@@ -64,10 +64,12 @@ int Window::Init(int w, int h, const TCHAR *title)
 	screen_pitch = w * 4;
 
 	AdjustWindowRect(&rect, GetWindowLong(screen_handle, GWL_STYLE), 0);
+	// window area
 	wx = rect.right - rect.left;
 	wy = rect.bottom - rect.top;
+	// window position
 	sx = (GetSystemMetrics(SM_CXSCREEN) - wx) / 2;
-	sy = (GetSystemMetrics(SM_CXSCREEN) - wy) / 2;
+	sy = (GetSystemMetrics(SM_CXSCREEN) - wy) / 4;
 	if (sy < 0) sy = 0;
 	SetWindowPos(screen_handle, NULL, sx, sy, wx, wy, (SWP_NOCOPYBITS | SWP_NOZORDER | SWP_SHOWWINDOW));
 	SetForegroundWindow(screen_handle);
