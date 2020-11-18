@@ -45,3 +45,20 @@ project "SoftRenderer"
 	filter "system:windows"
 		systemversion "latest"
 		staticruntime "off"
+	
+	includedirs
+	{
+	
+	}
+	
+	defines
+	{
+	
+	}
+	
+	links
+	{
+		"gdi32.lib",
+		"user32.lib"
+	}
+	
