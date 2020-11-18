@@ -4,13 +4,13 @@ HWND Window::screen_handle = nullptr;
 HDC Window::screen_dc = nullptr;
 HBITMAP Window::screen_hb = nullptr;
 HBITMAP Window::screen_ob = nullptr;
-bool Window::exitState = 0;
+bool Window::exit_state = 0;
 int Window::keys[512] = {0};
 
 LRESULT Window::screen_events(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
-	case WM_CLOSE: exitState = 1; break;
+	case WM_CLOSE: exit_state = 1; break;
 	case WM_KEYDOWN: keys[wParam & 511] = 1; break;
 	case WM_KEYUP: keys[wParam & 511] = 0; break;
 	default: return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -27,7 +27,6 @@ int Window::Init(int w, int h, const TCHAR *title)
 
 	// Init bitmap
 	// Because of top left is origin point 
-
 	BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB,
 		w * h * 4, 0, 0, 0, 0 } };
 
@@ -49,7 +48,7 @@ int Window::Init(int w, int h, const TCHAR *title)
 		0, 0, 0, 0, NULL, NULL, wc.hInstance, NULL);
 	if (screen_handle == NULL) return -2;
 
-	exitState = 0;
+	exit_state = 0;
 	hDC = GetDC(screen_handle);
 	screen_dc = CreateCompatibleDC(hDC);
 	ReleaseDC(screen_handle, hDC);

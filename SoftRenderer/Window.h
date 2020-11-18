@@ -8,7 +8,7 @@ class Window
 public:
 	int Init(int w, int h, const TCHAR *title);
 	void Update(void);
-	bool GetClose() { return exitState; }
+	bool GetClose() { return exit_state; }
 
 public:
 	static HWND screen_handle;
@@ -24,7 +24,7 @@ private:
 	void Dispatch(void);
 
 private:
-	static bool exitState;
+	static bool exit_state;
 	static int keys[512];
 
 	int width, height;
