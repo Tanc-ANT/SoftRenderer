@@ -1,11 +1,12 @@
 #pragma once
 #include "pch.h"
+#include "Vector3.h"
 
 class Vector4
 {
 public:
 	Vector4() : x(0), y(0), z(0), w(0) {};
-	Vector4(float x, float y, float z) : x(x), y(y), z(z), w(0) {};
+	Vector4(Vector3 vec3,float w) : x(vec3.x), y(vec3.y), z(vec3.z), w(w) {};
 	Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w){};
 	~Vector4() {};
 
@@ -41,6 +42,5 @@ public:
 
 };
 
-//Point.w = 1.0f
-//Vector.w = 0.0f
+//Point4.w = 1.0f Vector4.w = 0.0f 
 using Point4 = Vector4;

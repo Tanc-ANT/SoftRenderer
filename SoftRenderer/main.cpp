@@ -1,11 +1,10 @@
 #include "pch.h"
 #include "Window.h"
-#include "Vector4.h"
-#include "Matrix4.h"
+#include "Model.h"
 
 
 static int width = 800;
-static int height = 600;
+static int height = 800;
 
 // Define Render State
 #define RENDER_STATE_WIREFRAME 1 // wire frame mode
@@ -53,7 +52,7 @@ void device_clear(device_t *device,int mode)
 	{
 		UINT32 *dst = device->framebuffer[y];
 		for (x = device->witdth; x > 0; ++dst, --x)
-			dst[0] = 0.0f;
+			dst[0] = 0;
 	}
 }
 
@@ -66,8 +65,12 @@ void device_destory(device_t *device)
 
 void device_pixel(device_t *device, int x, int y, UINT32 color)
 {
-	if (((UINT)x < (UINT)device->witdth) && (((UINT)y < (UINT)device->height)))
+	if (((UINT)x < (UINT)device->witdth) && (((UINT)y < (UINT)device->height))
+		&& (((UINT)x > (UINT)0)) && (((UINT)y > (UINT)0)))
+	{
+		y = device->height - y;
 		device->framebuffer[y][x] = color;
+	}
 }
 
 // Bresenham's Line Drawing Algorithm
@@ -90,7 +93,7 @@ void device_line(device_t *device, int x0, int y0, int x1, int y1, UINT32 color)
 	int derror2 = std::abs(dy) * 2;
 	int error2 = 0;
 	int y = y0;
-	for (int x = x0; x <= x1; x++) {
+	for (int x = x0; x <= x1; ++x) {
 		if (steep) {
 			device_pixel(device,y, x, color);
 		}
@@ -105,22 +108,21 @@ void device_line(device_t *device, int x0, int y0, int x1, int y1, UINT32 color)
 	}
 }
 
-void draw_somthing(device_t *device)
+void draw_somthing(device_t *device, Model *model)
 {
-	// draw rect
-	/*for (int i = 300; i < 400; ++i)
-	{
-		for (int j = 200; j < 300; ++j)
-		{
-			device_pixel(device, i, j, device->foreground);
-		}
-	}*/
-
 	// draw line
-	device_line(device, 13, 20, 80, 40, WHITH_COLOR);
-	device_line(device, 20, 13, 40, 80, RED_COLOR);
-	device_line(device, 80, 40, 13, 20, RED_COLOR);
-	
+	for (int i = 0; i < model->nfaces(); i++) {
+		std::vector<int> face = model->face(i);
+		for (int j = 0; j < 3; j++) {
+			Vector3 v0 = model->vert(face[j]);
+			Vector3 v1 = model->vert(face[(j + 1) % 3]);
+			int x0 = (v0.x + 1.)*width / 2.;
+			int y0 = (v0.y + 1.)*height / 2.;
+			int x1 = (v1.x + 1.)*width / 2.;
+			int y1 = (v1.y + 1.)*height / 2.;
+			device_line(device, x0, y0, x1, y1, WHITH_COLOR);
+		}
+	}
 }
 
 int main()
@@ -132,10 +134,12 @@ int main()
 	device_t device;
 	device_init(&device, width, height, window->GetFrameBuffer());
 
+	Model model("../Asset/Obj/african_head.obj");
+
 	while (window->GetClose() == 0)
 	{
 		device_clear(&device, 0);
-		draw_somthing(&device);
+		draw_somthing(&device, &model);
 		window->Update();
 		Sleep(1);
 	}

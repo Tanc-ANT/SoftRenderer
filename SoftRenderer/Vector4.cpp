@@ -57,7 +57,7 @@ Vector4 Vector4::operator*(float k) const
 
 Vector4 Vector4::operator/(float k) const
 {
-	float oneOver = 1.0 / k;
+	float oneOver = 1.0f / k;
 	return Vector4(x * oneOver,
 		y * oneOver,
 		z * oneOver,
@@ -106,7 +106,7 @@ void Vector4::Normalize()
 	float sq = x * x + y * y + z * z;
 	if (sq > 0.0)
 	{
-		float oneOver = 1.0 / sqrt(sq);
+		float oneOver = 1.0f / sqrt(sq);
 		x *= oneOver;
 		y *= oneOver;
 		z *= oneOver;
