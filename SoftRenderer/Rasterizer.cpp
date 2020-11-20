@@ -1,15 +1,5 @@
 #include"Rasterizer.h"
 
-Rasterizer::Rasterizer()
-{
-	
-}
-
-Rasterizer::~Rasterizer()
-{
-
-}
-
 void Rasterizer::SetDevice(Device* d)
 {
 	device = d;
@@ -76,7 +66,6 @@ void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, UINT32 color)
 
 void Rasterizer::DrawTriangle(Vector3 t0, Vector3 t1, Vector3 t2, UINT32 color)
 {
-	//TODO: Change 2D trangle to 3D triangle
 	if (t0.y > t1.y) std::swap(t0, t1);
 	if (t0.y > t2.y) std::swap(t0, t2);
 	if (t1.y > t2.y) std::swap(t1, t2);

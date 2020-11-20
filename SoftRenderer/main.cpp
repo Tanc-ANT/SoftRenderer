@@ -2,11 +2,13 @@
 #include "Window.h"
 #include "Device.h"
 #include "Model.h"
+#include "Camera.h"
 #include "Rasterizer.h"
 
 static int width = 800;
 static int height = 800;
-static int states[] = { RENDER_STATE_WIREFRAME, RENDER_STATE_COLOR };
+
+int Render_state = RENDER_STATE_TEST;
 
 int main()
 {

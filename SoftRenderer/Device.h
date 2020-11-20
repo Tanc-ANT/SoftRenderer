@@ -11,7 +11,7 @@ enum RENDER_STATE
 	RENDER_STATE_COLOR = 2
 };
 
-static int Render_state = RENDER_STATE_COLOR;
+extern int Render_state;
 
 class Device
 {

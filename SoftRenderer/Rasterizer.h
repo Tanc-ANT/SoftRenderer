@@ -3,6 +3,7 @@
 #include "Device.h"
 #include "Model.h"
 #include "Vector3.h"
+#include "Camera.h"
 
 // Define Color
 #define RED_COLOR	0x00ff0000
@@ -13,8 +14,8 @@
 class Rasterizer
 {
 public:
-	Rasterizer();
-	~Rasterizer();
+	Rasterizer() {};
+	~Rasterizer() {};
 
 	void SetDevice(Device* d);
 	Device* GetDevice();
@@ -33,5 +34,6 @@ public:
 private:
 	Device* device;
 	Model* model;
+	Camera *camera;
 };
 
