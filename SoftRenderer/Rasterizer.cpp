@@ -81,39 +81,54 @@ void Rasterizer::DrawTriangle(Vector3 t0, Vector3 t1, Vector3 t2, UINT32 color)
 	if (t0.y > t2.y) std::swap(t0, t2);
 	if (t1.y > t2.y) std::swap(t1, t2);
 
-	if (device->render_state & RENDER_STATE_WIREFRAME)
+	int total_height = t2.y - t0.y;
+	if (total_height < 0.00001) return;
+	for (int y = t0.y; y <= t1.y; ++y)
 	{
-		DrawLine(t0.x, t0.y, t1.x, t1.y, GREEN_COLOR);
-		DrawLine(t1.x, t1.y, t2.x, t2.y, GREEN_COLOR);
-		DrawLine(t2.x, t2.y, t0.x, t0.y, RED_COLOR);
-	}
-	else if (device->render_state & RENDER_STATE_COLOR)
-	{
-		int total_height = t2.y - t0.y;
-		if (total_height < 0.00001) return;
-		for (int y = t0.y; y <= t1.y; ++y)
+		// Because of up set down Y. Add a checkpoint here.
+		if (y >= device->height) break;
+		int segement_height = t1.y - t0.y + 1;//plus 1 for non zero division
+		float alpha = (float)(y - t0.y) / total_height;
+		float beta = (float)(y - t0.y) / segement_height;
+		Vector3 A = t0 + (t2 - t0)*alpha;
+		Vector3 B = t0 + (t1 - t0)*beta;
+		if (A.x > B.x) std::swap(A, B); //draw line from left to right
+
+		float scanline_depth = B.z - A.z; //for zbuffer caculation
+		float scanline_width = B.x - A.x;
+		float ratio = scanline_depth / scanline_width;
+		float *z_line_buffer = device->zbuffer[y];
+		for (int j = A.x; j < B.x; ++j)
 		{
-			int segement_height = t1.y - t0.y + 1;//plus 1 for non zero division
-			float alpha = (float)(y - t0.y) / total_height;
-			float beta = (float)(y - t0.y) / segement_height;
-			Vector3 A = t0 + (t2 - t0)*alpha;
-			Vector3 B = t0 + (t1 - t0)*beta;
-			if (A.x > B.x) std::swap(A, B);
-			for (int j = A.x; j < B.x; ++j)
+			float z = (j - A.x) * ratio + A.z;
+			if (z_line_buffer[j] >= z)
 			{
+				z_line_buffer[j] = z;
 				DrawPixel(j, y, color);
 			}
 		}
-		for (int y = t1.y; y <= t2.y; ++y)
+	}
+	for (int y = t1.y; y <= t2.y; ++y)
+	{
+		// Because of up set down Y. Add a checkpoint here.
+		if (y >= device->height) break;
+		int segement_height = t2.y - t1.y + 1;//plus 1 for non zero division
+		float alpha = (float)(y - t0.y) / total_height;
+		float beta = (float)(y - t1.y) / segement_height;
+		Vector3 A = t0 + (t2 - t0)*alpha;
+		Vector3 B = t1 + (t2 - t1)*beta;
+		if (A.x > B.x) std::swap(A, B);//draw line from left to right
+
+		float scanline_depth = B.z - A.z; //for zbuffer caculation
+		float scanline_width = B.x - A.x;
+		float ratio = scanline_depth / scanline_width;
+		float *z_line_buffer = device->zbuffer[y];
+		for (int j = A.x; j < B.x; ++j)
 		{
-			int segement_height = t2.y - t1.y + 1;//plus 1 for non zero division
-			float alpha = (float)(y - t0.y) / total_height;
-			float beta = (float)(y - t1.y) / segement_height;
-			Vector3 A = t0 + (t2 - t0)*alpha;
-			Vector3 B = t1 + (t2 - t1)*beta;
-			if (A.x > B.x) std::swap(A, B);
-			for (int j = A.x; j < B.x; ++j)
+			float z = (j - A.x) * ratio + A.z;
+			if (z_line_buffer[j] >= z)
 			{
+				z_line_buffer[j] = z;
 				DrawPixel(j, y, color);
 			}
 		}
@@ -122,7 +137,7 @@ void Rasterizer::DrawTriangle(Vector3 t0, Vector3 t1, Vector3 t2, UINT32 color)
 
 void Rasterizer::DrawSomthing()
 {
-	if (device->render_state & RENDER_STATE_WIREFRAME)
+	if (device->render_state == RENDER_STATE_WIREFRAME)
 	{
 		for (int i = 0; i < model->nfaces(); i++) {
 			std::vector<int> face = model->face(i);
@@ -137,7 +152,7 @@ void Rasterizer::DrawSomthing()
 			}
 		}
 	}
-	else if (device->render_state & RENDER_STATE_COLOR)
+	else if (device->render_state == RENDER_STATE_COLOR)
 	{
 		for (int i = 0; i < model->nfaces(); i++) {
 			std::vector<int> face = model->face(i);
@@ -147,7 +162,7 @@ void Rasterizer::DrawSomthing()
 				Vector3 v = model->vert(face[j]);
 				screen_points[j] = Vector3((v.x + 1.0f)*device->width / 2.0f,
 					(v.y + 1.0f)*device->height / 2.0f,
-					1.0f);
+					v.z * 1000.f);
 				world_points[j] = v;
 			}
 			Vector3 v1 = world_points[2] - world_points[1];
@@ -164,6 +179,14 @@ void Rasterizer::DrawSomthing()
 					screen_points[2], color);
 			}
 		}
+	}
+	else
+	{
+		DrawLine(20, 34, 744, 400, RED_COLOR);
+		DrawLine(120, 434, 444, 400, GREEN_COLOR);
+		DrawLine(330, 463, 549, 200, BLUE_COLOR);
+
+		DrawLine(10, 10, 790, 10, WHITH_COLOR);
 	}
 }
 
