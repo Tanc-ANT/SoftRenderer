@@ -36,5 +36,9 @@ public:
 	Matrix4 operator*(const Matrix4 &other) const;
 	Matrix4 operator*(float k) const;
 
-	float m[4][4] = {.0f};
+	Matrix4 Translation(const Vector3& translate);
+	Matrix4 Rotation(const Vector3& rotate, float theta);
+	Matrix4 Scale(const Vector3& scale);
+
+	float m[4][4] = { 0.0f };
 };

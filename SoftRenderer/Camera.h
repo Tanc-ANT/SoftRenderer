@@ -9,15 +9,11 @@
 #define TO_RADIANS(degrees) ((PI / 180) * (degrees))
 #define TO_DEGREES(radians) ((180 / PI) * (radians))
 
-static const float NEAR = 0.1f;
-static const float FAR = 10000;
-static const float FOVY = TO_RADIANS(60);
-
 class Camera
 {
 public:
-	Camera(Vector3 p, Vector3 d, Vector3 u)
-		:position(p), driection(d), up(u) {};
+	Camera(Vector3 p, Vector3 d, Vector3 u, float a)
+		:position(p), driection(d), up(u), aspect(a) {};
 	~Camera() {};
 
 	void SetPostion(Vector3 p);
@@ -37,4 +33,10 @@ private:
 	Vector3 driection;
 	Vector3 up;
 	float aspect;
+
+	// const number of camera
+	// we don't need change number value here
+	const float Near = 0.1f;
+	const float Far = 1000.f;
+	const float FovY = TO_RADIANS(60);
 };
