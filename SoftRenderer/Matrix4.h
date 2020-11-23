@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Vector3.h"
 
 class Matrix4
 {
@@ -38,7 +39,7 @@ public:
 
 	Matrix4 Translation(const Vector3& translate);
 	Matrix4 Rotation(const Vector3& rotate, float theta);
-	Matrix4 Scale(const Vector3& scale);
+	Matrix4 Scalation(const Vector3& scale);
 
 	float m[4][4] = { 0.0f };
 };

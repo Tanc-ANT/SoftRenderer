@@ -18,18 +18,18 @@ void Matrix4::Set(int row, int col, float num)
 
 void Matrix4::SetIdentity()
 {
-	m[0][0] = 1; m[0][1] = 0; m[0][2] = 0; m[0][3] = 0;
-	m[0][0] = 0; m[0][1] = 1; m[0][2] = 0; m[0][3] = 0;
-	m[0][0] = 0; m[0][1] = 0; m[0][2] = 1; m[0][3] = 0;
-	m[0][0] = 0; m[0][1] = 0; m[0][2] = 0; m[0][3] = 1;
+	m[0][0] = 1.0f; m[0][1] = 0.0f; m[0][2] = 0.0f; m[0][3] = 0.0f;
+	m[1][0] = 0.0f; m[1][1] = 1.0f; m[1][2] = 0.0f; m[1][3] = 0.0f;
+	m[2][0] = 0.0f; m[2][1] = 0.0f; m[2][2] = 1.0f; m[2][3] = 0.0f;
+	m[3][0] = 0.0f; m[3][1] = 0.0f; m[3][2] = 0.0f; m[3][3] = 1.0f;
 }
 
 void Matrix4::SetZero()
 {
-	m[0][0] = 0; m[0][1] = 0; m[0][2] = 0; m[0][3] = 0;
-	m[0][0] = 0; m[0][1] = 0; m[0][2] = 0; m[0][3] = 0;
-	m[0][0] = 0; m[0][1] = 0; m[0][2] = 0; m[0][3] = 0;
-	m[0][0] = 0; m[0][1] = 0; m[0][2] = 0; m[0][3] = 0;
+	m[0][0] = 0.0f; m[0][1] = 0.0f; m[0][2] = 0.0f; m[0][3] = 0.0f;
+	m[1][0] = 0.0f; m[1][1] = 0.0f; m[1][2] = 0.0f; m[1][3] = 0.0f;
+	m[2][0] = 0.0f; m[2][1] = 0.0f; m[2][2] = 0.0f; m[2][3] = 0.0f;
+	m[3][0] = 0.0f; m[3][1] = 0.0f; m[3][2] = 0.0f; m[3][3] = 0.0f;
 }
 
 Matrix4& Matrix4::operator=(const Matrix4& other)
@@ -121,4 +121,46 @@ Matrix4 Matrix4::operator*(float k) const
 		}
 	}
 	return newMatrix;
+}
+
+Matrix4 Matrix4::Translation(const Vector3& translate)
+{
+	m[3][0] = translate.x;
+	m[3][1] = translate.y;
+	m[3][2] = translate.z;
+	return *this;
+}
+
+Matrix4 Matrix4::Rotation(const Vector3& rotate, float theta)
+{
+	Vector3 n = rotate;
+	n.Normalize();
+	float c = (float)cos(theta);
+	float s = (float)sin(theta);
+
+	m[0][0] = n.x * n.x * (1 - c) + c;
+	m[1][0] = n.y * n.x * (1 - c) - s * n.z;
+	m[2][0] = n.z * n.x * (1 - c) + s * n.y;
+
+	m[0][1] = n.x * n.y * (1 - c) + s * n.z;
+	m[1][1] = n.y * n.y * (1 - c) + c;
+	m[2][1] = n.z * n.y * (1 - c) - s * n.x;
+
+	m[0][2] = n.x * n.z * (1 - c) - s * n.y;
+	m[1][2] = n.y * n.z * (1 - c) + s * n.x;
+	m[2][2] = n.z * n.z * (1 - c) + c;
+
+	m[0][3] = m[1][3] = m[2][3] = 0.0f;
+	m[3][0] = m[3][1] = m[3][2] = 0.0f;
+	m[3][3] = 1.0f;
+
+	return *this;
+}
+
+Matrix4 Matrix4::Scalation(const Vector3& scale)
+{
+	m[0][0] = scale.x;
+	m[1][1] = scale.y;
+	m[2][2] = scale.z;
+	return *this;
 }

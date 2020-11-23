@@ -37,6 +37,6 @@ private:
 	// const number of camera
 	// we don't need change number value here
 	const float Near = 0.1f;
-	const float Far = 1000.f;
-	const float FovY = TO_RADIANS(60);
+	const float Far = 500.f;
+	const float FovY = 3.1415926f*0.5;
 };

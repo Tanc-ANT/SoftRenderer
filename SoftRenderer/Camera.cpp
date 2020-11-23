@@ -61,12 +61,12 @@ Matrix4 Camera::GetViewMatrix()
 
 Matrix4 Camera::GetProjectionMatrix()
 {
-	float cotHalfFovY = 1.0f / tan(FovY / 2);
+	float cotHalfFovY = 1.0f / (float)tan(FovY * 0.5f);
 	Matrix4 matrix;
-	matrix.m[0][0] = cotHalfFovY / aspect;
-	matrix.m[1][1] = cotHalfFovY;
-	matrix.m[2][2] = (Near + Far) / (Near - Far);
-	matrix.m[3][3] = -(2 * Near*Far) / (Near - Far);
+	matrix.m[0][0] = (float)(cotHalfFovY / aspect);
+	matrix.m[1][1] = (float)(cotHalfFovY);
+	matrix.m[2][2] = (Near + Far) / (Far - Near);
+	matrix.m[3][2] = -2 * Near*Far / (Far - Near);
 	matrix.m[2][3] = 1.0f;
 
 	return matrix;
