@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Window.h"
 #include "Device.h"
 #include "Model.h"
 #include "Vector3.h"
@@ -12,6 +13,9 @@ class Rasterizer
 public:
 	Rasterizer() {};
 	~Rasterizer() {};
+
+	void SetWindow(Window *w);
+	Window* GetWindow();
 
 	void SetDevice(Device* d);
 	Device* GetDevice();
@@ -39,11 +43,14 @@ private:
 
 	bool FaceCulling(Vector4 t0, Vector4 t1, Vector4 t2);
 
+	void InputKeysEvent();
+
 private:
+	Window* window;
 	Device* device;
 	Model* model;
 	Camera *camera;
 
-	Matrix4 transform;
+	bool change_state = false;
 };
 

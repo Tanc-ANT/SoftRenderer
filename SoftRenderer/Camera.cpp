@@ -30,7 +30,7 @@ Vector3 Camera::GetUp()
 	return up;
 }
 
-Matrix4 Camera::GetViewMatrix()
+Matrix4 Camera::GetViewMatrix() const
 {
 	Vector3 z_axis = driection - position;
 	z_axis.Normalize();
@@ -59,7 +59,7 @@ Matrix4 Camera::GetViewMatrix()
 	return matrix;
 }
 
-Matrix4 Camera::GetProjectionMatrix()
+Matrix4 Camera::GetProjectionMatrix() const
 {
 	float cotHalfFovY = 1.0f / (float)tan(FovY * 0.5f);
 	Matrix4 matrix;
@@ -70,4 +70,40 @@ Matrix4 Camera::GetProjectionMatrix()
 	matrix.m[2][3] = 1.0f;// For DirectX
 
 	return matrix;
+}
+
+Matrix4 Camera::GetTranformation() const
+{
+	return tranformation;
+}
+
+void Camera::Update()
+{
+	Matrix4 world;
+	world.SetIdentity();
+	world.Rotation(Vector3(-1, -0.5, 1), angle);
+	Matrix4 view = GetViewMatrix();
+	Matrix4 proj = GetProjectionMatrix();
+	Matrix4 t = world * view;
+	tranformation = t * proj;
+}
+
+void Camera::TranslateFront()
+{
+	position.x -= 0.01f;
+}
+
+void Camera::TranslateBack()
+{
+	position.x += 0.01f;
+}
+
+void Camera::RotateLeft()
+{
+	angle += 0.01f;
+}
+
+void Camera::RotateRight()
+{
+	angle -= 0.01f;
 }

@@ -12,6 +12,16 @@ Vector4 mesh[8] = {
 	{-1.0f, 1.0f,-1.0f,1.0f},
 };
 
+void Rasterizer::SetWindow(Window *w)
+{
+	window = w;
+}
+
+Window* Rasterizer::GetWindow()
+{
+	return window;
+}
+
 void Rasterizer::SetDevice(Device* d)
 {
 	device = d;
@@ -168,7 +178,7 @@ void Rasterizer::DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& 
 
 void Rasterizer::DrawPlane(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d)
 {
-	if (device->GetRenderState() == RENDER_BOX_WIREFRAME)
+	if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
 		if (!FaceCulling(a, b, c))
 		{
@@ -184,10 +194,13 @@ void Rasterizer::DrawPlane(const Vector4& a, const Vector4& b, const Vector4& c,
 			DrawLine(a.x, a.y, c.x, c.y, WHITH_COLOR);
 		}
 	}
-	else if (device->GetRenderState() == RENDER_BOX_COLOR)
+	else if (device->GetRenderState() == RENDER_STATE_COLOR)
 	{
-		DrawTriangle(a, b, c, WHITH_COLOR);
-		DrawTriangle(c, d, a, WHITH_COLOR);
+		if (!FaceCulling(a, b, c))
+			DrawTriangle(a, b, c, WHITH_COLOR);
+
+		if(!FaceCulling(c, d, a))
+			DrawTriangle(c, d, a, WHITH_COLOR);
 	}
 }
 
@@ -202,85 +215,111 @@ void Rasterizer::DrawBox(const Vector4 points[],int n)
 }
 
 void Rasterizer::DrawSomthing()
-{
-	Matrix4 world;
-	world.SetIdentity();
-	world.Rotation(Vector3(-1, -0.5, 1), 1);
-	Matrix4 view = camera->GetViewMatrix();
-	Matrix4 proj = camera->GetProjectionMatrix();
-	Matrix4 t = world * view;
-	transform = t * proj;
-	
-	if (device->GetRenderState() == RENDER_MODEL_WIREFRAME)
+{	
+	if (device->GetRenderState() & RENDER_STATE_MODEL)
 	{
-		Vector4 screen_points[2];
-		Vector4 world_points[2];
-		for (int i = 0; i < model->nfaces(); i++) {
-			std::vector<int> face = model->face(i);
-			for (int j = 0; j < 3; j++) {
-				Vector4 v0 = Vector4(model->vert(face[j]), 1.0f);
-				Vector4 v1 = Vector4(model->vert(face[(j + 1) % 3]), 1.0f);
-				world_points[0] = TransformApply(v0, transform);
-				screen_points[0] = TransformHomogenize(world_points[0]);
-				world_points[1] = TransformApply(v1, transform);
-				screen_points[1] = TransformHomogenize(world_points[1]);
+		if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
+		{
+			Vector4 screen_points[2];
+			Vector4 world_points[2];
+			for (int i = 0; i < model->nfaces(); i++) {
+				std::vector<int> face = model->face(i);
+				for (int j = 0; j < 3; j++) {
+					Vector4 v0 = Vector4(model->vert(face[j]), 1.0f);
+					Vector4 v1 = Vector4(model->vert(face[(j + 1) % 3]), 1.0f);
+					world_points[0] = TransformApply(v0, camera->GetTranformation());
+					screen_points[0] = TransformHomogenize(world_points[0]);
+					world_points[1] = TransformApply(v1, camera->GetTranformation());
+					screen_points[1] = TransformHomogenize(world_points[1]);
 
-				DrawLine(screen_points[0].x, screen_points[0].y,
-					screen_points[1].x, screen_points[1].y, WHITH_COLOR);
+					DrawLine(screen_points[0].x, screen_points[0].y,
+						screen_points[1].x, screen_points[1].y, WHITH_COLOR);
+				}
 			}
 		}
-	}
-	else if (device->GetRenderState() == RENDER_MODEL_COLOR)
-	{
-		for (int i = 0; i < model->nfaces(); i++) {
-			std::vector<int> face = model->face(i);
-			Vector4 screen_points[3];
-			Vector4 world_points[3];
-			for (int j = 0; j < 3; j++) {
-				Vector4 v = Vector4(model->vert(face[j]), 1.0f);
-				world_points[j] = TransformApply(v,transform);
-				screen_points[j] = TransformHomogenize(world_points[j]);
-				
-			}
-			Vector4 v1 = world_points[2] - world_points[1];
-			Vector4 v2 = world_points[1] - world_points[0];
-			Vector4 n = v1.Cross(v2);
-			n.Normalize();
-			Vector4 light_dir(0, 0, 1, 1);
-			float light_color = n.Dot(light_dir);
-			Color color(light_color, light_color, light_color);
-			int intensity = color.GetIntensity();
-			if (light_color > 0)
-			{
-				DrawTriangle(screen_points[0], screen_points[1],
-					screen_points[2], intensity);
+		else if (device->GetRenderState() & RENDER_STATE_COLOR)
+		{
+			for (int i = 0; i < model->nfaces(); i++) {
+				std::vector<int> face = model->face(i);
+				Vector4 screen_points[3];
+				Vector4 world_points[3];
+				for (int j = 0; j < 3; j++) {
+					Vector4 v = Vector4(model->vert(face[j]), 1.0f);
+					world_points[j] = TransformApply(v, camera->GetTranformation());
+					screen_points[j] = TransformHomogenize(world_points[j]);
+
+				}
+				Vector4 v1 = world_points[2] - world_points[1];
+				Vector4 v2 = world_points[1] - world_points[0];
+				Vector4 n = v1.Cross(v2);
+				n.Normalize();
+				Vector4 light_dir(0, 0, 1, 1);
+				float light_color = n.Dot(light_dir);
+				Color color(light_color, light_color, light_color);
+				int intensity = color.GetIntensity();
+				if (light_color > 0)
+				{
+					DrawTriangle(screen_points[0], screen_points[1],
+						screen_points[2], intensity);
+				}
 			}
 		}
+		
 	}
-	else
+	else if(device->GetRenderState() & RENDER_STATE_BOX)
 	{
 		Vector4 world_points[8];
 		Vector4 screen_points[8];
 		for (int i = 0; i < 8; ++i)
 		{
-			world_points[i] = TransformApply(mesh[i], transform);
+			world_points[i] = TransformApply(mesh[i], camera->GetTranformation());
 			screen_points[i] = TransformHomogenize(world_points[i]);
 		}
 		DrawBox(screen_points, 8);
 	}
-	
 }
 
 void Rasterizer::Update()
 {
 	device->Clear();
+	camera->Update();
 	DrawSomthing();
+	window->Update();
+	InputKeysEvent();
 }
 
 bool Rasterizer::FaceCulling(Vector4 t0, Vector4 t1, Vector4 t2)
 {
-	Vector3 v1 = Vector3(t1.x,t1.y,t1.z) - Vector3(t0.x, t0.y, t0.z);
-	Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
-	Vector3 n = v1.Cross(v2);
-	return n.z <= 0;
+	if (device->GetRenderState() & RENDER_STATE_BACKCULL)
+	{
+		Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
+		Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
+		Vector3 n = v1.Cross(v2);
+		return n.z <= 0;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void Rasterizer::InputKeysEvent()
+{
+	if (window->GetKey()[VK_ESCAPE]) window->SetCloseState(true);
+	if (window->GetKey()[VK_UP]) camera->TranslateFront();
+	if (window->GetKey()[VK_DOWN]) camera->TranslateBack();
+	if (window->GetKey()[VK_LEFT]) camera->RotateLeft();
+	if (window->GetKey()[VK_RIGHT]) camera->RotateRight();
+	if (window->GetKey()[VK_SPACE])
+	{
+		if (!change_state)
+		{
+			change_state = true;
+			int m = device->GetRenderMode();
+			m = (m + 1) % MODE;
+			device->SetRenderState(m);
+		}
+	}
+	else
+		change_state = false;
 }

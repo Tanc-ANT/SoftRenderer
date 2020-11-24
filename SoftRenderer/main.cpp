@@ -8,8 +8,6 @@
 static int width = 800;
 static int height = 600;
 
-int Render_state = RENDER_MODEL_WIREFRAME;
-
 int main()
 {
 	Window *window = new Window();
@@ -26,14 +24,14 @@ int main()
 	Camera* camera = new Camera(eye, at, up, aspect);
 
 	Rasterizer *raster = new Rasterizer();
+	raster->SetWindow(window);
 	raster->SetDevice(device);
 	raster->SetModel(model);
 	raster->SetCamera(camera);
 
-	while (window->GetClose() == 0)
+	while (!window->GetCloseState())
 	{
 		raster->Update();
-		window->Update();
 		Sleep(1);
 	}
 	delete raster;

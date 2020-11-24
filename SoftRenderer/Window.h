@@ -8,7 +8,11 @@ class Window
 public:
 	int Init(int w, int h, const TCHAR *title);
 	void Update(void);
-	bool GetClose() { return exit_state; }
+	
+	void SetCloseState(bool e) { exit_state = e; }
+	bool GetCloseState() {return exit_state;}
+	
+	int* GetKey() { return keys; }
 	unsigned char* GetFrameBuffer() { return screen_fb; };
 
 public:

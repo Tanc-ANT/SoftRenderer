@@ -25,14 +25,28 @@ public:
 	void SetUp(Vector3 u);
 	Vector3 GetUp();
 
-	Matrix4 GetViewMatrix();
-	Matrix4 GetProjectionMatrix();
+	Matrix4 GetViewMatrix() const;
+	Matrix4 GetProjectionMatrix() const;
+	Matrix4 GetTranformation() const;
+
+	void Update();
+
+	// just for demo
+	void TranslateFront();
+	void TranslateBack();
+	void RotateLeft();
+	void RotateRight();
 
 private:
 	Vector3 position;
 	Vector3 driection;
 	Vector3 up;
 	float aspect;
+
+	Matrix4 tranformation;
+
+	// for demo
+	float angle = 1.0f;
 
 	// const number of camera
 	// we don't need change number value here
