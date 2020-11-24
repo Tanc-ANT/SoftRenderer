@@ -1,4 +1,5 @@
-#include"Rasterizer.h"
+#include "Rasterizer.h"
+#include "Color.h"
 
 Vector4 mesh[8] = {
 	{-1.0f,-1.0f,1.0f,1.0f},
@@ -43,12 +44,12 @@ Camera* Rasterizer::GetCamera()
 
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
-	if (((unsigned int)x < (UINT32)device->width) && (((unsigned int)y < (UINT32)device->height))
+	if (((unsigned int)x < (UINT32)device->GetWidth()) && (((unsigned int)y < (UINT32)device->GetHeight()))
 		&& (((unsigned int)x > (UINT32)0)) && (((unsigned int)y > (UINT32)0)))
 		
 	{
 		//y = device->height - y;
-		device->framebuffer[y][x] = color;
+		device->GetFrameBuffer()[y][x] = color;
 	}
 }
 
@@ -92,13 +93,13 @@ void Rasterizer::DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& 
 	if (t0.y > t2.y) std::swap(t0, t2);
 	if (t1.y > t2.y) std::swap(t1, t2);
 
-	int total_height = t2.y - t0.y;
-	if (total_height < 0.00001) return;
+	float total_height = t2.y - t0.y;
+	if (total_height <= 1.0f) return;
 	for (int y = t0.y; y <= t1.y; ++y)
 	{
 		// Because of up set down Y. Add a checkpoint here.
-		if (y >= device->height) break;
-		int segement_height = t1.y - t0.y + 1;//plus 1 for non zero division
+		if (y >= device->GetHeight()) break;
+		float segement_height = t1.y - t0.y + 1.0f;//plus EPSILON for non zero division
 		float alpha = (float)(y - t0.y) / total_height;
 		float beta = (float)(y - t0.y) / segement_height;
 		Vector4 A = t0 + (t2 - t0)*alpha;
@@ -108,7 +109,7 @@ void Rasterizer::DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& 
 		float scanline_depth = B.w - A.w; //for zbuffer caculation
 		float scanline_width = B.x - A.x;
 		float ratio = scanline_depth / scanline_width;
-		float *z_line_buffer = device->zbuffer[y];
+		float *z_line_buffer = device->GetZBuffer()[y];
 		for (int j = A.x; j < B.x; ++j)
 		{
 			float z = (j - A.x) * ratio + A.w;
@@ -122,8 +123,8 @@ void Rasterizer::DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& 
 	for (int y = t1.y; y <= t2.y; ++y)
 	{
 		// Because of up set down Y. Add a checkpoint here.
-		if (y >= device->height) break;
-		int segement_height = t2.y - t1.y + 1;//plus 1 for non zero division
+		if (y >= device->GetHeight()) break;
+		float segement_height = t2.y - t1.y + 1.0f;//plus EPSILON for non zero division
 		float alpha = (float)(y - t0.y) / total_height;
 		float beta = (float)(y - t1.y) / segement_height;
 		Vector4 A = t0 + (t2 - t0)*alpha;
@@ -133,7 +134,7 @@ void Rasterizer::DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& 
 		float scanline_depth = B.w - A.w; //for zbuffer caculation
 		float scanline_width = B.x - A.x;
 		float ratio = scanline_depth / scanline_width;
-		float *z_line_buffer = device->zbuffer[y];
+		float *z_line_buffer = device->GetZBuffer()[y];
 		for (int j = A.x; j < B.x; ++j)
 		{
 			float z = (j - A.x) * ratio + A.w;
@@ -148,7 +149,7 @@ void Rasterizer::DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& 
 
 void Rasterizer::DrawPlane(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d)
 {
-	if (device->render_state == RENDER_BOX_WIREFRAME)
+	if (device->GetRenderState() == RENDER_BOX_WIREFRAME)
 	{
 		DrawLine(a.x, a.y, b.x, b.y, WHITH_COLOR);
 		DrawLine(b.x, b.y, c.x, c.y, WHITH_COLOR);
@@ -158,7 +159,7 @@ void Rasterizer::DrawPlane(const Vector4& a, const Vector4& b, const Vector4& c,
 		DrawLine(d.x, d.y, a.x, a.y, WHITH_COLOR);
 		DrawLine(a.x, a.y, c.x, c.y, WHITH_COLOR);
 	}
-	else if (device->render_state == RENDER_BOX_COLOR)
+	else if (device->GetRenderState() == RENDER_BOX_COLOR)
 	{
 		DrawTriangle(a, b, c, WHITH_COLOR);
 		DrawTriangle(c, d, a, WHITH_COLOR);
@@ -179,13 +180,13 @@ void Rasterizer::DrawSomthing()
 {
 	Matrix4 world;
 	world.SetIdentity();
-	world.Rotation(Vector3(0, 1, 0), 90);
+	world.Rotation(Vector3(-1, -0.5, 1), 90);
 	Matrix4 view = camera->GetViewMatrix();
 	Matrix4 proj = camera->GetProjectionMatrix();
 	Matrix4 t = world * view;
 	transform = t * proj;
 	
-	if (device->render_state == RENDER_MODEL_WIREFRAME)
+	if (device->GetRenderState() == RENDER_MODEL_WIREFRAME)
 	{
 		Vector4 screen_points[2];
 		Vector4 world_points[2];
@@ -204,7 +205,7 @@ void Rasterizer::DrawSomthing()
 			}
 		}
 	}
-	else if (device->render_state == RENDER_MODEL_COLOR)
+	else if (device->GetRenderState() == RENDER_MODEL_COLOR)
 	{
 		for (int i = 0; i < model->nfaces(); i++) {
 			std::vector<int> face = model->face(i);
@@ -221,13 +222,13 @@ void Rasterizer::DrawSomthing()
 			Vector4 n = v1.Cross(v2);
 			n.Normalize();
 			Vector4 light_dir(0, 0, 1, 1);
-			float intenstiy = n.Dot(light_dir);
-			UINT32 color = intenstiy * 255;
-			color = (color) | (color << 8) | (color << 16);
-			if (intenstiy > 0)
+			float light_color = n.Dot(light_dir);
+			Color color(light_color, light_color, light_color);
+			int intensity = color.GetIntensity();
+			if (light_color > 0)
 			{
 				DrawTriangle(screen_points[0], screen_points[1],
-					screen_points[2], color);
+					screen_points[2], intensity);
 			}
 		}
 	}
@@ -254,8 +255,8 @@ void Rasterizer::Update()
 Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 {
 	float rhw = 1.0f / v.w;
-	return Vector4((v.x * rhw + 1.0f)*device->width * 0.5f,
-		(1.0f - v.y * rhw)*device->height * 0.5f,
+	return Vector4((v.x * rhw + 1.0f)*device->GetWidth() * 0.5f,
+		(1.0f - v.y * rhw)*device->GetHeight() * 0.5f,
 		v.z*rhw, rhw);
 }
 

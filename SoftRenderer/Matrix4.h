@@ -16,6 +16,17 @@ public:
 			m20, m21, m22, m23,
 			m30, m31, m32, m33);
 	};
+	Matrix4(const Matrix4& other)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; j < 4; ++j)
+			{
+				m[i][j] = other.m[i][j];
+			}
+		}
+	}
+	Matrix4& operator=(const Matrix4& other);
 	~Matrix4() {};
 
 	void Set(float m00, float m01, float m02, float m03,
@@ -28,7 +39,6 @@ public:
 	void SetIdentity();
 	void SetZero();
 
-	Matrix4& operator=(const Matrix4& other);
 	bool operator==(const Matrix4& other);
 	bool operator!=(const Matrix4& other);
 

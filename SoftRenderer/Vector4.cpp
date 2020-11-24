@@ -55,6 +55,11 @@ Vector4 Vector4::operator*(float k) const
 		w * k);
 }
 
+//Vector4 Vector4::operator*(const Matrix4 &m) const
+//{
+//
+//}
+
 Vector4 Vector4::operator/(float k) const
 {
 	float oneOver = 1.0f / k;
@@ -129,4 +134,9 @@ Vector4 Vector4::Cross(const Vector4& other) const
 	m2 = z * other.x - x * other.z;
 	m3 = x * other.y - y * other.x;
 	return Vector4(m1, m2, m3, 1.0f);
+}
+
+Vector4 Vector4::Lerp(const Vector4 &v1, const Vector4 &v2, float factor) const
+{
+	return v1 + (v2 - v1) * factor;
 }

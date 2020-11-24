@@ -5,12 +5,7 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Camera.h"
-
-// Define Color
-#define RED_COLOR	0x00ff0000
-#define BLUE_COLOR	0x000000ff
-#define GREEN_COLOR	0x0000ff00
-#define WHITH_COLOR 0x00ffffff
+#include "Geometry.h"
 
 class Rasterizer
 {

@@ -67,7 +67,7 @@ Matrix4 Camera::GetProjectionMatrix()
 	matrix.m[1][1] = (float)(cotHalfFovY);
 	matrix.m[2][2] = (Near + Far) / (Far - Near);
 	matrix.m[3][2] = -2 * Near*Far / (Far - Near);
-	matrix.m[2][3] = 1.0f;
+	matrix.m[2][3] = 1.0f;// For DirectX
 
 	return matrix;
 }

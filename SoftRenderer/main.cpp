@@ -8,7 +8,7 @@
 static int width = 800;
 static int height = 600;
 
-int Render_state = RENDER_BOX_WIREFRAME;
+int Render_state = RENDER_MODEL_COLOR;
 
 int main()
 {

@@ -118,3 +118,8 @@ Vector3 Vector3::Cross(const Vector3& other) const
 	m3 = x * other.y - y * other.x;
 	return Vector3(m1, m2, m3);
 }
+
+Vector3 Vector3::Lerp(const Vector3 &v1, const Vector3 &v2, float factor) const
+{
+	return v1 + (v2 - v1) * factor;
+}

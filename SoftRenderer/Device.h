@@ -23,10 +23,20 @@ public:
 
 	void Clear();
 
-public:
+	void SetWidth(int w) { width = w; }
+	int GetWidth() { return width; }
+
+	void SetHeight(int h) { height = h; }
+	int GetHeight() { return height; }
+
+	UINT32** GetFrameBuffer() { return framebuffer; }
+	float** GetZBuffer() { return zbuffer; }
+	UINT32 GetRenderState() { return render_state; }
+
+private:
 	int width;
 	int height;
 	UINT32 **framebuffer;
 	float **zbuffer;
-	int render_state;
+	UINT32 render_state;
 };

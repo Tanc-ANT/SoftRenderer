@@ -1,14 +1,15 @@
 #pragma once
 #include "pch.h"
 #include "Vector3.h"
+#include "Matrix4.h"
 
 class Vector4
 {
 public:
-	Vector4() : x(0), y(0), z(0), w(0) {};
-	Vector4(Vector3 vec3,float w) : x(vec3.x), y(vec3.y), z(vec3.z), w(w) {};
-	Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w){};
-	~Vector4() {};
+	Vector4() : x(0), y(0), z(0), w(0) {}
+	Vector4(Vector3 vec3,float w) : x(vec3.x), y(vec3.y), z(vec3.z), w(w) {}
+	Vector4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w){}
+	~Vector4() {}
 
 	void Set(float _x, float _y, float _z, float _w);
 
@@ -26,16 +27,14 @@ public:
 	Vector4 &operator*=(float k);
 	Vector4 &operator/=(float k);
 
+	//Vector4 operator*(const Matrix4 &m) const;
+
 	//only influnce 3D(xyz)
 	void Normalize();
 	double Lenght();
 	double Dot(const Vector4& other) const;
 	Vector4 Cross(const Vector4& other) const;
-	
-	static Vector4 Lerp(const Vector4 &v1, const Vector4 &v2, float factor)
-	{
-		return v1 + (v2 - v1) * factor;
-	}
+	Vector4 Lerp(const Vector4 &v1, const Vector4 &v2, float factor) const;
 
 public:
 	float x, y, z, w;

@@ -3,8 +3,8 @@
 #include "Vector3.h"
 #include "Matrix4.h"
 
-#define EPSILON 1e-5f
-#define PI 3.1415927f
+constexpr float EPSILON = 1e-5f;
+constexpr float PI = 3.1415926f;
 
 #define TO_RADIANS(degrees) ((PI / 180) * (degrees))
 #define TO_DEGREES(radians) ((180 / PI) * (radians))
@@ -38,5 +38,5 @@ private:
 	// we don't need change number value here
 	const float Near = 0.1f;
 	const float Far = 500.f;
-	const float FovY = 3.1415926f*0.5;
+	const float FovY = TO_RADIANS(90);
 };

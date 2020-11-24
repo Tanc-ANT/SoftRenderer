@@ -8,9 +8,9 @@ Device::Device(int w, int h, void *fb)
 	char *framebuf,*zbuf;
 	assert(ptr);
 	// Allocate index memeory
-	// The index of frame buffer line number
+	// The line number index of frame buffer
 	framebuffer = (UINT32 **)ptr;
-	// The index of z buffer line number
+	// The line number index of z buffer
 	zbuffer = (float **)(ptr + sizeof(void*) * h);
 	ptr += sizeof(void*) * h * 2;
 
