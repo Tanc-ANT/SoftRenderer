@@ -42,6 +42,25 @@ Camera* Rasterizer::GetCamera()
 	return camera;
 }
 
+Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
+{
+	float rhw = 1.0f / v.w;
+	return Vector4((v.x * rhw + 1.0f)*device->GetWidth() * 0.5f,
+		(1.0f - v.y * rhw)*device->GetHeight() * 0.5f,
+		v.z*rhw, rhw);
+}
+
+Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
+{
+	float X = v.x; float Y = v.y; float Z = v.z; float W = v.w;
+	Vector4 u;
+	u.x = X * m.m[0][0] + Y * m.m[1][0] + Z * m.m[2][0] + W * m.m[3][0];
+	u.y = X * m.m[0][1] + Y * m.m[1][1] + Z * m.m[2][1] + W * m.m[3][1];
+	u.z = X * m.m[0][2] + Y * m.m[1][2] + Z * m.m[2][2] + W * m.m[3][2];
+	u.w = X * m.m[0][3] + Y * m.m[1][3] + Z * m.m[2][3] + W * m.m[3][3];
+	return u;
+}
+
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
 	if (((unsigned int)x < (UINT32)device->GetWidth()) && (((unsigned int)y < (UINT32)device->GetHeight()))
@@ -151,13 +170,19 @@ void Rasterizer::DrawPlane(const Vector4& a, const Vector4& b, const Vector4& c,
 {
 	if (device->GetRenderState() == RENDER_BOX_WIREFRAME)
 	{
-		DrawLine(a.x, a.y, b.x, b.y, WHITH_COLOR);
-		DrawLine(b.x, b.y, c.x, c.y, WHITH_COLOR);
-		DrawLine(c.x, c.y, a.x, a.y, WHITH_COLOR);
-
-		DrawLine(c.x, c.y, d.x, d.y, WHITH_COLOR);
-		DrawLine(d.x, d.y, a.x, a.y, WHITH_COLOR);
-		DrawLine(a.x, a.y, c.x, c.y, WHITH_COLOR);
+		if (!FaceCulling(a, b, c))
+		{
+			DrawLine(a.x, a.y, b.x, b.y, WHITH_COLOR);
+			DrawLine(b.x, b.y, c.x, c.y, WHITH_COLOR);
+			DrawLine(c.x, c.y, a.x, a.y, WHITH_COLOR);
+		}
+		
+		if (!FaceCulling(c, d, a))
+		{
+			DrawLine(c.x, c.y, d.x, d.y, WHITH_COLOR);
+			DrawLine(d.x, d.y, a.x, a.y, WHITH_COLOR);
+			DrawLine(a.x, a.y, c.x, c.y, WHITH_COLOR);
+		}
 	}
 	else if (device->GetRenderState() == RENDER_BOX_COLOR)
 	{
@@ -180,7 +205,7 @@ void Rasterizer::DrawSomthing()
 {
 	Matrix4 world;
 	world.SetIdentity();
-	world.Rotation(Vector3(-1, -0.5, 1), 90);
+	world.Rotation(Vector3(-1, -0.5, 1), 1);
 	Matrix4 view = camera->GetViewMatrix();
 	Matrix4 proj = camera->GetProjectionMatrix();
 	Matrix4 t = world * view;
@@ -252,21 +277,10 @@ void Rasterizer::Update()
 	DrawSomthing();
 }
 
-Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
+bool Rasterizer::FaceCulling(Vector4 t0, Vector4 t1, Vector4 t2)
 {
-	float rhw = 1.0f / v.w;
-	return Vector4((v.x * rhw + 1.0f)*device->GetWidth() * 0.5f,
-		(1.0f - v.y * rhw)*device->GetHeight() * 0.5f,
-		v.z*rhw, rhw);
-}
-
-Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
-{
-	float X = v.x; float Y = v.y; float Z = v.z; float W = v.w;
-	Vector4 u;
-	u.x = X * m.m[0][0] + Y * m.m[1][0] + Z * m.m[2][0] + W * m.m[3][0];
-	u.y = X * m.m[0][1] + Y * m.m[1][1] + Z * m.m[2][1] + W * m.m[3][1];
-	u.z = X * m.m[0][2] + Y * m.m[1][2] + Z * m.m[2][2] + W * m.m[3][2];
-	u.w = X * m.m[0][3] + Y * m.m[1][3] + Z * m.m[2][3] + W * m.m[3][3];
-	return u;
+	Vector3 v1 = Vector3(t1.x,t1.y,t1.z) - Vector3(t0.x, t0.y, t0.z);
+	Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
+	Vector3 n = v1.Cross(v2);
+	return n.z <= 0;
 }

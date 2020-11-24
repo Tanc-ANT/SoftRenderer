@@ -8,3 +8,4 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <exception>

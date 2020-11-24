@@ -27,7 +27,7 @@ Device::Device(int w, int h, void *fb)
 	}
 	width = w;
 	height = h;
-	render_state = Render_state;
+	render_state = RENDER_ARRY[0];
 }
 
 Device::~Device()
