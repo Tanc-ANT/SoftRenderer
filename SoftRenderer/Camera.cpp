@@ -81,7 +81,7 @@ void Camera::Update()
 {
 	Matrix4 world;
 	world.SetIdentity();
-	world.Rotation(Vector3(-1, -0.5, 1), angle);
+	world.Rotation(axis, angle);
 	Matrix4 view = GetViewMatrix();
 	Matrix4 proj = GetProjectionMatrix();
 	Matrix4 t = world * view;

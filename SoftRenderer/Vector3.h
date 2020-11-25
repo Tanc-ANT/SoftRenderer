@@ -30,7 +30,11 @@ public:
 	double Lenght();
 	double Dot(const Vector3& other) const;
 	Vector3 Cross(const Vector3& other) const;
-	Vector3 Lerp(const Vector3 &v1, const Vector3 &v2, float factor) const;
+
+	static Vector3 Lerp(const Vector3 &v1, const Vector3 &v2, float factor)
+	{
+		return v1 + (v2 - v1) * factor;
+	}
 
 public:
 	float x, y, z;

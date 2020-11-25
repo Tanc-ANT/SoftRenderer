@@ -135,8 +135,3 @@ Vector4 Vector4::Cross(const Vector4& other) const
 	m3 = x * other.y - y * other.x;
 	return Vector4(m1, m2, m3, 1.0f);
 }
-
-Vector4 Vector4::Lerp(const Vector4 &v1, const Vector4 &v2, float factor) const
-{
-	return v1 + (v2 - v1) * factor;
-}

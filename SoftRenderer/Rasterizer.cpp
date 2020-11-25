@@ -150,34 +150,38 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); }
 
 		float total_height = t2.y - t0.y;
-		if (total_height <= 1.0f) return;
-		for (float y = t0.y; y <= t1.y; y+=1.0f)
+		if (total_height < 1.0f) return;
+		// plus 0.5 here for prevent leaks pixel
+		for (int y = (int)(t0.y + 0.5); y <= (int)(t1.y + 0.5); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= device->GetHeight() || y<0) break;
-			float segement_height = t1.y - t0.y + EPSILON;//plus EPSILON for non zero division
+			if (y >= device->GetHeight() || y < 0) break;
+			// This check  additional pixel 
+			if(std::abs((float)y - t0.y)<0.5f) continue;
+			float segement_height = t1.y - t0.y + 0.25;
+			if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
-			Vector4 A = t0 + (t2 - t0)*alpha;
-			Vector4 B = t0 + (t1 - t0)*beta;
-			Color C = c0 + (c2 - c0)*alpha;
-			Color D = c0 + (c1 - c0)*beta;
+			Vector4 A = Vector4::Lerp(t0, t2, alpha);
+			Vector4 B = Vector4::Lerp(t0, t1, beta);
+			Color C = Color::Lerp(c0, c2, alpha);
+			Color D = Color::Lerp(c0, c1, beta);
 			//draw line from left to right
 			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
 
 			//zbuffer caculation
-			float scanline_depth = B.w - A.w; 
+			float scanline_depth = B.w - A.w;
 			float scanline_width = B.x - A.x;
 			float depth_ratio = scanline_depth / scanline_width;
-			float *z_line_buffer = device->GetZBuffer()[(int)y];
+			float *z_line_buffer = device->GetZBuffer()[y];
 
 			//color caculation
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
-			
+
 			for (float j = A.x; j < B.x; j+=1.0f)
 			{
-				if (j >= device->GetWidth() || j< 0) break;
+				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * (j - A.x) + A.w;
 				if (z_line_buffer[(int)j] <= z)
 				{
@@ -187,17 +191,21 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				}
 			}
 		}
-		for (float y = t1.y; y <= t2.y; y+=1.0f)
+		// plus 0.5 here for prevent leaks pixel
+		for (int y = (int)(t1.y + 0.5); y <= (int)(t2.y + 0.5); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
-			float segement_height = t2.y - t1.y + EPSILON;//plus EPSILON for non zero division
+			// This check  additional pixel 
+			if (std::abs((float)y - t1.y) < 0.5f) continue;
+			float segement_height = t2.y - t1.y + 0.25f;
+			if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
-			Vector4 A = t0 + (t2 - t0)*alpha;
-			Vector4 B = t1 + (t2 - t1)*beta;
-			Color C = c0 + (c2 - c0)*alpha;
-			Color D = c1 + (c2 - c1)*beta;
+			Vector4 A = Vector4::Lerp(t0, t2, alpha);
+			Vector4 B = Vector4::Lerp(t1, t2, beta);
+			Color C = Color::Lerp(c0, c2, alpha);
+			Color D = Color::Lerp(c1, c2, beta);
 			//draw line from left to right
 			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
 
@@ -205,13 +213,13 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float scanline_depth = B.w - A.w; 
 			float scanline_width = B.x - A.x;
 			float depth_ratio = scanline_depth / scanline_width;
-			float *z_line_buffer = device->GetZBuffer()[(int)y];
+			float *z_line_buffer = device->GetZBuffer()[y];
 
 			//color caculation
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
 
-			for (float j = A.x; j < B.x; j+=1.0f)
+			for (float j = A.x; j < B.x; j += 1.0f)
 			{
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * (j - A.x) + A.w;

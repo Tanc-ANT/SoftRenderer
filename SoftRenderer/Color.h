@@ -29,6 +29,11 @@ public:
 	void SetIntensity(UINT32 c);
 	UINT32 GetIntensity() const;
 
+	static Color Lerp(const Color &v1, const Color &v2, float factor)
+	{
+		return v1 + (v2 - v1) * factor;
+	}
+
 private:
 	Vector3 color;
 };
