@@ -37,11 +37,11 @@ private:
 	void DrawPixel(int x, int y, UINT32 color);
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, UINT32 color);
-	void DrawTriangle(Vector4 t0, Vector4 t1, Vector4 t2, const UINT32& color);
-	void DrawPlane(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d);
-	void DrawBox(const Vector4 points[], int n);
+	void DrawTriangle(const Triangle& t);
+	void DrawPlane(const Vertex& a, const Vertex& b, const Vertex& c, const Vertex& d);
+	void DrawBox(const Vertex points[], int n);
 
-	bool FaceCulling(Vector4 t0, Vector4 t1, Vector4 t2);
+	bool FaceCulling(const Triangle& t) const;
 
 	void InputKeysEvent();
 

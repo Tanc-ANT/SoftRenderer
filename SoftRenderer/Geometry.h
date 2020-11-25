@@ -1,48 +1,49 @@
 #pragma once
 #include "pch.h"
 #include "Vector3.h"
+#include "Vector4.h"
 #include "Color.h"
 
 class Vertex
 {
 public:
 	Vertex() {}
-	Vertex(Vector3 p, Vector3 n, Color c) :position(p), color(c) {}
+	Vertex(Vector4 p, Color c) :position(p), color(c) {}
 	Vertex(const Vertex& v) { position = v.GetPosition(); color = v.GetColor(); }
 	Vertex& operator=(const Vertex& v)	{ position = v.GetPosition(); color = v.GetColor(); return *this; }
 	~Vertex() {}
 
-	void SetPosition(Vector3 p) { position = p; }
-	Vector3 GetPosition() const { return position; }
+	void SetPosition(Vector4 p) { position = p; }
+	Vector4 GetPosition() const { return position; }
 
 	void SetColor(Color c) { color = c; }
 	Color GetColor() const { return color; }
 
 private:
-	Vector3 position;
-	Color color;
+	Vector4 position;
+	Color color = { 1.0f, 1.0f, 1.0f }; // TODO :temp color
 };
 
 class Triangle
 {
 public:
 	Triangle() {};
-	Triangle(Vertex v0, Vertex v1, Vertex v2) :a(v0), b(v1), c(v2) {}
-	Triangle(const Triangle& t) { a = t.GetA(); b = t.GetB(); c = t.GetC(); }
-	Triangle& operator=(const Triangle& t) { a = t.GetA(); b = t.GetB(); c = t.GetC(); return *this; }
+	Triangle(Vertex v0, Vertex v1, Vertex v2) :v0(v0), v1(v1), v2(v2) {}
+	Triangle(const Triangle& t) { v0 = t.GetV0(); v1 = t.GetV1(); v2 = t.GetV2(); }
+	Triangle& operator=(const Triangle& t) { v0 = t.GetV0(); v1 = t.GetV1(); v2 = t.GetV2(); return *this; }
 	~Triangle() {}
 
-	void SetA(Vertex A) { a = A; };
-	Vertex GetA() const { return a; };
+	inline void SetV0(Vertex A) { v0 = A; };
+	inline Vertex GetV0() const { return v0; };
 
-	void SetB(Vertex B) { b = B; };
-	Vertex GetB() const { return b; };
+	inline void SetV1(Vertex B) { v1 = B; };
+	inline Vertex GetV1() const { return v1; };
 
-	void SetC(Vertex C) { c = C; };
-	Vertex GetC() const { return c; };
+	inline void SetV2(Vertex C) { v2 = C; };
+	inline Vertex GetV2() const { return v2; };
 
 private:
-	Vertex a;
-	Vertex b;
-	Vertex c;
+	Vertex v0;
+	Vertex v1;
+	Vertex v2;
 };
