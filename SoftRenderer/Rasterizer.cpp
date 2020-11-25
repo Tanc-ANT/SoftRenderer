@@ -1,5 +1,6 @@
 #include "Rasterizer.h"
 #include "Color.h"
+#include "Light.h"
 
 Vertex mesh[8] = {
 	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
@@ -157,7 +158,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
 			// This check  additional pixel 
-			if(std::abs((float)y - t0.y)<0.5f) continue;
+			//if(std::abs((float)y - t0.y)<0.5f) continue;
 			float segement_height = t1.y - t0.y + 0.25;
 			if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
@@ -197,7 +198,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
 			// This check  additional pixel 
-			if (std::abs((float)y - t1.y) < 0.5f) continue;
+			//if (std::abs((float)y - t1.y) < 0.5f) continue;
 			float segement_height = t2.y - t1.y + 0.25f;
 			if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
@@ -268,8 +269,8 @@ void Rasterizer::DrawSomthing()
 			Vector4 v2 = world_points[1] - world_points[0];
 			Vector4 n = v1.Cross(v2);
 			n.Normalize();
-			Vector4 light_dir(0, 0, 1, 1);
-			float light_color = n.Dot(light_dir);
+			Light light(Vector4(0, 0, 1, 1));
+			float light_color = n.Dot(light.GetDirection());
 			Color color(light_color, light_color, light_color);
 			Vertex a(screen_points[0], color);
 			Vertex b(screen_points[1], color);
