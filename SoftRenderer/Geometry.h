@@ -9,6 +9,7 @@ class Vertex
 public:
 	Vertex() {}
 	Vertex(Vector4 p, Color c) :position(p), color(c) {}
+	Vertex(Vector4 p, Vector4 n, Color c) :position(p), normal(n), color(c) {}
 	Vertex(const Vertex& v) { position = v.GetVertexPosition(); color = v.GetVertexColor(); }
 	Vertex& operator=(const Vertex& v)	{ position = v.GetVertexPosition(); color = v.GetVertexColor(); return *this; }
 	~Vertex() {}
@@ -16,11 +17,15 @@ public:
 	void SetVertexPosition(Vector4 p) { position = p; }
 	Vector4 GetVertexPosition() const { return position; }
 
+	void SetVertexNormal(Vector4 n) { normal = n; }
+	Vector4 GetVertexNormal() const { return normal; }
+
 	void SetVertexColor(Color c) { color = c; }
 	Color GetVertexColor() const { return color; }
 
 private:
 	Vector4 position;
+	Vector4 normal;
 	Color color;
 };
 

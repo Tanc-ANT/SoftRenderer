@@ -12,15 +12,15 @@ constexpr float PI = 3.1415926f;
 class Camera
 {
 public:
-	Camera(Vector3 p, Vector3 d, Vector3 u, float a)
-		:position(p), driection(d), up(u), aspect(a) {};
+	Camera(Vector3 p, Vector3 t, Vector3 u, float a)
+		:position(p), target(t), up(u), aspect(a) {};
 	~Camera() {};
 
 	void SetPostion(Vector3 p);
 	Vector3 GetPostion();
 
-	void SetDriection(Vector3 d);
-	Vector3 GetDriection();
+	void SetTarget(Vector3 d);
+	Vector3 GetTarget();
 
 	void SetUp(Vector3 u);
 	Vector3 GetUp();
@@ -39,15 +39,15 @@ public:
 
 private:
 	Vector3 position;
-	Vector3 driection;
+	Vector3 target;
 	Vector3 up;
 	float aspect;
 
 	Matrix4 tranformation;
 
 	// for demo
-	float angle = 1.0f;
-	Vector3 axis = { -1.0f, -0.5f, 1.0f };
+	float angle = 0.0f;
+	Vector3 axis = { 0.0f, 0.5f, 1.0f };
 
 	// const number of camera
 	// we don't need change number value here

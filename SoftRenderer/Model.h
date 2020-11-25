@@ -7,13 +7,16 @@ class Model
 public:
 	Model(const char *filename);
 	~Model();
-	int nverts();
-	int nfaces();
-	Vector3 vert(long i);
-	std::vector<int> face(long idx);
+	int Nverts();
+	int Nnormals();
+	int Nfaces();
+	Vector3 GetVert(long i);
+	Vector3 GetNorm(long i);
+	std::vector<int> GetFace(long idx);
 
 private:
 	std::vector<Vector3> verts;
+	std::vector<Vector3> normals;
 	std::vector<std::vector<int>> faces;
 
 };

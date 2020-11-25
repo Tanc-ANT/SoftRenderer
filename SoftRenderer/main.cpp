@@ -3,6 +3,7 @@
 #include "Device.h"
 #include "Model.h"
 #include "Camera.h"
+#include "Light.h"
 #include "Rasterizer.h"
 
 static int width = 800;
@@ -23,11 +24,14 @@ int main()
 	float aspect = (float)width / (float)height;
 	Camera* camera = new Camera(eye, at, up, aspect);
 
+	Light *light = new Light(Vector4(0, 0, 1, 1));
+
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
 	raster->SetDevice(device);
 	raster->SetModel(model);
 	raster->SetCamera(camera);
+	raster->SetLight(light);
 
 	while (!window->GetCloseState())
 	{
@@ -35,6 +39,7 @@ int main()
 		Sleep(1);
 	}
 	delete raster;
+	delete light;
 	delete camera;
 	delete model;
 	delete device;

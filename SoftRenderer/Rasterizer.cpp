@@ -1,6 +1,4 @@
 #include "Rasterizer.h"
-#include "Color.h"
-#include "Light.h"
 
 Vertex mesh[8] = {
 	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
@@ -11,6 +9,16 @@ Vertex mesh[8] = {
 	{Vector4( 1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
 	{Vector4( 1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
 	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
+};
+
+Rasterizer::Rasterizer()
+{
+	//CalculateBoxNormal();
+};
+
+Rasterizer::~Rasterizer()
+{
+
 };
 
 void Rasterizer::SetWindow(Window *w)
@@ -77,6 +85,40 @@ Color Rasterizer::ColorHomogenize(const Color& c,const float& w)
 	// float rhw = 1 / w;
 	// color divid by rhw 
 	return c * w;
+}
+
+void Rasterizer::CalculateBoxNormal()
+{
+	Vector4 v0 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v1 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n0 = v1.Cross(v1);
+
+	Vector4 v2 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v3 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n1 = v1.Cross(v2);
+
+	Vector4 v4 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v5 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n2 = v1.Cross(v2);
+
+	Vector4 v6 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v7 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n3 = v1.Cross(v2);
+
+	Vector4 v8 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v9 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n4 = v1.Cross(v2);
+
+	Vector4 v10 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v11 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n5 = v1.Cross(v2);
+
+	
+}
+
+void Rasterizer::CalculateVertexColor(Vertex& v)
+{
+
 }
 
 void Rasterizer::DrawPixel(int x, int y, Color color)
@@ -151,7 +193,6 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); }
 
 		float total_height = t2.y - t0.y;
-		if (total_height < 1.0f) return;
 		// plus 0.5 here for prevent leaks pixel
 		for (int y = (int)(t0.y + 0.5); y <= (int)(t1.y + 0.5); y++)
 		{
@@ -160,7 +201,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			// This check  additional pixel 
 			//if(std::abs((float)y - t0.y)<0.5f) continue;
 			float segement_height = t1.y - t0.y + 0.25;
-			if(segement_height < 1.0f) continue;
+			//if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
 			Vector4 A = Vector4::Lerp(t0, t2, alpha);
@@ -200,7 +241,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			// This check  additional pixel 
 			//if (std::abs((float)y - t1.y) < 0.5f) continue;
 			float segement_height = t2.y - t1.y + 0.25f;
-			if (segement_height < 1.0f) continue;
+			//if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
 			Vector4 A = Vector4::Lerp(t0, t2, alpha);
@@ -255,12 +296,12 @@ void Rasterizer::DrawSomthing()
 {	
 	if (device->GetRenderState() & RENDER_STATE_MODEL)
 	{
-		for (int i = 0; i < model->nfaces(); i++) {
-			std::vector<int> face = model->face(i);
+		for (int i = 0; i < model->Nfaces(); i++) {
+			std::vector<int> face = model->GetFace(i);
 			Vector4 screen_points[3];
 			Vector4 world_points[3];
 			for (int j = 0; j < 3; j++) {
-				Vector4 v = Vector4(model->vert(face[j]), 1.0f);
+				Vector4 v = Vector4(model->GetVert(face[j]), 1.0f);
 				world_points[j] = TransformApply(v, camera->GetTranformation());
 				screen_points[j] = TransformHomogenize(world_points[j]);
 
@@ -269,8 +310,7 @@ void Rasterizer::DrawSomthing()
 			Vector4 v2 = world_points[1] - world_points[0];
 			Vector4 n = v1.Cross(v2);
 			n.Normalize();
-			Light light(Vector4(0, 0, 1, 1));
-			float light_color = n.Dot(light.GetDirection());
+			float light_color = n.Dot(light->GetDirection());
 			Color color(light_color, light_color, light_color);
 			Vertex a(screen_points[0], color);
 			Vertex b(screen_points[1], color);

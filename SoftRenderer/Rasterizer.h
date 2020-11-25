@@ -6,13 +6,15 @@
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Camera.h"
+#include "Color.h"
+#include "Light.h"
 #include "Geometry.h"
 
 class Rasterizer
 {
 public:
-	Rasterizer() {};
-	~Rasterizer() {};
+	Rasterizer();
+	~Rasterizer();
 
 	void SetWindow(Window *w);
 	Window* GetWindow();
@@ -26,6 +28,8 @@ public:
 	void SetCamera(Camera* c);
 	Camera* GetCamera();
 
+	void SetLight(Light* l) { light = l; }
+
 	void DrawSomthing();
 
 	void Update();
@@ -35,6 +39,8 @@ private:
 	Vector4 TransformApply(const Vector4& v, const Matrix4& m);
 
 	Color ColorHomogenize(const Color& c, const float& w);
+	void CalculateBoxNormal();
+	void CalculateVertexColor(Vertex& v);
 
 	void DrawPixel(int x, int y, Color color);
 	// Bresenham's Line Drawing Algorithm
@@ -51,7 +57,8 @@ private:
 	Window* window;
 	Device* device;
 	Model* model;
-	Camera *camera;
+	Camera* camera;
+	Light* light;
 
 	bool change_state = false;
 };

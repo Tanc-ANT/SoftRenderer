@@ -10,14 +10,14 @@ Vector3 Camera::GetPostion()
 	return position;
 }
 
-void Camera::SetDriection(Vector3 d)
+void Camera::SetTarget(Vector3 d)
 {
-	driection = d;
+	target = d;
 }
 
-Vector3 Camera::GetDriection()
+Vector3 Camera::GetTarget()
 {
-	return driection;
+	return target;
 }
 
 void Camera::SetUp(Vector3 u)
@@ -32,7 +32,7 @@ Vector3 Camera::GetUp()
 
 Matrix4 Camera::GetViewMatrix() const
 {
-	Vector3 z_axis = driection - position;
+	Vector3 z_axis = target - position;
 	z_axis.Normalize();
 	Vector3 x_axis = up.Cross(z_axis);
 	x_axis.Normalize();

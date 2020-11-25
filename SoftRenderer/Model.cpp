@@ -18,6 +18,14 @@ Model::Model(const char *filename)
 			iss >> v.z;
 			verts.push_back(v);
 		}
+		if (!line.compare(0, 3, "vn ")) {
+			iss >> trash;
+			Vector3 n;
+			iss >> n.x;
+			iss >> n.y;
+			iss >> n.z;
+			normals.push_back(n);
+		}
 		else if (!line.compare(0, 2, "f ")) {
 			std::vector<int> f;
 			int itrash, idx;
@@ -29,7 +37,9 @@ Model::Model(const char *filename)
 			faces.push_back(f);
 		}
 	}
-	std::cerr << "v# " << verts.size() << "	f# " << faces.size() << std::endl;
+	std::cerr << "v# " << verts.size() <<
+		"		vn# " << normals.size() <<
+		"	f# " << faces.size() << std::endl;
 }
 
 Model::~Model()
@@ -37,22 +47,32 @@ Model::~Model()
 
 }
 
-int Model::nverts()
+int Model::Nverts()
 {
 	return (int)verts.size();
 }
 
-int Model::nfaces()
+int Model::Nnormals()
+{
+	return (int)normals.size();
+}
+
+int Model::Nfaces()
 {
 	return (int)faces.size();
 }
 
-Vector3 Model::vert(long i)
+Vector3 Model::GetVert(long i)
 {
 	return verts[i];
 }
 
-std::vector<int> Model::face(long idx)
+Vector3 Model::GetNorm(long i)
+{
+	return normals[i];
+}
+
+std::vector<int> Model::GetFace(long idx)
 {
 	return faces[idx];
 }
