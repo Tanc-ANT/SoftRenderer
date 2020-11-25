@@ -8,11 +8,12 @@
 #define RENDER_STATE_MODEL		8	// Render model
 #define RENDER_STATE_BACKCULL	16	// Back culling or not
 
-constexpr int MODE = 5;
+constexpr int MODE = 6;
 
 static UINT32 RENDER_MODE_ARRAY[MODE] = {
 	RENDER_STATE_WIREFRAME | RENDER_STATE_BOX,
 	RENDER_STATE_WIREFRAME | RENDER_STATE_BOX | RENDER_STATE_BACKCULL,
+	RENDER_STATE_COLOR | RENDER_STATE_BOX | RENDER_STATE_BACKCULL,
 	RENDER_STATE_WIREFRAME | RENDER_STATE_MODEL ,
 	RENDER_STATE_WIREFRAME | RENDER_STATE_MODEL | RENDER_STATE_BACKCULL,
 	RENDER_STATE_COLOR | RENDER_STATE_MODEL | RENDER_STATE_BACKCULL,
@@ -26,19 +27,19 @@ public:
 
 	void Clear();
 
-	void SetWidth(int w) { width = w; }
-	int GetWidth() { return width; }
+	inline void SetWidth(int w) { width = w; }
+	inline int GetWidth() { return width; }
 
-	void SetHeight(int h) { height = h; }
-	int GetHeight() { return height; }
+	inline void SetHeight(int h) { height = h; }
+	inline int GetHeight() { return height; }
 
-	UINT32** GetFrameBuffer() { return framebuffer; }
-	float** GetZBuffer() { return zbuffer; }
+	inline UINT32** GetFrameBuffer() { return framebuffer; }
+	inline float** GetZBuffer() { return zbuffer; }
 	
-	int GetRenderMode() { return render_mode; }
+	inline int GetRenderMode() { return render_mode; }
 
-	void SetRenderState(int n) { render_mode = n; render_state = RENDER_MODE_ARRAY[n]; }
-	UINT32 GetRenderState() { return render_state; }
+	inline void SetRenderState(int n) { render_mode = n; render_state = RENDER_MODE_ARRAY[n]; }
+	inline UINT32 GetRenderState() { return render_state; }
 
 private:
 	int width;

@@ -9,19 +9,19 @@ class Vertex
 public:
 	Vertex() {}
 	Vertex(Vector4 p, Color c) :position(p), color(c) {}
-	Vertex(const Vertex& v) { position = v.GetPosition(); color = v.GetColor(); }
-	Vertex& operator=(const Vertex& v)	{ position = v.GetPosition(); color = v.GetColor(); return *this; }
+	Vertex(const Vertex& v) { position = v.GetVertexPosition(); color = v.GetVertexColor(); }
+	Vertex& operator=(const Vertex& v)	{ position = v.GetVertexPosition(); color = v.GetVertexColor(); return *this; }
 	~Vertex() {}
 
-	void SetPosition(Vector4 p) { position = p; }
-	Vector4 GetPosition() const { return position; }
+	void SetVertexPosition(Vector4 p) { position = p; }
+	Vector4 GetVertexPosition() const { return position; }
 
-	void SetColor(Color c) { color = c; }
-	Color GetColor() const { return color; }
+	void SetVertexColor(Color c) { color = c; }
+	Color GetVertexColor() const { return color; }
 
 private:
 	Vector4 position;
-	Color color = { 1.0f, 1.0f, 1.0f }; // TODO :temp color
+	Color color;
 };
 
 class Triangle

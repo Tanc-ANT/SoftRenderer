@@ -1,15 +1,15 @@
 #include "Rasterizer.h"
 #include "Color.h"
 
-Vector4 mesh[8] = {
-	{-1.0f,-1.0f,1.0f,1.0f},
-	{ 1.0f,-1.0f,1.0f,1.0f},
-	{ 1.0f, 1.0f,1.0f,1.0f},
-	{-1.0f, 1.0f,1.0f,1.0f},
-	{-1.0f,-1.0f,-1.0f,1.0f},
-	{ 1.0f,-1.0f,-1.0f,1.0f},
-	{ 1.0f, 1.0f,-1.0f,1.0f},
-	{-1.0f, 1.0f,-1.0f,1.0f},
+Vertex mesh[8] = {
+	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
+	{Vector4( 1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},
+	{Vector4( 1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},
+	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},
+	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},
+	{Vector4( 1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
+	{Vector4( 1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
+	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
 };
 
 void Rasterizer::SetWindow(Window *w)
@@ -71,18 +71,25 @@ Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
 	return u;
 }
 
-void Rasterizer::DrawPixel(int x, int y, UINT32 color)
+Color Rasterizer::ColorHomogenize(const Color& c,const float& w)
+{
+	// float rhw = 1 / w;
+	// color divid by rhw 
+	return c * w;
+}
+
+void Rasterizer::DrawPixel(int x, int y, Color color)
 {
 	if (((unsigned int)x < (UINT32)device->GetWidth()) && (((unsigned int)y < (UINT32)device->GetHeight()))
 		&& (((unsigned int)x > (UINT32)0)) && (((unsigned int)y > (UINT32)0)))
 		
 	{
 		//y = device->height - y;
-		device->GetFrameBuffer()[y][x] = color;
+		device->GetFrameBuffer()[y][x] = color.GetIntensity();
 	}
 }
 
-void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, UINT32 color)
+void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
 {
 	bool steep = false;
 	if (std::abs(x0 - x1) < std::abs(y0 - y1))
@@ -121,14 +128,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	if (FaceCulling(t))
 		return;
 
-	Vector4 t0 = t.GetV0().GetPosition();
-	Vector4 t1 = t.GetV1().GetPosition();
-	Vector4 t2 = t.GetV2().GetPosition();
-
-	UINT32 color = (
-		t.GetV0().GetColor().GetIntensity() +
-		t.GetV1().GetColor().GetIntensity() +
-		t.GetV2().GetColor().GetIntensity()) / 3;
+	Vector4 t0 = t.GetV0().GetVertexPosition();
+	Vector4 t1 = t.GetV1().GetVertexPosition();
+	Vector4 t2 = t.GetV2().GetVertexPosition();
 
 	if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
@@ -139,62 +141,85 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	
 	else if(device->GetRenderState() & RENDER_STATE_COLOR)
 	{
-		if (t0.y > t1.y) std::swap(t0, t1);
-		if (t0.y > t2.y) std::swap(t0, t2);
-		if (t1.y > t2.y) std::swap(t1, t2);
+		Color c0 = ColorHomogenize(t.GetV0().GetVertexColor(), t0.w);
+		Color c1 = ColorHomogenize(t.GetV1().GetVertexColor(), t1.w);
+		Color c2 = ColorHomogenize(t.GetV2().GetVertexColor(), t2.w);
+
+		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); }
+		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); }
+		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); }
 
 		float total_height = t2.y - t0.y;
 		if (total_height <= 1.0f) return;
-		for (int y = t0.y; y <= t1.y; ++y)
+		for (float y = t0.y; y <= t1.y; y+=1.0f)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= device->GetHeight()) break;
-			float segement_height = t1.y - t0.y + 1.0f;//plus EPSILON for non zero division
+			if (y >= device->GetHeight() || y<0) break;
+			float segement_height = t1.y - t0.y + EPSILON;//plus EPSILON for non zero division
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
 			Vector4 A = t0 + (t2 - t0)*alpha;
 			Vector4 B = t0 + (t1 - t0)*beta;
-			if (A.x > B.x) std::swap(A, B); //draw line from left to right
+			Color C = c0 + (c2 - c0)*alpha;
+			Color D = c0 + (c1 - c0)*beta;
+			//draw line from left to right
+			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
 
 			//zbuffer caculation
 			float scanline_depth = B.w - A.w; 
 			float scanline_width = B.x - A.x;
-			float ratio = scanline_depth / scanline_width;
-			float *z_line_buffer = device->GetZBuffer()[y];
+			float depth_ratio = scanline_depth / scanline_width;
+			float *z_line_buffer = device->GetZBuffer()[(int)y];
 
+			//color caculation
+			Color color_diff = D - C;
+			Color color_ratio = color_diff / scanline_width;
 			
-			for (int j = A.x; j < B.x; ++j)
+			for (float j = A.x; j < B.x; j+=1.0f)
 			{
-				float z = (j - A.x) * ratio + A.w;
-				if (z_line_buffer[j] <= z)
+				if (j >= device->GetWidth() || j< 0) break;
+				float z = depth_ratio * (j - A.x) + A.w;
+				if (z_line_buffer[(int)j] <= z)
 				{
-					z_line_buffer[j] = z;
-					DrawPixel(j, y, color);
+					Color c = (color_ratio * (j - A.x) + C) / z;
+					z_line_buffer[(int)j] = z;
+					DrawPixel(j, y, c);
 				}
 			}
 		}
-		for (int y = t1.y; y <= t2.y; ++y)
+		for (float y = t1.y; y <= t2.y; y+=1.0f)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= device->GetHeight()) break;
-			float segement_height = t2.y - t1.y + 1.0f;//plus EPSILON for non zero division
+			if (y >= device->GetHeight() || y < 0) break;
+			float segement_height = t2.y - t1.y + EPSILON;//plus EPSILON for non zero division
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
 			Vector4 A = t0 + (t2 - t0)*alpha;
 			Vector4 B = t1 + (t2 - t1)*beta;
-			if (A.x > B.x) std::swap(A, B);//draw line from left to right
+			Color C = c0 + (c2 - c0)*alpha;
+			Color D = c1 + (c2 - c1)*beta;
+			//draw line from left to right
+			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
 
-			float scanline_depth = B.w - A.w; //for zbuffer caculation
+			//for zbuffer caculation
+			float scanline_depth = B.w - A.w; 
 			float scanline_width = B.x - A.x;
-			float ratio = scanline_depth / scanline_width;
-			float *z_line_buffer = device->GetZBuffer()[y];
-			for (int j = A.x; j < B.x; ++j)
+			float depth_ratio = scanline_depth / scanline_width;
+			float *z_line_buffer = device->GetZBuffer()[(int)y];
+
+			//color caculation
+			Color color_diff = D - C;
+			Color color_ratio = color_diff / scanline_width;
+
+			for (float j = A.x; j < B.x; j+=1.0f)
 			{
-				float z = (j - A.x) * ratio + A.w;
-				if (z_line_buffer[j] <= z)
+				if (j >= device->GetWidth() || j < 0) break;
+				float z = depth_ratio * (j - A.x) + A.w;
+				if (z_line_buffer[(int)j] <= z)
 				{
-					z_line_buffer[j] = z;
-					DrawPixel(j, y, color);
+					Color c = (color_ratio * (j - A.x) + C) / z;
+					z_line_buffer[(int)j] = z;
+					DrawPixel(j, y, c);
 				}
 			}
 		}
@@ -255,10 +280,10 @@ void Rasterizer::DrawSomthing()
 		Vector4 screen_points[8];
 		for (int i = 0; i < 8; ++i)
 		{
-			world_points[i] = TransformApply(mesh[i], camera->GetTranformation());
+			world_points[i] = TransformApply(mesh[i].GetVertexPosition(), camera->GetTranformation());
 			screen_points[i] = TransformHomogenize(world_points[i]);
-			vert[i].SetPosition(screen_points[i]);
-			vert[i].SetColor(Color(1.0f, 1.0f, 1.0f));
+			vert[i].SetVertexPosition(screen_points[i]);
+			vert[i].SetVertexColor(mesh[i].GetVertexColor());
 		}
 		DrawBox(vert, 8);
 	}
@@ -277,9 +302,9 @@ bool Rasterizer::FaceCulling(const Triangle& t) const
 {
 	if (device->GetRenderState() & RENDER_STATE_BACKCULL)
 	{
-		Vector4 t0 = t.GetV0().GetPosition();
-		Vector4 t1 = t.GetV1().GetPosition();
-		Vector4 t2 = t.GetV2().GetPosition();
+		Vector4 t0 = t.GetV0().GetVertexPosition();
+		Vector4 t1 = t.GetV1().GetVertexPosition();
+		Vector4 t2 = t.GetV2().GetVertexPosition();
 
 		Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
 		Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);

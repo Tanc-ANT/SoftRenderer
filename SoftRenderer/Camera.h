@@ -50,7 +50,7 @@ private:
 
 	// const number of camera
 	// we don't need change number value here
-	const float Near = 0.1f;
+	const float Near = 1.0f;
 	const float Far = 500.f;
 	const float FovY = 3.1415926f*0.5;
 };

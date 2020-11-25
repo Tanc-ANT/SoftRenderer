@@ -34,9 +34,11 @@ private:
 	Vector4 TransformHomogenize(const Vector4& v);
 	Vector4 TransformApply(const Vector4& v, const Matrix4& m);
 
-	void DrawPixel(int x, int y, UINT32 color);
+	Color ColorHomogenize(const Color& c, const float& w);
+
+	void DrawPixel(int x, int y, Color color);
 	// Bresenham's Line Drawing Algorithm
-	void DrawLine(int x0, int y0, int x1, int y1, UINT32 color);
+	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 	void DrawTriangle(const Triangle& t);
 	void DrawPlane(const Vertex& a, const Vertex& b, const Vertex& c, const Vertex& d);
 	void DrawBox(const Vertex points[], int n);

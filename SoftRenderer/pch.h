@@ -9,3 +9,4 @@
 #include <fstream>
 #include <sstream>
 #include <exception>
+#include <algorithm>
