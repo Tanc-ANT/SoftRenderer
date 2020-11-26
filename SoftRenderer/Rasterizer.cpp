@@ -1,26 +1,26 @@
 #include "Rasterizer.h"
 
-//Vertex mesh[8] = {
-//	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
-//	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},
-//	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},
-//	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},
-//	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},
-//	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
-//	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
-//	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
-//};
+Vertex mesh[8] = {
+	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
+	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},
+	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},
+	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},
+	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},
+	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
+	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
+	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
+};
 
- Vertex mesh[8] = {
- 	{Vector4(-1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(-1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
- 	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
- };
+ //Vertex mesh[8] = {
+ //	{Vector4(-1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(-1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
+ //	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
+ //};
 
 Rasterizer::Rasterizer()
 {
@@ -156,15 +156,16 @@ void Rasterizer::CalculateBoxNormal()
 	mesh[2].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
 	mesh[3].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
 
-	mesh[4].SetVertexNormal(Vector4(-0.57, -0.57, -0.57, 1.0f));
-	mesh[5].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
-	mesh[6].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
-	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
+	mesh[4].SetVertexNormal(Vector4(-0.57, -0.57, 0.57, 1.0f));
+	mesh[5].SetVertexNormal(Vector4(-0.57, 0.57, 0.57, 1.0f));
+	mesh[6].SetVertexNormal(Vector4(0.57, -0.57, 0.57, 1.0f));
+	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));
 }
 
 void Rasterizer::CalculateVertexColor(Vertex& v)
 {
-
+	float light_ratio = v.GetVertexNormal().Dot(light->GetDirection());
+	v.SetVertexColor(v.GetVertexColor()*light_ratio);
 }
 
 void Rasterizer::DrawPixel(int x, int y, Color color)
@@ -275,10 +276,6 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (z_line_buffer[j] <= z)
 				{
 					Color c = (color_ratio * step + C);
-					if (c.GetColor().x < 0.1)
-					{
-						std::cout << "black" << std::endl;
-					}
 					z_line_buffer[j] = z;
 					DrawPixel(j, y, c);
 				}
@@ -320,10 +317,6 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (z_line_buffer[(int)j] <= z)
 				{
 					Color c = (color_ratio * step + C);
-					if (c.GetColor().x < 0.1)
-					{
-						std::cout << "black" << std::endl;
-					}
 					z_line_buffer[(int)j] = z;
 					DrawPixel(j, y, c);
 				}
@@ -389,6 +382,7 @@ void Rasterizer::DrawSomthing()
 			screen_points[i] = TransformHomogenize(world_points[i]);
 			vert[i].SetVertexPosition(screen_points[i]);
 			vert[i].SetVertexColor(mesh[i].GetVertexColor());
+			//CalculateVertexColor(vert[i]);
 		}
 		DrawBox(vert, 8);
 	}
