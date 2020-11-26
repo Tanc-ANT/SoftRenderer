@@ -38,7 +38,6 @@ private:
 	Vector4 TransformHomogenize(const Vector4& v);
 	Vector4 TransformApply(const Vector4& v, const Matrix4& m);
 
-	Color ColorHomogenize(const Color& c, const float& w);
 	void CalculateBoxNormal();
 	void CalculateVertexColor(Vertex& v);
 

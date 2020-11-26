@@ -53,7 +53,7 @@ void Device::Clear()
 	{
 		float *dst = zbuffer[y];
 		for (x = width; x > 0; ++dst, --x)
-			dst[0] = 0.0f;
+			dst[0] = -1.0f;
 	}
 }
 

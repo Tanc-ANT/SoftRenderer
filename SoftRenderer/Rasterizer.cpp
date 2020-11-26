@@ -1,19 +1,30 @@
 #include "Rasterizer.h"
 
-Vertex mesh[8] = {
-	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
-	{Vector4( 1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},
-	{Vector4( 1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},
-	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},
-	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},
-	{Vector4( 1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
-	{Vector4( 1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
-	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
-};
+//Vertex mesh[8] = {
+//	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
+//	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},
+//	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},
+//	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},
+//	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},
+//	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
+//	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
+//	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
+//};
+
+ Vertex mesh[8] = {
+ 	{Vector4(-1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(-1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
+ 	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
+ };
 
 Rasterizer::Rasterizer()
 {
-	//CalculateBoxNormal();
+	CalculateBoxNormal();
 };
 
 Rasterizer::~Rasterizer()
@@ -80,40 +91,75 @@ Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
 	return u;
 }
 
-Color Rasterizer::ColorHomogenize(const Color& c,const float& w)
-{
-	// float rhw = 1 / w;
-	// color divid by rhw 
-	return c * w;
-}
-
 void Rasterizer::CalculateBoxNormal()
 {
+	/*
 	Vector4 v0 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v1 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n0 = v1.Cross(v1);
+	Vector4 v1 = mesh[2].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n0 = v0.Cross(v1);
 
-	Vector4 v2 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v3 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n1 = v1.Cross(v2);
+	Vector4 v2 = mesh[5].GetVertexPosition() - mesh[4].GetVertexPosition();
+	Vector4 v3 = mesh[6].GetVertexPosition() - mesh[4].GetVertexPosition();
+	Vector4 n1 = v2.Cross(v3);
 
-	Vector4 v4 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v5 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n2 = v1.Cross(v2);
+	Vector4 v4 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v5 = mesh[7].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n2 = v4.Cross(v5);
 
-	Vector4 v6 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v7 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n3 = v1.Cross(v2);
+	Vector4 v6 = mesh[2].GetVertexPosition() - mesh[1].GetVertexPosition();
+	Vector4 v7 = mesh[6].GetVertexPosition() - mesh[1].GetVertexPosition();
+	Vector4 n3 = v6.Cross(v7);
 
-	Vector4 v8 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v9 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n4 = v1.Cross(v2);
+	Vector4 v8 = mesh[3].GetVertexPosition() - mesh[2].GetVertexPosition();
+	Vector4 v9 = mesh[7].GetVertexPosition() - mesh[2].GetVertexPosition();
+	Vector4 n4 = v8.Cross(v9);
 
 	Vector4 v10 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v11 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n5 = v1.Cross(v2);
+	Vector4 v11 = mesh[5].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n5 = v10.Cross(v11);
 
-	
+	Vector4 norm0 = n0 + n2 + n5;
+	norm0.Normalize();
+	mesh[0].SetVertexNormal(norm0);
+
+	Vector4 norm1 = n0 + n3 + n5;
+	norm1.Normalize();
+	mesh[1].SetVertexNormal(norm1);
+
+	Vector4 norm2 = n0 + n3 + n4;
+	norm2.Normalize();
+	mesh[2].SetVertexNormal(norm2);
+
+	Vector4 norm3 = n0 + n2 + n4;
+	norm3.Normalize();
+	mesh[3].SetVertexNormal(norm3);
+
+	Vector4 norm4 = n1 + n2 + n5;
+	norm4.Normalize();
+	mesh[4].SetVertexNormal(norm4);
+
+	Vector4 norm5 = n1 + n3 + n5;
+	norm5.Normalize();
+	mesh[5].SetVertexNormal(norm5);
+
+	Vector4 norm6 = n1 + n3 + n4;
+	norm6.Normalize();
+	mesh[6].SetVertexNormal(norm6);
+
+	Vector4 norm7 = n1 + n2 + n4;
+	norm7.Normalize();
+	mesh[7].SetVertexNormal(norm7);
+	*/
+
+	mesh[0].SetVertexNormal(Vector4(-0.57, -0.57, -0.57,1.0f));
+	mesh[1].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
+	mesh[2].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
+	mesh[3].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
+
+	mesh[4].SetVertexNormal(Vector4(-0.57, -0.57, -0.57, 1.0f));
+	mesh[5].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
+	mesh[6].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
+	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
 }
 
 void Rasterizer::CalculateVertexColor(Vertex& v)
@@ -184,23 +230,23 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	
 	else if(device->GetRenderState() & RENDER_STATE_COLOR)
 	{
-		Color c0 = ColorHomogenize(t.GetV0().GetVertexColor(), t0.w);
-		Color c1 = ColorHomogenize(t.GetV1().GetVertexColor(), t1.w);
-		Color c2 = ColorHomogenize(t.GetV2().GetVertexColor(), t2.w);
+		Color c0 = t.GetV0().GetVertexColor();
+		Color c1 = t.GetV1().GetVertexColor();
+		Color c2 = t.GetV2().GetVertexColor();
 
 		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); }
 		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); }
 		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); }
 
-		float total_height = t2.y - t0.y;
-		// plus 0.5 here for prevent leaks pixel
+		float total_height = t2.y - t0.y + EPSILON;
+		// plus 0.5 for rounding
 		for (int y = (int)(t0.y + 0.5); y <= (int)(t1.y + 0.5); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if(std::abs((float)y - t0.y)<0.5f) continue;
-			float segement_height = t1.y - t0.y + 0.25;
+			float segement_height = t1.y - t0.y + EPSILON;
 			//if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
@@ -212,7 +258,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
 
 			//zbuffer caculation
-			float scanline_depth = B.w - A.w;
+			float scanline_depth = B.z - A.z;
 			float scanline_width = B.x - A.x;
 			float depth_ratio = scanline_depth / scanline_width;
 			float *z_line_buffer = device->GetZBuffer()[y];
@@ -221,26 +267,31 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
 
-			for (float j = A.x; j < B.x; j+=1.0f)
+			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
 			{
+				float step = (float)j - A.x;
 				if (j >= device->GetWidth() || j < 0) break;
-				float z = depth_ratio * (j - A.x) + A.w;
-				if (z_line_buffer[(int)j] <= z)
+				float z = depth_ratio * step + A.z;
+				if (z_line_buffer[j] <= z)
 				{
-					Color c = (color_ratio * (j - A.x) + C) / z;
-					z_line_buffer[(int)j] = z;
+					Color c = (color_ratio * step + C);
+					if (c.GetColor().x < 0.1)
+					{
+						std::cout << "black" << std::endl;
+					}
+					z_line_buffer[j] = z;
 					DrawPixel(j, y, c);
 				}
 			}
 		}
-		// plus 0.5 here for prevent leaks pixel
+		// plus 0.5 for rounding
 		for (int y = (int)(t1.y + 0.5); y <= (int)(t2.y + 0.5); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if (std::abs((float)y - t1.y) < 0.5f) continue;
-			float segement_height = t2.y - t1.y + 0.25f;
+			float segement_height = t2.y - t1.y + EPSILON;
 			//if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
@@ -252,7 +303,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
 
 			//for zbuffer caculation
-			float scanline_depth = B.w - A.w; 
+			float scanline_depth = B.z - A.z; 
 			float scanline_width = B.x - A.x;
 			float depth_ratio = scanline_depth / scanline_width;
 			float *z_line_buffer = device->GetZBuffer()[y];
@@ -261,13 +312,18 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
 
-			for (float j = A.x; j < B.x; j += 1.0f)
+			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
 			{
+				float step = (float)j - A.x;
 				if (j >= device->GetWidth() || j < 0) break;
-				float z = depth_ratio * (j - A.x) + A.w;
+				float z = depth_ratio * step + A.z;
 				if (z_line_buffer[(int)j] <= z)
 				{
-					Color c = (color_ratio * (j - A.x) + C) / z;
+					Color c = (color_ratio * step + C);
+					if (c.GetColor().x < 0.1)
+					{
+						std::cout << "black" << std::endl;
+					}
 					z_line_buffer[(int)j] = z;
 					DrawPixel(j, y, c);
 				}

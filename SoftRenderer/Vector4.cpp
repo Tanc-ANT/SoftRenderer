@@ -115,6 +115,7 @@ void Vector4::Normalize()
 		x *= oneOver;
 		y *= oneOver;
 		z *= oneOver;
+		w = 1.0f;
 	}
 }
 
