@@ -20,6 +20,7 @@ Model::Model(const char *filename)
 		}
 		if (!line.compare(0, 3, "vn ")) {
 			iss >> trash;
+			iss >> trash;
 			Vector3 n;
 			iss >> n.x;
 			iss >> n.y;

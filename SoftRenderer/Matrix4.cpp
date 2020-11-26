@@ -123,6 +123,44 @@ Matrix4 Matrix4::operator*(float k) const
 	return newMatrix;
 }
 
+Vector4 Matrix4::operator*(const Vector4& other) const
+{
+	return Vector4(
+		m[0][0] * other.x
+		+ m[0][1] * other.y
+		+ m[0][2] * other.z
+		+ m[0][3] * other.w,
+
+		m[1][0] * other.x
+		+ m[1][1] * other.y
+		+ m[1][2] * other.z
+		+ m[1][3] * other.w,
+
+		m[2][0] * other.x
+		+ m[2][1] * other.y
+		+ m[2][2] * other.z
+		+ m[2][3] * other.w,
+
+		m[3][0] * other.x
+		+ m[3][1] * other.y
+		+ m[3][2] * other.z
+		+ m[3][3] * other.w);
+}
+
+Matrix4 Matrix4::operator/(float k) const
+{
+	Matrix4 newMatrix;
+	float oneOver = 1.0f / k;
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			newMatrix.m[i][j] = m[i][j] * oneOver;
+		}
+	}
+	return newMatrix;
+}
+
 Matrix4 Matrix4::Translation(const Vector3& translate)
 {
 	m[3][0] = translate.x;
@@ -163,4 +201,58 @@ Matrix4 Matrix4::Scalation(const Vector3& scale)
 	m[1][1] = scale.y;
 	m[2][2] = scale.z;
 	return *this;
+}
+
+Matrix4 Matrix4::GetinverseTranspose()
+{
+	float SubFactor00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
+	float SubFactor01 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
+	float SubFactor02 = m[2][1] * m[3][2] - m[3][1] * m[2][2];
+	float SubFactor03 = m[2][0] * m[3][3] - m[3][0] * m[2][3];
+	float SubFactor04 = m[2][0] * m[3][2] - m[3][0] * m[2][2];
+	float SubFactor05 = m[2][0] * m[3][1] - m[3][0] * m[2][1];
+	float SubFactor06 = m[1][2] * m[3][3] - m[3][2] * m[1][3];
+	float SubFactor07 = m[1][1] * m[3][3] - m[3][1] * m[1][3];
+	float SubFactor08 = m[1][1] * m[3][2] - m[3][1] * m[1][2];
+	float SubFactor09 = m[1][0] * m[3][3] - m[3][0] * m[1][3];
+	float SubFactor10 = m[1][0] * m[3][2] - m[3][0] * m[1][2];
+	float SubFactor11 = m[1][0] * m[3][1] - m[3][0] * m[1][1];
+	float SubFactor12 = m[1][2] * m[2][3] - m[2][2] * m[1][3];
+	float SubFactor13 = m[1][1] * m[2][3] - m[2][1] * m[1][3];
+	float SubFactor14 = m[1][1] * m[2][2] - m[2][1] * m[1][2];
+	float SubFactor15 = m[1][0] * m[2][3] - m[2][0] * m[1][3];
+	float SubFactor16 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
+	float SubFactor17 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
+
+	Matrix4 Inverse;
+
+	Inverse.m[0][0] = +(m[1][1] * SubFactor00 - m[1][2] * SubFactor01 + m[1][3] * SubFactor02);
+	Inverse.m[0][1] = -(m[1][0] * SubFactor00 - m[1][2] * SubFactor03 + m[1][3] * SubFactor04);
+	Inverse.m[0][2] = +(m[1][0] * SubFactor01 - m[1][1] * SubFactor03 + m[1][3] * SubFactor05);
+	Inverse.m[0][3] = -(m[1][0] * SubFactor02 - m[1][1] * SubFactor04 + m[1][2] * SubFactor05);
+
+	Inverse.m[1][0] = -(m[0][1] * SubFactor00 - m[0][2] * SubFactor01 + m[0][3] * SubFactor02);
+	Inverse.m[1][1] = +(m[0][0] * SubFactor00 - m[0][2] * SubFactor03 + m[0][3] * SubFactor04);
+	Inverse.m[1][2] = -(m[0][0] * SubFactor01 - m[0][1] * SubFactor03 + m[0][3] * SubFactor05);
+	Inverse.m[1][3] = +(m[0][0] * SubFactor02 - m[0][1] * SubFactor04 + m[0][2] * SubFactor05);
+
+	Inverse.m[2][0] = +(m[0][1] * SubFactor06 - m[0][2] * SubFactor07 + m[0][3] * SubFactor08);
+	Inverse.m[2][1] = -(m[0][0] * SubFactor06 - m[0][2] * SubFactor09 + m[0][3] * SubFactor10);
+	Inverse.m[2][2] = +(m[0][0] * SubFactor07 - m[0][1] * SubFactor09 + m[0][3] * SubFactor11);
+	Inverse.m[2][3] = -(m[0][0] * SubFactor08 - m[0][1] * SubFactor10 + m[0][2] * SubFactor11);
+
+	Inverse.m[3][0] = -(m[0][1] * SubFactor12 - m[0][2] * SubFactor13 + m[0][3] * SubFactor14);
+	Inverse.m[3][1] = +(m[0][0] * SubFactor12 - m[0][2] * SubFactor15 + m[0][3] * SubFactor16);
+	Inverse.m[3][2] = -(m[0][0] * SubFactor13 - m[0][1] * SubFactor15 + m[0][3] * SubFactor17);
+	Inverse.m[3][3] = +(m[0][0] * SubFactor14 - m[0][1] * SubFactor16 + m[0][2] * SubFactor17);
+
+	float Determinant =
+		+m[0][0] * Inverse.m[0][0]
+		+ m[0][1] * Inverse.m[0][1]
+		+ m[0][2] * Inverse.m[0][2]
+		+ m[0][3] * Inverse.m[0][3];
+
+	Inverse = Inverse/Determinant;
+
+	return Inverse;
 }

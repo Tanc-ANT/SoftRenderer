@@ -57,7 +57,12 @@ Vector4 Vector4::operator*(float k) const
 
 //Vector4 Vector4::operator*(const Matrix4 &m) const
 //{
-//
+//	Vector4 v;
+//	v.x = x * m.m[0][0] + y * m.m[1][0] + z * m.m[2][0] + w * m.m[3][0];
+//	v.y = x * m.m[0][1] + y * m.m[1][1] + z * m.m[2][1] + w * m.m[3][1];
+//	v.z = x * m.m[0][2] + y * m.m[1][2] + z * m.m[2][2] + w * m.m[3][2];
+//	v.w = x * m.m[0][3] + y * m.m[1][3] + z * m.m[2][3] + w * m.m[3][3];
+//	return v;
 //}
 
 Vector4 Vector4::operator/(float k) const

@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 class Matrix4
 {
@@ -46,10 +47,16 @@ public:
 	Matrix4 operator-(const Matrix4 &other) const;
 	Matrix4 operator*(const Matrix4 &other) const;
 	Matrix4 operator*(float k) const;
+	Matrix4 operator/(float k) const;
+
+	Vector4 operator*(const Vector4 &other) const;
 
 	Matrix4 Translation(const Vector3& translate);
 	Matrix4 Rotation(const Vector3& rotate, float theta);
 	Matrix4 Scalation(const Vector3& scale);
+
+	// Form glm
+	Matrix4 GetinverseTranspose();
 
 	float m[4][4] = { 0.0f };
 };

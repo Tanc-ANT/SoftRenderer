@@ -7,7 +7,7 @@ class Light
 {
 public:
 	Light() {};
-	Light(Vector4 d) :direction(d) {}
+	Light(Vector4 d) { direction = d; direction.Normalize(); }
 	~Light() {};
 
 	inline void SetDirection(const Vector4& d) { direction = d; }

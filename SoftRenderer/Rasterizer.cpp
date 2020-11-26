@@ -11,20 +11,20 @@ Vertex mesh[8] = {
 	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
 };
 
- //Vertex mesh[8] = {
- //	{Vector4(-1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(-1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
- //	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
- //};
+//Vertex mesh[8] = {
+//   {Vector4(-1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(-1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(-1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
+//   {Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
+//};
 
 Rasterizer::Rasterizer()
 {
-	CalculateBoxNormal();
+	SetBoxNormal();
 };
 
 Rasterizer::~Rasterizer()
@@ -75,9 +75,14 @@ Camera* Rasterizer::GetCamera()
 Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 {
 	float rhw = 1.0f / v.w;
-	return Vector4((v.x * rhw + 1.0f)*device->GetWidth() * 0.5f,
-		(1.0f - v.y * rhw)*device->GetHeight() * 0.5f,
-		v.z*rhw, rhw);
+	float x = v.x * rhw;
+	float y = v.y * rhw;
+	float z = v.z * rhw;
+	float w = 1.0f;
+	z = (z + 1.0f) * 0.5f;
+	return Vector4((x + 1.0f)*device->GetWidth() * 0.5f,
+		(1.0f - y)*device->GetHeight() * 0.5f,
+		z, w);
 }
 
 Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
@@ -91,67 +96,9 @@ Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
 	return u;
 }
 
-void Rasterizer::CalculateBoxNormal()
+void Rasterizer::SetBoxNormal()
 {
-	/*
-	Vector4 v0 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v1 = mesh[2].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n0 = v0.Cross(v1);
-
-	Vector4 v2 = mesh[5].GetVertexPosition() - mesh[4].GetVertexPosition();
-	Vector4 v3 = mesh[6].GetVertexPosition() - mesh[4].GetVertexPosition();
-	Vector4 n1 = v2.Cross(v3);
-
-	Vector4 v4 = mesh[3].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v5 = mesh[7].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n2 = v4.Cross(v5);
-
-	Vector4 v6 = mesh[2].GetVertexPosition() - mesh[1].GetVertexPosition();
-	Vector4 v7 = mesh[6].GetVertexPosition() - mesh[1].GetVertexPosition();
-	Vector4 n3 = v6.Cross(v7);
-
-	Vector4 v8 = mesh[3].GetVertexPosition() - mesh[2].GetVertexPosition();
-	Vector4 v9 = mesh[7].GetVertexPosition() - mesh[2].GetVertexPosition();
-	Vector4 n4 = v8.Cross(v9);
-
-	Vector4 v10 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v11 = mesh[5].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n5 = v10.Cross(v11);
-
-	Vector4 norm0 = n0 + n2 + n5;
-	norm0.Normalize();
-	mesh[0].SetVertexNormal(norm0);
-
-	Vector4 norm1 = n0 + n3 + n5;
-	norm1.Normalize();
-	mesh[1].SetVertexNormal(norm1);
-
-	Vector4 norm2 = n0 + n3 + n4;
-	norm2.Normalize();
-	mesh[2].SetVertexNormal(norm2);
-
-	Vector4 norm3 = n0 + n2 + n4;
-	norm3.Normalize();
-	mesh[3].SetVertexNormal(norm3);
-
-	Vector4 norm4 = n1 + n2 + n5;
-	norm4.Normalize();
-	mesh[4].SetVertexNormal(norm4);
-
-	Vector4 norm5 = n1 + n3 + n5;
-	norm5.Normalize();
-	mesh[5].SetVertexNormal(norm5);
-
-	Vector4 norm6 = n1 + n3 + n4;
-	norm6.Normalize();
-	mesh[6].SetVertexNormal(norm6);
-
-	Vector4 norm7 = n1 + n2 + n4;
-	norm7.Normalize();
-	mesh[7].SetVertexNormal(norm7);
-	*/
-
-	mesh[0].SetVertexNormal(Vector4(-0.57, -0.57, -0.57,1.0f));
+	/*mesh[0].SetVertexNormal(Vector4(-0.57, -0.57, -0.57,1.0f));
 	mesh[1].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
 	mesh[2].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
 	mesh[3].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
@@ -159,13 +106,27 @@ void Rasterizer::CalculateBoxNormal()
 	mesh[4].SetVertexNormal(Vector4(-0.57, -0.57, 0.57, 1.0f));
 	mesh[5].SetVertexNormal(Vector4(-0.57, 0.57, 0.57, 1.0f));
 	mesh[6].SetVertexNormal(Vector4(0.57, -0.57, 0.57, 1.0f));
-	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));
+	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));*/
+
+	mesh[0].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));
+	mesh[1].SetVertexNormal(Vector4(0.57, -0.57, 0.57, 1.0f));
+	mesh[2].SetVertexNormal(Vector4(-0.57, 0.57, 0.57, 1.0f));
+	mesh[3].SetVertexNormal(Vector4(-0.57, -0.57, +0.57, 1.0f));
+
+	mesh[4].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
+	mesh[5].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
+	mesh[6].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
+	mesh[7].SetVertexNormal(Vector4(-0.57, -0.57, -0.57, 1.0f));
 }
 
 void Rasterizer::CalculateVertexColor(Vertex& v)
 {
-	float light_ratio = v.GetVertexNormal().Dot(light->GetDirection());
-	v.SetVertexColor(v.GetVertexColor()*light_ratio);
+	Vector4 n = v.GetVertexNormal();
+	Vector4 light_driection = light->GetDirection();
+	float light_ratio = n.Dot(light_driection);
+	Color color = v.GetVertexColor();
+	color = color * light_ratio;
+	v.SetVertexColor(color);
 }
 
 void Rasterizer::DrawPixel(int x, int y, Color color)
@@ -270,7 +231,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
 			{
-				float step = (float)j - A.x;
+				float step = (float)j - A.x + 0.5;
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				if (z_line_buffer[j] <= z)
@@ -311,7 +272,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
 			{
-				float step = (float)j - A.x;
+				float step = (float)j - A.x + 0.5;
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				if (z_line_buffer[(int)j] <= z)
@@ -347,28 +308,24 @@ void Rasterizer::DrawSomthing()
 	{
 		for (int i = 0; i < model->Nfaces(); i++) {
 			std::vector<int> face = model->GetFace(i);
-			Vector4 screen_points[3];
+			Vertex screen_points[3];
 			Vector4 world_points[3];
 			for (int j = 0; j < 3; j++) {
 				Vector4 v = Vector4(model->GetVert(face[j]), 1.0f);
+				Vector4 n = Vector4(model->GetNorm(face[j]), 0.0f);
 				world_points[j] = TransformApply(v, camera->GetTranformation());
-				screen_points[j] = TransformHomogenize(world_points[j]);
-
+				screen_points[j].SetVertexPosition(TransformHomogenize(world_points[j]));
+				screen_points[j].SetVertexColor(WHITH_COLOR);
+				screen_points[j].SetVertexNormal(TransformApply(n, camera->GetTranformation()));
+				CalculateVertexColor(screen_points[j]);
 			}
 			Vector4 v1 = world_points[2] - world_points[1];
 			Vector4 v2 = world_points[1] - world_points[0];
 			Vector4 n = v1.Cross(v2);
 			n.Normalize();
-			float light_color = n.Dot(light->GetDirection());
-			Color color(light_color, light_color, light_color);
-			Vertex a(screen_points[0], color);
-			Vertex b(screen_points[1], color);
-			Vertex c(screen_points[2], color);
-			Triangle t(a, b, c);
-			if (light_color > 0)
-			{
-				DrawTriangle(t);
-			}
+			Triangle t(screen_points[0], screen_points[1], screen_points[2]);
+			DrawTriangle(t);
+
 		}
 	}
 	else if(device->GetRenderState() & RENDER_STATE_BOX)
@@ -381,8 +338,12 @@ void Rasterizer::DrawSomthing()
 			world_points[i] = TransformApply(mesh[i].GetVertexPosition(), camera->GetTranformation());
 			screen_points[i] = TransformHomogenize(world_points[i]);
 			vert[i].SetVertexPosition(screen_points[i]);
+			Vector4 n = mesh[i].GetVertexNormal();
+			
+			n = TransformApply(n, camera->GetTranformation());
+			vert[i].SetVertexNormal(n);
 			vert[i].SetVertexColor(mesh[i].GetVertexColor());
-			//CalculateVertexColor(vert[i]);
+			CalculateVertexColor(vert[i]);
 		}
 		DrawBox(vert, 8);
 	}

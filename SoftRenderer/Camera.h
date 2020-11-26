@@ -25,6 +25,7 @@ public:
 	void SetUp(Vector3 u);
 	Vector3 GetUp();
 
+	Matrix4 GetModelMatrix() const{ return model; }
 	Matrix4 GetViewMatrix() const;
 	Matrix4 GetProjectionMatrix() const;
 	Matrix4 GetTranformation() const;
@@ -43,6 +44,7 @@ private:
 	Vector3 up;
 	float aspect;
 
+	Matrix4 model;
 	Matrix4 tranformation;
 
 	// for demo

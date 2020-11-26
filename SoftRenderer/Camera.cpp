@@ -79,12 +79,11 @@ Matrix4 Camera::GetTranformation() const
 
 void Camera::Update()
 {
-	Matrix4 world;
-	world.SetIdentity();
-	world.Rotation(axis, angle);
+	model.SetIdentity();
+	model.Rotation(axis, angle);
 	Matrix4 view = GetViewMatrix();
 	Matrix4 proj = GetProjectionMatrix();
-	Matrix4 t = world * view;
+	Matrix4 t = model * view;
 	tranformation = t * proj;
 }
 

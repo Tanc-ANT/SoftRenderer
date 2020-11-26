@@ -24,7 +24,7 @@ int main()
 	float aspect = (float)width / (float)height;
 	Camera* camera = new Camera(eye, at, up, aspect);
 
-	Light *light = new Light(Vector4(0, 0, 1, 1));
+	Light *light = new Light(Vector4(0, 0, -1, 1));
 
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
