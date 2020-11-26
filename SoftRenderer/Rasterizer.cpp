@@ -22,6 +22,24 @@ Vertex mesh[8] = {
 //   {Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
 //};
 
+static Vector4 MatrixVectorMul(const Matrix4& m, const Vector4& v)
+{
+	return Vector4(	
+		m.m[0][0] * v.x	+ m.m[0][1] * v.y + m.m[0][2] * v.z + m.m[0][3] * v.w,
+		m.m[1][0] * v.x + m.m[1][1] * v.y + m.m[1][2] * v.z + m.m[1][3] * v.w,
+		m.m[2][0] * v.x + m.m[2][1] * v.y + m.m[2][2] * v.z + m.m[2][3] * v.w,
+		m.m[3][0] * v.x + m.m[3][1] * v.y + m.m[3][2] * v.z + m.m[3][3] * v.w);
+}
+
+static Vector4 MatrixVectorMul(const Vector4& v, const Matrix4& m)
+{
+	return Vector4(
+		v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + v.w * m.m[3][0],
+		v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + v.w * m.m[3][1],
+		v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + v.w * m.m[3][2],
+		v.x * m.m[0][3] + v.y * m.m[1][3] + v.z * m.m[2][3] + v.w * m.m[3][3]);
+}
+
 Rasterizer::Rasterizer()
 {
 	SetBoxNormal();
@@ -98,6 +116,64 @@ Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
 
 void Rasterizer::SetBoxNormal()
 {
+	
+	Vector4 v0 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v1 = mesh[2].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n0 = v0.Cross(v1);
+
+	Vector4 v2 = mesh[6].GetVertexPosition() - mesh[7].GetVertexPosition();
+	Vector4 v3 = mesh[5].GetVertexPosition() - mesh[7].GetVertexPosition();
+	Vector4 n1 = v2.Cross(v3);
+
+	Vector4 v4 = mesh[7].GetVertexPosition() - mesh[3].GetVertexPosition();
+	Vector4 v5 = mesh[4].GetVertexPosition() - mesh[3].GetVertexPosition();
+	Vector4 n2 = v4.Cross(v5);
+
+	Vector4 v6 = mesh[5].GetVertexPosition() - mesh[1].GetVertexPosition();
+	Vector4 v7 = mesh[6].GetVertexPosition() - mesh[1].GetVertexPosition();
+	Vector4 n3 = v6.Cross(v7);
+
+	Vector4 v8 = mesh[6].GetVertexPosition() - mesh[2].GetVertexPosition();
+	Vector4 v9 = mesh[7].GetVertexPosition() - mesh[2].GetVertexPosition();
+	Vector4 n4 = v8.Cross(v9);
+
+	Vector4 v10 = mesh[4].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 v11 = mesh[5].GetVertexPosition() - mesh[0].GetVertexPosition();
+	Vector4 n5 = v10.Cross(v11);
+
+	Vector4 norm0 = n0 + n2 + n5;
+	norm0.Normalize();
+	mesh[0].SetVertexNormal(norm0);
+
+	Vector4 norm1 = n0 + n3 + n5;
+	norm1.Normalize();
+	mesh[1].SetVertexNormal(norm1);
+
+	Vector4 norm2 = n0 + n3 + n4;
+	norm2.Normalize();
+	mesh[2].SetVertexNormal(norm2);
+
+	Vector4 norm3 = n0 + n2 + n4;
+	norm3.Normalize();
+	mesh[3].SetVertexNormal(norm3);
+
+	Vector4 norm4 = n1 + n2 + n5;
+	norm4.Normalize();
+	mesh[4].SetVertexNormal(norm4);
+
+	Vector4 norm5 = n1 + n3 + n5;
+	norm5.Normalize();
+	mesh[5].SetVertexNormal(norm5);
+
+	Vector4 norm6 = n1 + n3 + n4;
+	norm6.Normalize();
+	mesh[6].SetVertexNormal(norm6);
+
+	Vector4 norm7 = n1 + n2 + n4;
+	norm7.Normalize();
+	mesh[7].SetVertexNormal(norm7);
+	
+	
 	/*mesh[0].SetVertexNormal(Vector4(-0.57, -0.57, -0.57,1.0f));
 	mesh[1].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
 	mesh[2].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
@@ -107,16 +183,7 @@ void Rasterizer::SetBoxNormal()
 	mesh[5].SetVertexNormal(Vector4(-0.57, 0.57, 0.57, 1.0f));
 	mesh[6].SetVertexNormal(Vector4(0.57, -0.57, 0.57, 1.0f));
 	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));*/
-
-	mesh[0].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));
-	mesh[1].SetVertexNormal(Vector4(0.57, -0.57, 0.57, 1.0f));
-	mesh[2].SetVertexNormal(Vector4(-0.57, 0.57, 0.57, 1.0f));
-	mesh[3].SetVertexNormal(Vector4(-0.57, -0.57, +0.57, 1.0f));
-
-	mesh[4].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
-	mesh[5].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
-	mesh[6].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
-	mesh[7].SetVertexNormal(Vector4(-0.57, -0.57, -0.57, 1.0f));
+	
 }
 
 void Rasterizer::CalculateVertexColor(Vertex& v)
@@ -294,12 +361,12 @@ void Rasterizer::DrawPlane(const Vertex& a, const Vertex& b, const Vertex& c, co
 
 void Rasterizer::DrawBox(const Vertex points[],int n)
 {
-	DrawPlane(points[0], points[1], points[2], points[3]);
-	DrawPlane(points[7], points[6], points[5], points[4]);
-	DrawPlane(points[0], points[4], points[5], points[1]);
-	DrawPlane(points[1], points[5], points[6], points[2]);
-	DrawPlane(points[2], points[6], points[7], points[3]);
-	DrawPlane(points[3], points[7], points[4], points[0]);
+	DrawPlane(points[0], points[1], points[2], points[3]); // front
+	DrawPlane(points[7], points[6], points[5], points[4]); // back
+	DrawPlane(points[0], points[4], points[5], points[1]); // down
+	DrawPlane(points[1], points[5], points[6], points[2]); // right
+	DrawPlane(points[2], points[6], points[7], points[3]); // up
+	DrawPlane(points[3], points[7], points[4], points[0]); // left
 }
 
 void Rasterizer::DrawSomthing()
@@ -316,7 +383,8 @@ void Rasterizer::DrawSomthing()
 				world_points[j] = TransformApply(v, camera->GetTranformation());
 				screen_points[j].SetVertexPosition(TransformHomogenize(world_points[j]));
 				screen_points[j].SetVertexColor(WHITH_COLOR);
-				screen_points[j].SetVertexNormal(TransformApply(n, camera->GetTranformation()));
+				n = MatrixVectorMul(n, camera->GetModelMatrix());
+				screen_points[j].SetVertexNormal(n);
 				CalculateVertexColor(screen_points[j]);
 			}
 			Vector4 v1 = world_points[2] - world_points[1];
@@ -340,7 +408,8 @@ void Rasterizer::DrawSomthing()
 			vert[i].SetVertexPosition(screen_points[i]);
 			Vector4 n = mesh[i].GetVertexNormal();
 			
-			n = TransformApply(n, camera->GetTranformation());
+			n = MatrixVectorMul(n, camera->GetModelMatrix());
+
 			vert[i].SetVertexNormal(n);
 			vert[i].SetVertexColor(mesh[i].GetVertexColor());
 			CalculateVertexColor(vert[i]);

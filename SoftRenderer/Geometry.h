@@ -20,7 +20,7 @@ public:
 	void SetVertexNormal(Vector4 n) { normal = n; }
 	Vector4 GetVertexNormal() const { return normal; }
 
-	void SetVertexColor(Color c) { color = c; }
+	void SetVertexColor(Color c) { Vector3 v = c.GetColor(); color.SetColor(v); }
 	Color GetVertexColor() const { return color; }
 
 private:

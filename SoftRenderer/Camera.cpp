@@ -81,6 +81,7 @@ void Camera::Update()
 {
 	model.SetIdentity();
 	model.Rotation(axis, angle);
+	invModel = model.GetinverseTranspose();
 	Matrix4 view = GetViewMatrix();
 	Matrix4 proj = GetProjectionMatrix();
 	Matrix4 t = model * view;

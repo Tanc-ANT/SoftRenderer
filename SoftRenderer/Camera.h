@@ -26,6 +26,7 @@ public:
 	Vector3 GetUp();
 
 	Matrix4 GetModelMatrix() const{ return model; }
+	Matrix4 GetInvModelMatrix() const { return invModel; }
 	Matrix4 GetViewMatrix() const;
 	Matrix4 GetProjectionMatrix() const;
 	Matrix4 GetTranformation() const;
@@ -45,11 +46,12 @@ private:
 	float aspect;
 
 	Matrix4 model;
+	Matrix4 invModel;
 	Matrix4 tranformation;
 
 	// for demo
 	float angle = 0.0f;
-	Vector3 axis = { 0.0f, 0.5f, 1.0f };
+	Vector3 axis = { 1.0f, 1.0f, 1.0f };
 
 	// const number of camera
 	// we don't need change number value here
