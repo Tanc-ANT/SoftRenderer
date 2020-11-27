@@ -1,14 +1,14 @@
 #include "Rasterizer.h"
 
 Vertex mesh[8] = {
-	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},
-	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},
-	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},
-	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},
-	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},
-	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},
-	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},
-	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},
+	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f),Vector3(0,0,0)},
+	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f),Vector3(0,1,0)},
+	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f),Vector3(1,1,0)},
+	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f),Vector3(1,0,0)},
+	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f),Vector3(0,0,0)},
+	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f),Vector3(0,1,0)},
+	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f),Vector3(1,1,0)},
+	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f),Vector3(1,0,0)},
 };
 
 //Vertex mesh[8] = {

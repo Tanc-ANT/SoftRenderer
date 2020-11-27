@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Camera.h"
 #include "Light.h"
+#include "Texture.h"
 #include "Rasterizer.h"
 
 static int width = 800;
@@ -17,6 +18,8 @@ int main()
 
 	Device *device = new Device(width, height, window->GetFrameBuffer());
 	Model *model = new Model("../Asset/Obj/african_head.obj");
+
+	Texture texture("../Asset/Texture/checkerboard.bmp");
 
 	Vector3 eye(3, 0, 0);
 	Vector3 at(0, 0, 0);

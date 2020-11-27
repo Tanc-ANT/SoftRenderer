@@ -4,7 +4,7 @@ Device::Device(int w, int h, void *fb)
 {
 	//TODO: recaculate memory need;
 	int need = w * h * 8 + sizeof(void*)*(h * 2);
-	char *ptr = (char*)malloc(need + 1024);
+	char *ptr = (char*)malloc(need + 64);
 	char *framebuf,*zbuf;
 	assert(ptr);
 	// Allocate index memeory

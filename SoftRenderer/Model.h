@@ -8,15 +8,18 @@ public:
 	Model(const char *filename);
 	~Model();
 	int Nverts();
-	int Nnormals();
+	int Ntexs();
+	int Nnorms();
 	int Nfaces();
 	Vector3 GetVert(long i);
+	Vector3 Gettex(long i);
 	Vector3 GetNorm(long i);
 	std::vector<int> GetFace(long idx);
 
 private:
 	std::vector<Vector3> verts;
-	std::vector<Vector3> normals;
+	std::vector<Vector3> texs;
+	std::vector<Vector3> norms;
 	std::vector<std::vector<int>> faces;
 
 };

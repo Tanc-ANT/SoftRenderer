@@ -9,7 +9,8 @@ class Vertex
 public:
 	Vertex() {}
 	Vertex(Vector4 p, Color c) :position(p), color(c) {}
-	Vertex(Vector4 p, Vector4 n, Color c) :position(p), normal(n), color(c) {}
+	Vertex(Vector4 p, Color c, Vector3 t) :position(p), color(c),texcoord(t) {}
+	Vertex(Vector4 p, Vector4 n, Color c,Vector3 t) :position(p), normal(n), color(c),texcoord(t) {}
 	Vertex(const Vertex& v) { position = v.GetVertexPosition(); color = v.GetVertexColor(); }
 	Vertex& operator=(const Vertex& v)	{ position = v.GetVertexPosition(); color = v.GetVertexColor(); return *this; }
 	~Vertex() {}
@@ -27,6 +28,7 @@ private:
 	Vector4 position;
 	Vector4 normal;
 	Color color;
+	Vector3 texcoord;
 };
 
 class Triangle
