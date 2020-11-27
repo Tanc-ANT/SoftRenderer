@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Vector3.h"
+#include "Matrix4.h"
 
 class Vector4
 {
@@ -18,6 +19,7 @@ public:
 
 	Vector4 operator+(const Vector4 &other) const;
 	Vector4 operator-(const Vector4 &other) const;
+	Vector4 operator-() const;
 	Vector4 operator*(float k) const;
 	Vector4 operator/(float k) const;
 
@@ -26,7 +28,7 @@ public:
 	Vector4 &operator*=(float k);
 	Vector4 &operator/=(float k);
 
-	//Vector4 operator*(const Matrix4 &m) const;
+	Vector4 operator*(const Matrix4 &m) const;
 
 	//only influnce 3D(xyz)
 	void Normalize();

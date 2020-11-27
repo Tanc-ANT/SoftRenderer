@@ -13,8 +13,19 @@ class Color
 public:
 	Color() {};
 	Color(float r, float g, float b) :color(r, g, b) {};
-	Color(const Color& c) { color = c.GetColor(); };
-	Color& operator=(const Color& c) { color = c.GetColor(); return  *this; };
+	Color(const Color& c)
+	{
+		color.x = std::clamp(c.color.x, 0.0f, 1.0f);
+		color.y = std::clamp(c.color.y, 0.0f, 1.0f);
+		color.z = std::clamp(c.color.z, 0.0f, 1.0f);
+	};
+	Color& operator=(const Color& c) 
+	{
+		color.x = std::clamp(c.color.x, 0.0f, 1.0f);
+		color.y = std::clamp(c.color.y, 0.0f, 1.0f);
+		color.z = std::clamp(c.color.z, 0.0f, 1.0f);
+		return  *this;
+	};
 	~Color() {};
 
 	Color operator+(const Color &other) const;
@@ -26,15 +37,20 @@ public:
 	void SetColor(const Vector3& v);
 	Vector3 GetColor() const;
 
-	void SetIntensity(UINT32 c);
-	UINT32 GetIntensity() const;
+	inline UINT32 GetIntensity() const 
+	{ 
+		UINT32 r = color.x * 255;
+		UINT32 g = color.y * 255;
+		UINT32 b = color.z * 255;
+		UINT32 intensity = (r << 16) | (g << 8) | (b);
+		return intensity; 
+	}
 
 	static Color Lerp(const Color &v1, const Color &v2, float factor)
 	{
 		factor = std::clamp(factor,0.0f, 1.0f);
 		return v1 + (v2 - v1) * factor;
 	}
-
 private:
 	Vector3 color;
 };

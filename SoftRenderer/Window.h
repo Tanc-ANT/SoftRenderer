@@ -4,8 +4,9 @@
 
 class Window
 {
-
 public:
+	Window() {};
+	~Window() {};
 	int Init(int w, int h, const TCHAR *title);
 	void Update(void);
 	

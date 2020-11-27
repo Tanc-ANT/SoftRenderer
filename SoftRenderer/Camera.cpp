@@ -30,62 +30,20 @@ Vector3 Camera::GetUp()
 	return up;
 }
 
-Matrix4 Camera::GetViewMatrix() const
-{
-	Vector3 z_axis = target - position;
-	z_axis.Normalize();
-	Vector3 x_axis = up.Cross(z_axis);
-	x_axis.Normalize();
-	Vector3 y_axis = z_axis.Cross(x_axis);
-
-	Matrix4 matrix;
-	matrix.m[0][0] = x_axis.x;
-	matrix.m[1][0] = x_axis.y;
-	matrix.m[2][0] = x_axis.z;
-	matrix.m[3][0] = -x_axis.Dot(position);
-
-	matrix.m[0][1] = y_axis.x;
-	matrix.m[1][1] = y_axis.y;
-	matrix.m[2][1] = y_axis.z;
-	matrix.m[3][1] = -y_axis.Dot(position);
-
-	matrix.m[0][2] = z_axis.x;
-	matrix.m[1][2] = z_axis.y;
-	matrix.m[2][2] = z_axis.z;
-	matrix.m[3][2] = -z_axis.Dot(position);
-	
-	matrix.m[0][3] = matrix.m[1][3] = matrix.m[2][3] = 0.0f;
-	matrix.m[3][3] = 1.0f;
-	return matrix;
-}
-
-Matrix4 Camera::GetProjectionMatrix() const
-{
-	float cotHalfFovY = 1.0f / (float)tan(FovY * 0.5f);
-	Matrix4 matrix;
-	matrix.m[0][0] = (float)(cotHalfFovY / aspect);
-	matrix.m[1][1] = (float)(cotHalfFovY);
-	matrix.m[2][2] = (Near + Far) / (Far - Near);
-	matrix.m[3][2] = -2 * Near*Far / (Far - Near);
-	matrix.m[2][3] = -1.0f;// For DirectX
-
-	return matrix;
-}
-
-Matrix4 Camera::GetTranformation() const
-{
-	return tranformation;
-}
+//Matrix4 Camera::GetTranformation() const
+//{
+//	return tranformation;
+//}
 
 void Camera::Update()
 {
 	model.SetIdentity();
 	model.Rotation(axis, angle);
 	invModel = model.GetinverseTranspose();
-	Matrix4 view = GetViewMatrix();
-	Matrix4 proj = GetProjectionMatrix();
-	Matrix4 t = model * view;
-	tranformation = t * proj;
+	UpdateViewMatrix();
+	UpdateProjectionMatirx();
+	//Matrix4 t = model * view;
+	//tranformation = t * proj;
 }
 
 void Camera::TranslateFront()
@@ -106,4 +64,41 @@ void Camera::RotateLeft()
 void Camera::RotateRight()
 {
 	angle += 0.01f;
+}
+
+void Camera::UpdateViewMatrix()
+{
+	Vector3 z_axis = target - position;
+	z_axis.Normalize();
+	Vector3 x_axis = up.Cross(z_axis);
+	x_axis.Normalize();
+	Vector3 y_axis = z_axis.Cross(x_axis);
+
+	view.m[0][0] = x_axis.x;
+	view.m[1][0] = x_axis.y;
+	view.m[2][0] = x_axis.z;
+	view.m[3][0] = -x_axis.Dot(position);
+
+	view.m[0][1] = y_axis.x;
+	view.m[1][1] = y_axis.y;
+	view.m[2][1] = y_axis.z;
+	view.m[3][1] = -y_axis.Dot(position);
+
+	view.m[0][2] = z_axis.x;
+	view.m[1][2] = z_axis.y;
+	view.m[2][2] = z_axis.z;
+	view.m[3][2] = -z_axis.Dot(position);
+
+	view.m[0][3] = view.m[1][3] = view.m[2][3] = 0.0f;
+	view.m[3][3] = 1.0f;
+}
+
+void Camera::UpdateProjectionMatirx()
+{
+	float cotHalfFovY = 1.0f / (float)tan(FovY * 0.5f);
+	proj.m[0][0] = (float)(cotHalfFovY / aspect);
+	proj.m[1][1] = (float)(cotHalfFovY);
+	proj.m[2][2] = (Near + Far) / (Far - Near);
+	proj.m[3][2] = -2 * Near*Far / (Far - Near);
+	proj.m[2][3] = -1.0f;// For DirectX
 }

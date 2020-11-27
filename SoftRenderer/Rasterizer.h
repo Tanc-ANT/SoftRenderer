@@ -35,11 +35,11 @@ public:
 	void Update();
 
 private:
+	void SetBoxNormal();
+
 	Vector4 TransformHomogenize(const Vector4& v);
 	Vector4 TransformApply(const Vector4& v, const Matrix4& m);
-
-	void SetBoxNormal();
-	void CalculateVertexColor(Vertex& v);
+	void LightCalculaiton(Vertex& v);
 
 	void DrawPixel(int x, int y, Color color);
 	// Bresenham's Line Drawing Algorithm

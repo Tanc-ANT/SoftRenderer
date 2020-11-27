@@ -41,6 +41,11 @@ Vector3 Vector3::operator-(const Vector3 &other) const
 		z - other.z);
 }
 
+Vector3 Vector3::operator-() const
+{
+	return Vector3(-x, -y, -z);
+}
+
 Vector3 Vector3::operator*(float k) const
 {
 	return Vector3(x * k,
