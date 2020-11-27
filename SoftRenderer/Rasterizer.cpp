@@ -214,14 +214,14 @@ void Rasterizer::LightCalculaiton(Vertex& v)
 	}
 }
 
-void Rasterizer::DrawPixel(int x, int y, Color color)
+void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
 	if (((unsigned int)x < (UINT32)device->GetWidth()) && (((unsigned int)y < (UINT32)device->GetHeight()))
 		&& (((unsigned int)x > (UINT32)0)) && (((unsigned int)y > (UINT32)0)))
 		
 	{
 		//y = device->height - y;
-		device->GetFrameBuffer()[y][x] = color.GetIntensity();
+		device->GetFrameBuffer()[y][x] = color;
 	}
 }
 
@@ -246,10 +246,10 @@ void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
 	int y = y0;
 	for (int x = x0; x <= x1; ++x) {
 		if (steep) {
-			DrawPixel(y, x, color);
+			DrawPixel(y, x, color.GetIntensity());
 		}
 		else {
-			DrawPixel(x, y, color);
+			DrawPixel(x, y, color.GetIntensity());
 		}
 		error2 += derror2;
 		if (error2 > dx) {
@@ -275,12 +275,16 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		DrawLine(t2.x, t2.y, t0.x, t0.y, WHITH_COLOR);
 	}
 	
-	else if(device->GetRenderState() & RENDER_STATE_COLOR)
+	else if(device->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
 	{
 		Color c0 = t.GetV0().GetVertexColor();
 		Color c1 = t.GetV1().GetVertexColor();
 		Color c2 = t.GetV2().GetVertexColor();
 
+		Vector3 uv0 = t.GetV0().GetVertexTexcoord();
+		Vector3 uv1 = t.GetV1().GetVertexTexcoord();
+		Vector3 uv2 = t.GetV2().GetVertexTexcoord();
+		
 		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); }
 		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); }
 		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); }
@@ -297,12 +301,22 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			//if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
+			//position lerp
 			Vector4 A = Vector4::Lerp(t0, t2, alpha);
 			Vector4 B = Vector4::Lerp(t0, t1, beta);
+			//color lerp
 			Color C = Color::Lerp(c0, c2, alpha);
 			Color D = Color::Lerp(c0, c1, beta);
+			//texcoord lerp
+			Vector3 E = Vector3::Lerp(uv0, uv2, alpha);
+			Vector3 F = Vector3::Lerp(uv0, uv1, beta);
 			//draw line from left to right
-			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
+			if (A.x > B.x)
+			{
+				std::swap(A, B);
+				std::swap(C, D);
+				std::swap(E, F);
+			}
 
 			//zbuffer caculation
 			float scanline_depth = B.z - A.z;
@@ -314,6 +328,10 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
 
+			//UV caculation
+			Vector3 uv_diff = F - E;
+			Vector3 uv_ratio = uv_diff / scanline_width;
+
 			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
 			{
 				float step = (float)j - A.x + 0.5;
@@ -321,9 +339,18 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				float z = depth_ratio * step + A.z;
 				if (z_line_buffer[j] <= z)
 				{
-					Color c = (color_ratio * step + C);
+					Color color;
+					if (device->GetRenderState() & RENDER_STATE_COLOR)
+					{
+						color = (color_ratio * step + C);
+					}
+					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+					{
+						Vector3 uv = (uv_ratio * step + E);
+						color = texture->GetColor(uv);
+					}					
 					z_line_buffer[j] = z;
-					DrawPixel(j, y, c);
+					DrawPixel(j, y, color.GetIntensity());
 				}
 			}
 		}
@@ -338,12 +365,22 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			//if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
+			//position lerp
 			Vector4 A = Vector4::Lerp(t0, t2, alpha);
 			Vector4 B = Vector4::Lerp(t1, t2, beta);
+			//color lerp
 			Color C = Color::Lerp(c0, c2, alpha);
 			Color D = Color::Lerp(c1, c2, beta);
+			//texcoord lerp
+			Vector3 E = Vector3::Lerp(uv0, uv2, alpha);
+			Vector3 F = Vector3::Lerp(uv1, uv2, beta);
 			//draw line from left to right
-			if (A.x > B.x) { std::swap(A, B); std::swap(C, D); }
+			if (A.x > B.x)
+			{
+				std::swap(A, B);
+				std::swap(C, D);
+				std::swap(E, F);
+			}
 
 			//for zbuffer caculation
 			float scanline_depth = B.z - A.z; 
@@ -355,6 +392,10 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
 
+			//UV caculation
+			Vector3 uv_diff = F - E;
+			Vector3 uv_ratio = uv_diff / scanline_width;
+
 			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
 			{
 				float step = (float)j - A.x + 0.5;
@@ -362,9 +403,18 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				float z = depth_ratio * step + A.z;
 				if (z_line_buffer[(int)j] <= z)
 				{
-					Color c = (color_ratio * step + C);
-					z_line_buffer[(int)j] = z;
-					DrawPixel(j, y, c);
+					Color color;
+					if (device->GetRenderState() & RENDER_STATE_COLOR)
+					{
+						color = (color_ratio * step + C);
+					}
+					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+					{
+						Vector3 uv = (uv_ratio * step + E);
+						color = texture->GetColor(uv);
+					}
+					z_line_buffer[j] = z;
+					DrawPixel(j, y, color.GetIntensity());
 				}
 			}
 		}
@@ -399,8 +449,10 @@ void Rasterizer::DrawSomthing()
 			for (int j = 0; j < 3; j++) {
 				Vector4 v = Vector4(model->GetVert(face[j]), 1.0f);
 				Vector4 n = Vector4(model->GetNorm(face[j]), 0.0f);
+				Vector3 t = model->GetTex(i);
 				// Set color
 				vertex_points[j].SetVertexColor(WHITH_COLOR);
+				vertex_points[j].SetVertexTexcoord(t);
 				// model transform
 				world_points[j] = v * camera->GetModelMatrix();
 				n = n * camera->GetModelMatrix();
@@ -440,8 +492,10 @@ void Rasterizer::DrawSomthing()
 			vert[i].SetVertexNormal(n);
 			// Color Set
 			vert[i].SetVertexColor(mesh[i].GetVertexColor());
+			// Texcoord Set
+			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
 			// Light Calculation
-			//LightCalculaiton(vert[i]);
+			LightCalculaiton(vert[i]);
 		}
 		DrawBox(vert, 8);
 	}

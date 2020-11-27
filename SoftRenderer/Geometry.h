@@ -11,8 +11,21 @@ public:
 	Vertex(Vector4 p, Color c) :position(p), color(c) {}
 	Vertex(Vector4 p, Color c, Vector3 t) :position(p), color(c),texcoord(t) {}
 	Vertex(Vector4 p, Vector4 n, Color c,Vector3 t) :position(p), normal(n), color(c),texcoord(t) {}
-	Vertex(const Vertex& v) { position = v.GetVertexPosition(); color = v.GetVertexColor(); }
-	Vertex& operator=(const Vertex& v)	{ position = v.GetVertexPosition(); color = v.GetVertexColor(); return *this; }
+	Vertex(const Vertex& v) 
+	{
+		position = v.GetVertexPosition(); 
+		normal = v.GetVertexNormal(); 
+		color = v.GetVertexColor();
+		texcoord = v.GetVertexTexcoord();
+	}
+	Vertex& operator=(const Vertex& v)
+	{
+		position = v.GetVertexPosition();
+		normal = v.GetVertexNormal();
+		color = v.GetVertexColor();
+		texcoord = v.GetVertexTexcoord();
+		return *this;
+	}
 	~Vertex() {}
 
 	void SetVertexPosition(Vector4 p) { position = p; }
@@ -21,8 +34,11 @@ public:
 	void SetVertexNormal(Vector4 n) { normal = n; }
 	Vector4 GetVertexNormal() const { return normal; }
 
-	void SetVertexColor(Color c) { Vector3 v = c.GetColor(); color.SetColor(v); }
+	void SetVertexColor(Color c) { color = c; }
 	Color GetVertexColor() const { return color; }
+
+	void SetVertexTexcoord(Vector3 t) { texcoord = t; }
+	Vector3 GetVertexTexcoord() const { return texcoord; }
 
 private:
 	Vector4 position;

@@ -19,7 +19,7 @@ int main()
 	Device *device = new Device(width, height, window->GetFrameBuffer());
 	Model *model = new Model("../Asset/Obj/african_head.obj");
 
-	Texture texture("../Asset/Texture/checkerboard.bmp");
+	Texture *texture = new Texture("../Asset/Texture/checkerboard.bmp");
 
 	Vector3 eye(3, 0, 0);
 	Vector3 at(0, 0, 0);
@@ -35,6 +35,7 @@ int main()
 	raster->SetModel(model);
 	raster->SetCamera(camera);
 	raster->SetLight(light);
+	raster->SetTexture(texture);
 
 	while (!window->GetCloseState())
 	{
@@ -42,6 +43,7 @@ int main()
 		Sleep(1);
 	}
 	delete raster;
+	delete texture;
 	delete light;
 	delete camera;
 	delete model;

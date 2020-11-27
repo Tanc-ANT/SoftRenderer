@@ -12,7 +12,7 @@ public:
 	int Nnorms();
 	int Nfaces();
 	Vector3 GetVert(long i);
-	Vector3 Gettex(long i);
+	Vector3 GetTex(long i);
 	Vector3 GetNorm(long i);
 	std::vector<int> GetFace(long idx);
 

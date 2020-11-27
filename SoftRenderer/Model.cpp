@@ -82,7 +82,7 @@ Vector3 Model::GetVert(long i)
 	return verts[i];
 }
 
-Vector3 Model::Gettex(long i)
+Vector3 Model::GetTex(long i)
 {
 	return texs[i];
 }
