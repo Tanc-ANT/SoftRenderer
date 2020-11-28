@@ -1,14 +1,14 @@
 #include "Rasterizer.h"
 
 Vertex mesh[8] = {
-	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f),Vector3(0,0,0)},
-	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f),Vector3(0,1,0)},
-	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f),Vector3(1,1,0)},
-	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f),Vector3(1,0,0)},
-	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f),Vector3(0,0,0)},
-	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f),Vector3(0,1,0)},
-	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f),Vector3(1,1,0)},
-	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f),Vector3(1,0,0)},
+	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},  //0
+	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},	//1
+	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},	//2
+	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},	//3
+	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},	//4
+	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},	//5
+	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},	//6
+	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},	//7
 };
 
 //Vertex mesh[8] = {
@@ -421,13 +421,19 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	}
 }
 
-void Rasterizer::DrawPlane(const Vertex& a, const Vertex& b, const Vertex& c, const Vertex& d)
+void Rasterizer::DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d)
 {
+	// Set texcoord
+	a.SetVertexTexcoord({ 0,0,0 });
+	b.SetVertexTexcoord({ 0,1,0 });
+	c.SetVertexTexcoord({ 1,0,0 });
+	d.SetVertexTexcoord({ 1,1,0 });
+
 	DrawTriangle(Triangle(a, b, c));
 	DrawTriangle(Triangle(c, d, a));
 }
 
-void Rasterizer::DrawBox(const Vertex points[],int n)
+void Rasterizer::DrawBox(Vertex points[],int n)
 {
 	DrawPlane(points[0], points[1], points[2], points[3]); // front
 	DrawPlane(points[7], points[6], points[5], points[4]); // back

@@ -48,8 +48,8 @@ private:
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 	void DrawTriangle(const Triangle& t);
-	void DrawPlane(const Vertex& a, const Vertex& b, const Vertex& c, const Vertex& d);
-	void DrawBox(const Vertex points[], int n);
+	void DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d);
+	void DrawBox(Vertex points[], int n);
 
 	bool FaceCulling(const Triangle& t) const;
 
