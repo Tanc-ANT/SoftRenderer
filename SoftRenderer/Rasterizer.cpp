@@ -168,7 +168,7 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 	float x = v.x * rhw;
 	float y = v.y * rhw;
 	float z = v.z * rhw;
-	float w = 1.0f;
+	float w = rhw;
 	z = (z + 1.0f) * 0.5f;
 	return Vector4((x + 1.0f)*device->GetWidth() * 0.5f,
 		(1.0f - y)*device->GetHeight() * 0.5f,
@@ -268,6 +268,14 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	Vector4 t1 = t.GetV1().GetVertexPosition();
 	Vector4 t2 = t.GetV2().GetVertexPosition();
 
+	Color c0 = t.GetV0().GetVertexColor();
+	Color c1 = t.GetV1().GetVertexColor();
+	Color c2 = t.GetV2().GetVertexColor();
+
+	Vector3 uv0 = t.GetV0().GetVertexTexcoord();
+	Vector3 uv1 = t.GetV1().GetVertexTexcoord();
+	Vector3 uv2 = t.GetV2().GetVertexTexcoord();
+
 	if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
 		DrawLine(t0.x, t0.y, t1.x, t1.y, WHITH_COLOR);
@@ -277,13 +285,13 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	
 	else if(device->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
 	{
-		Color c0 = t.GetV0().GetVertexColor();
-		Color c1 = t.GetV1().GetVertexColor();
-		Color c2 = t.GetV2().GetVertexColor();
-
-		Vector3 uv0 = t.GetV0().GetVertexTexcoord();
-		Vector3 uv1 = t.GetV1().GetVertexTexcoord();
-		Vector3 uv2 = t.GetV2().GetVertexTexcoord();
+		
+		if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+		{
+			uv0 = uv0 * t0.w;
+			uv1 = uv1 * t1.w;
+			uv2 = uv2 * t2.w;
+		}
 		
 		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); std::swap(uv0, uv1); }
 		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); std::swap(uv0, uv2); }
@@ -324,6 +332,14 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float depth_ratio = scanline_depth / scanline_width;
 			float *z_line_buffer = device->GetZBuffer()[y];
 
+			//w caculation
+			float w_ratio = 1.0f;
+			if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+			{
+				float w_diff = B.w - A.w;
+				w_ratio = w_diff / scanline_width;
+			}
+
 			//color caculation
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
@@ -337,7 +353,8 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				float step = (float)j - A.x + 0.5;
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
-				if (z_line_buffer[j] <= z)
+				
+				if (z_line_buffer[j] >= z)
 				{
 					Color color;
 					if (device->GetRenderState() & RENDER_STATE_COLOR)
@@ -347,6 +364,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Vector3 uv = (uv_ratio * step + E);
+						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+						{
+							float w = w_ratio * step + A.w;
+							uv = uv / w;
+						}
 						color = texture->GetColor(uv);
 					}					
 					z_line_buffer[j] = z;
@@ -388,6 +410,14 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float depth_ratio = scanline_depth / scanline_width;
 			float *z_line_buffer = device->GetZBuffer()[y];
 
+			//w caculation
+			float w_ratio = 1.0f;
+			if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+			{
+				float w_diff = B.w - A.w;
+				w_ratio = w_diff / scanline_width;
+			}
+
 			//color caculation
 			Color color_diff = D - C;
 			Color color_ratio = color_diff / scanline_width;
@@ -401,7 +431,8 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				float step = (float)j - A.x + 0.5;
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
-				if (z_line_buffer[(int)j] <= z)
+				float w = w_ratio * step + A.w;
+				if (z_line_buffer[(int)j] >= z)
 				{
 					Color color;
 					if (device->GetRenderState() & RENDER_STATE_COLOR)
@@ -411,6 +442,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Vector3 uv = (uv_ratio * step + E);
+						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+						{
+							float w = w_ratio * step + A.w;
+							uv = uv / w;
+						}
 						color = texture->GetColor(uv);
 					}
 					z_line_buffer[j] = z;

@@ -58,12 +58,12 @@ void Camera::TranslateBack()
 
 void Camera::RotateLeft()
 {
-	angle -= 0.01f;
+	angle += 0.01f;
 }
 
 void Camera::RotateRight()
 {
-	angle += 0.01f;
+	angle -= 0.01f;
 }
 
 void Camera::UpdateViewMatrix()
@@ -100,5 +100,5 @@ void Camera::UpdateProjectionMatirx()
 	proj.m[1][1] = (float)(cotHalfFovY);
 	proj.m[2][2] = (Near + Far) / (Far - Near);
 	proj.m[3][2] = -2 * Near*Far / (Far - Near);
-	proj.m[2][3] = -1.0f;// For DirectX
+	proj.m[2][3] = 1.0f;// For DirectX
 }

@@ -27,7 +27,7 @@ Device::Device(int w, int h, void *fb)
 	}
 	width = w;
 	height = h;
-	render_mode = 7;
+	render_mode = 3;
 	render_state = RENDER_MODE_ARRAY[render_mode];
 }
 
@@ -53,7 +53,7 @@ void Device::Clear()
 	{
 		float *dst = zbuffer[y];
 		for (x = width; x > 0; ++dst, --x)
-			dst[0] = 0.0f;
+			dst[0] = 1.0f;
 	}
 }
 

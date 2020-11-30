@@ -75,14 +75,14 @@ void Texture::LoadTexture(const char *filename)
 	unsigned char R;
 	unsigned char A = 255;
 	
-	for (int j = height -1; j>=0 ; --j)
+	for (int j = 0; j < height; ++j)
 	{
 		for (int i = 0; i < width; ++i)
 		{
 			fread(&B, 1, 1, bmpFile);
 			fread(&G, 1, 1, bmpFile);
 			fread(&R, 1, 1, bmpFile);
-			if(infoHeader.biBitCount & 32)
+			if (infoHeader.biBitCount & 32)
 				fread(&A, 1, 1, bmpFile);
 			texture[j][i] = (A << 24) | (R << 16) | (G << 8) | B;
 		}
