@@ -1,5 +1,6 @@
 #pragma once
 #include<windows.h>
+#include<wingdi.h>
 #include<tchar.h>
 
 class Window

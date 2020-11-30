@@ -4,7 +4,7 @@ Device::Device(int w, int h, void *fb)
 {
 	//TODO: recaculate memory need;
 	int need = w * h * 8 + sizeof(void*)*(h * 2);
-	char *ptr = (char*)malloc(need + 64);
+	char *ptr = (char*)malloc(need);
 	char *framebuf,*zbuf;
 	assert(ptr);
 	// Allocate index memeory
@@ -27,7 +27,7 @@ Device::Device(int w, int h, void *fb)
 	}
 	width = w;
 	height = h;
-	render_mode = 2;
+	render_mode = 7;
 	render_state = RENDER_MODE_ARRAY[render_mode];
 }
 

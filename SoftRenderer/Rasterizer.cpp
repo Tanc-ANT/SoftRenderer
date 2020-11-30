@@ -261,8 +261,8 @@ void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
 
 void Rasterizer::DrawTriangle(const Triangle& t)
 {
-	if (FaceCulling(t))
-		return;
+	//if (FaceCulling(t))
+	//	return;
 
 	Vector4 t0 = t.GetV0().GetVertexPosition();
 	Vector4 t1 = t.GetV1().GetVertexPosition();
@@ -285,9 +285,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		Vector3 uv1 = t.GetV1().GetVertexTexcoord();
 		Vector3 uv2 = t.GetV2().GetVertexTexcoord();
 		
-		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); }
-		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); }
-		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); }
+		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); std::swap(uv0, uv1); }
+		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); std::swap(uv0, uv2); }
+		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); std::swap(uv1, uv2); }
 
 		float total_height = t2.y - t0.y + EPSILON;
 		// plus 0.5 for rounding
@@ -424,8 +424,8 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 void Rasterizer::DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d)
 {
 	// Set texcoord
-	a.SetVertexTexcoord({ 0,0,0 });
-	b.SetVertexTexcoord({ 0,1,0 });
+	a.SetVertexTexcoord({ 0,1,0 });
+	b.SetVertexTexcoord({ 0,0,0 });
 	c.SetVertexTexcoord({ 1,0,0 });
 	d.SetVertexTexcoord({ 1,1,0 });
 
@@ -455,9 +455,10 @@ void Rasterizer::DrawSomthing()
 			for (int j = 0; j < 3; j++) {
 				Vector4 v = Vector4(model->GetVert(face[j]), 1.0f);
 				Vector4 n = Vector4(model->GetNorm(face[j]), 0.0f);
-				Vector3 t = model->GetTex(i);
+				Vector3 t = model->GetTex(face[j]);
 				// Set color
 				vertex_points[j].SetVertexColor(WHITH_COLOR);
+				// Set texcoord
 				vertex_points[j].SetVertexTexcoord(t);
 				// model transform
 				world_points[j] = v * camera->GetModelMatrix();
