@@ -41,8 +41,7 @@ private:
 	void SetBoxNormal();
 
 	Vector4 TransformHomogenize(const Vector4& v);
-	Vector4 TransformApply(const Vector4& v, const Matrix4& m);
-	int TransformCheckCVV(const Vector4& v);
+	void TransformCheckCVV(const Triangle& t);
 
 	void LightCalculaiton(Vertex& v);
 

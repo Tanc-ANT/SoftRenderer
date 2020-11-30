@@ -175,28 +175,15 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 		z, w);
 }
 
-Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
+void Rasterizer::TransformCheckCVV(const Triangle& t)
 {
-	float X = v.x; float Y = v.y; float Z = v.z; float W = v.w;
-	Vector4 u;
-	u.x = X * m.m[0][0] + Y * m.m[1][0] + Z * m.m[2][0] + W * m.m[3][0];
-	u.y = X * m.m[0][1] + Y * m.m[1][1] + Z * m.m[2][1] + W * m.m[3][1];
-	u.z = X * m.m[0][2] + Y * m.m[1][2] + Z * m.m[2][2] + W * m.m[3][2];
-	u.w = X * m.m[0][3] + Y * m.m[1][3] + Z * m.m[2][3] + W * m.m[3][3];
-	return u;
-}
+	std::vector<Triangle> triangles;
+	triangles.push_back(t);
+	for (const auto& triangle: triangles)
+	{
+		DrawTriangle(triangle);
+	}
 
-int Rasterizer::TransformCheckCVV(const Vector4& v)
-{
-	float w = v.w;
-	int check = 0;
-	if (v.z < 0.0f) check |= 1;
-	if (v.z >  w) check |= 2;
-	if (v.x < -w) check |= 4;
-	if (v.x >  w) check |= 8;
-	if (v.y < -w) check |= 16;
-	if (v.y >  w) check |= 32;
-	return check;
 }
 
 void Rasterizer::LightCalculaiton(Vertex& v)
@@ -277,10 +264,6 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	Vector4 t0 = t.GetV0().GetVertexPosition();
 	Vector4 t1 = t.GetV1().GetVertexPosition();
 	Vector4 t2 = t.GetV2().GetVertexPosition();
-
-	if (TransformCheckCVV(t0)) return;
-	if (TransformCheckCVV(t1)) return;
-	if (TransformCheckCVV(t2)) return;
 
 	t0 = TransformHomogenize(t0);
 	t1 = TransformHomogenize(t1);
@@ -500,8 +483,8 @@ void Rasterizer::DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d)
 	c.SetVertexTexcoord({ 1,0,0 });
 	d.SetVertexTexcoord({ 1,1,0 });
 
-	DrawTriangle(Triangle(a, b, c));
-	DrawTriangle(Triangle(c, d, a));
+	TransformCheckCVV(Triangle(a, b, c));
+	TransformCheckCVV(Triangle(c, d, a));
 }
 
 void Rasterizer::DrawBox(Vertex points[],int n)
@@ -547,8 +530,7 @@ void Rasterizer::DrawSomthing()
 				vertex_points[j].SetVertexPosition(screen_points[j]);
 			}
 			Triangle t(vertex_points[0], vertex_points[1], vertex_points[2]);
-			DrawTriangle(t);
-
+			TransformCheckCVV(t);
 		}
 	}
 	else if(device->GetRenderState() & RENDER_STATE_BOX)
