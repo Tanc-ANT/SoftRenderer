@@ -21,7 +21,7 @@ int main()
 
 	Texture *texture = new Texture("../Asset/Texture/checkerboard.bmp");
 
-	Vector3 eye(3, 0, 0);
+	Vector3 eye(4, 0, 0);
 	Vector3 at(0, 0, 0);
 	Vector3 up(0, 0, 1);
 	float aspect = (float)width / (float)height;
