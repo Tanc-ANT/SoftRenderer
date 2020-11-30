@@ -42,6 +42,8 @@ private:
 
 	Vector4 TransformHomogenize(const Vector4& v);
 	Vector4 TransformApply(const Vector4& v, const Matrix4& m);
+	int TransformCheckCVV(const Vector4& v);
+
 	void LightCalculaiton(Vertex& v);
 
 	void DrawPixel(int x, int y, UINT32 color);
@@ -51,7 +53,7 @@ private:
 	void DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d);
 	void DrawBox(Vertex points[], int n);
 
-	bool FaceCulling(const Triangle& t) const;
+	bool FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 
 	void InputKeysEvent();
 

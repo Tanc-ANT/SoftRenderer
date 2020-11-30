@@ -169,7 +169,7 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 	float y = v.y * rhw;
 	float z = v.z * rhw;
 	float w = rhw;
-	z = (z + 1.0f) * 0.5f;
+	//z = (z + 1.0f) * 0.5f;
 	return Vector4((x + 1.0f)*device->GetWidth() * 0.5f,
 		(1.0f - y)*device->GetHeight() * 0.5f,
 		z, w);
@@ -184,6 +184,19 @@ Vector4 Rasterizer::TransformApply(const Vector4& v, const Matrix4& m)
 	u.z = X * m.m[0][2] + Y * m.m[1][2] + Z * m.m[2][2] + W * m.m[3][2];
 	u.w = X * m.m[0][3] + Y * m.m[1][3] + Z * m.m[2][3] + W * m.m[3][3];
 	return u;
+}
+
+int Rasterizer::TransformCheckCVV(const Vector4& v)
+{
+	float w = v.w;
+	int check = 0;
+	if (v.z < 0.0f) check |= 1;
+	if (v.z >  w) check |= 2;
+	if (v.x < -w) check |= 4;
+	if (v.x >  w) check |= 8;
+	if (v.y < -w) check |= 16;
+	if (v.y >  w) check |= 32;
+	return check;
 }
 
 void Rasterizer::LightCalculaiton(Vertex& v)
@@ -261,12 +274,20 @@ void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
 
 void Rasterizer::DrawTriangle(const Triangle& t)
 {
-	//if (FaceCulling(t))
-	//	return;
-
 	Vector4 t0 = t.GetV0().GetVertexPosition();
 	Vector4 t1 = t.GetV1().GetVertexPosition();
 	Vector4 t2 = t.GetV2().GetVertexPosition();
+
+	if (TransformCheckCVV(t0)) return;
+	if (TransformCheckCVV(t1)) return;
+	if (TransformCheckCVV(t2)) return;
+
+	t0 = TransformHomogenize(t0);
+	t1 = TransformHomogenize(t1);
+	t2 = TransformHomogenize(t2);
+
+	if (FaceCulling(t0,t1,t2))
+		return;
 
 	Color c0 = t.GetV0().GetVertexColor();
 	Color c1 = t.GetV1().GetVertexColor();
@@ -510,18 +531,19 @@ void Rasterizer::DrawSomthing()
 				vertex_points[j].SetVertexColor(WHITH_COLOR);
 				// Set texcoord
 				vertex_points[j].SetVertexTexcoord(t);
-				// model transform
+				// normal set
+				vertex_points[j].SetVertexNormal(n);
+
+				// M transform
 				world_points[j] = v * camera->GetModelMatrix();
 				n = n * camera->GetModelMatrix();
 				vertex_points[j].SetVertexPosition(world_points[j]);
-				vertex_points[j].SetVertexNormal(n);
 				// light caculation
 				LightCalculaiton(vertex_points[j]);
 				
-				// view transform and homogenize
+				// VP transform
 				screen_points[j] = world_points[j] * camera->GetViewMatrix();
 				screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
-				screen_points[j] = TransformHomogenize(screen_points[j]);
 				vertex_points[j].SetVertexPosition(screen_points[j]);
 			}
 			Triangle t(vertex_points[0], vertex_points[1], vertex_points[2]);
@@ -536,12 +558,13 @@ void Rasterizer::DrawSomthing()
 		Vector4 screen_points[8];
 		for (int i = 0; i < 8; ++i)
 		{
-			// MVP
+			// M transform
 			world_points[i] = mesh[i].GetVertexPosition() * camera->GetModelMatrix();
+			// Light Calculation
+			LightCalculaiton(vert[i]);
+			// VP transform
 			screen_points[i] = world_points[i] * camera->GetViewMatrix();
 			screen_points[i] = screen_points[i] * camera->GetProjectionMatrix();
-			// Screen Homogenize
-			screen_points[i] = TransformHomogenize(screen_points[i]);
 			vert[i].SetVertexPosition(screen_points[i]);
 			// Normal Calculation
 			Vector4 n = mesh[i].GetVertexNormal();		
@@ -551,8 +574,6 @@ void Rasterizer::DrawSomthing()
 			vert[i].SetVertexColor(mesh[i].GetVertexColor());
 			// Texcoord Set
 			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
-			// Light Calculation
-			LightCalculaiton(vert[i]);
 		}
 		DrawBox(vert, 8);
 	}
@@ -567,14 +588,10 @@ void Rasterizer::Update()
 	InputKeysEvent();
 }
 
-bool Rasterizer::FaceCulling(const Triangle& t) const
+bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
 {
 	if (device->GetRenderState() & RENDER_STATE_BACKCULL)
 	{
-		Vector4 t0 = t.GetV0().GetVertexPosition();
-		Vector4 t1 = t.GetV1().GetVertexPosition();
-		Vector4 t2 = t.GetV2().GetVertexPosition();
-
 		Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
 		Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
 		Vector3 n = v1.Cross(v2);
