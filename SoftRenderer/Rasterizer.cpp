@@ -288,6 +288,10 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		
 		if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 		{
+			c0 = c0 * t0.w;
+			c1 = c1 * t1.w;
+			c2 = c2 * t2.w;
+
 			uv0 = uv0 * t0.w;
 			uv1 = uv1 * t1.w;
 			uv2 = uv2 * t2.w;
@@ -360,6 +364,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 					if (device->GetRenderState() & RENDER_STATE_COLOR)
 					{
 						color = (color_ratio * step + C);
+						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+						{
+							float w = w_ratio * step + A.w;
+							color = color / w;
+						}
 					}
 					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
@@ -438,6 +447,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 					if (device->GetRenderState() & RENDER_STATE_COLOR)
 					{
 						color = (color_ratio * step + C);
+						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+						{
+							float w = w_ratio * step + A.w;
+							color = color / w;
+						}
 					}
 					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
