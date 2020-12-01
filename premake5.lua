@@ -46,19 +46,29 @@ project "SoftRenderer"
 		systemversion "latest"
 		staticruntime "off"
 	
-	includedirs
-	{
+		includedirs
+		{
 	
-	}
+		}
 	
-	defines
-	{
+		defines
+		{
 	
-	}
+		}
 	
-	links
-	{
-		"gdi32.lib",
-		"user32.lib"
-	}
+		links
+		{
+			"gdi32.lib",
+			"user32.lib"
+		}
 	
+	filter "configurations:Debug"
+		defines "_DEBUG"
+		runtime	"Debug"
+		symbols	"on"
+	
+	filter "configurations:Release"
+		defines "_RELEASE"
+		runtime	"Release"
+		symbols	"on"
+		optimize "Speed"

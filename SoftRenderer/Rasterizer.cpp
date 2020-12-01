@@ -175,7 +175,7 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 		z, w);
 }
 
-void Rasterizer::ClipWithPlane(Vector4 ponint, Vector4 normal, 
+void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 	std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list)
 {
 	int num_vert = vert_list.size();
@@ -367,7 +367,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); std::swap(uv0, uv2); }
 		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); std::swap(uv1, uv2); }
 
-		float total_height = t2.y - t0.y + EPSILON;
+		float total_height = t2.y - t0.y;
 		// plus 0.5 for rounding
 		for (int y = (int)(t0.y + 0.5); y <= (int)(t1.y + 0.5); y++)
 		{
@@ -563,6 +563,7 @@ void Rasterizer::DrawSomthing()
 {	
 	if (device->GetRenderState() & RENDER_STATE_MODEL)
 	{
+		int count = 0;
 		for (int i = 0; i < model->Nfaces(); i++) {
 			std::vector<int> face = model->GetFace(i);
 			Vertex vertex_points[3];
@@ -576,13 +577,12 @@ void Rasterizer::DrawSomthing()
 				vertex_points[j].SetVertexColor(WHITH_COLOR);
 				// Set texcoord
 				vertex_points[j].SetVertexTexcoord(t);
-				// normal set
-				vertex_points[j].SetVertexNormal(n);
-
 				// M transform
 				world_points[j] = v * camera->GetModelMatrix();
-				n = n * camera->GetModelMatrix();
 				vertex_points[j].SetVertexPosition(world_points[j]);
+				// normal set
+				n = n * camera->GetModelMatrix();
+				vertex_points[j].SetVertexNormal(n);
 				// light caculation
 				LightCalculaiton(vertex_points[j]);
 				
@@ -594,6 +594,7 @@ void Rasterizer::DrawSomthing()
 			Triangle t(vertex_points[0], vertex_points[1], vertex_points[2]);
 			TransformCheckCVV(t);
 		}
+		//std::cout << count << std::endl;
 	}
 	else if(device->GetRenderState() & RENDER_STATE_BOX)
 	{
@@ -604,12 +605,7 @@ void Rasterizer::DrawSomthing()
 		{
 			// M transform
 			world_points[i] = mesh[i].GetVertexPosition() * camera->GetModelMatrix();
-			// Light Calculation
-			LightCalculaiton(vert[i]);
-			// VP transform
-			screen_points[i] = world_points[i] * camera->GetViewMatrix();
-			screen_points[i] = screen_points[i] * camera->GetProjectionMatrix();
-			vert[i].SetVertexPosition(screen_points[i]);
+			vert[i].SetVertexPosition(world_points[i]);
 			// Normal Calculation
 			Vector4 n = mesh[i].GetVertexNormal();		
 			n = MatrixVectorMul(n, camera->GetModelMatrix());
@@ -618,6 +614,12 @@ void Rasterizer::DrawSomthing()
 			vert[i].SetVertexColor(mesh[i].GetVertexColor());
 			// Texcoord Set
 			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
+			// Light Calculation
+			LightCalculaiton(vert[i]);
+			// VP transform
+			screen_points[i] = world_points[i] * camera->GetViewMatrix();
+			screen_points[i] = screen_points[i] * camera->GetProjectionMatrix();
+			vert[i].SetVertexPosition(screen_points[i]);
 		}
 		DrawBox(vert, 8);
 	}

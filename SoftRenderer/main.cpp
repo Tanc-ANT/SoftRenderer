@@ -17,17 +17,17 @@ int main()
 	window->Init(width, height, title);
 
 	Device *device = new Device(width, height, window->GetFrameBuffer());
-	Model *model = new Model("../Asset/Obj/african_head.obj");
+	Model *model = new Model("../Asset/Obj/crab.obj");
 
-	Texture *texture = new Texture("../Asset/Texture/checkerboard.bmp");
+	Texture *texture = new Texture("../Asset/Texture/crab_diffuse.bmp");
 
-	Vector3 eye(4, 0, 0);
+	Vector3 eye(5, 0, 0);
 	Vector3 at(0, 0, 0);
 	Vector3 up(0, 0, 1);
 	float aspect = (float)width / (float)height;
 	Camera* camera = new Camera(eye, at, up, aspect);
 
-	Light *light = new Light(Vector4(5, 5, 0, 1),Color(1.0f,1.0f,1.0f));
+	Light *light = new Light(Vector4(5, -5, 0, 1),Color(1.0f,1.0f,1.0f));
 
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
@@ -40,7 +40,7 @@ int main()
 	while (!window->GetCloseState())
 	{
 		raster->Update();
-		Sleep(1);
+		//Sleep(1);
 	}
 	delete raster;
 	delete texture;

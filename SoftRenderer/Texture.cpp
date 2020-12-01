@@ -47,7 +47,7 @@ void Texture::LoadTexture(const char *filename)
 
 	fseek(bmpFile, fileHeader.bfOffBits, SEEK_SET);
 
-	int nPixels = infoHeader.biWidth*infoHeader.biHeight;        //Í¼ÏñµÄÏñËØÊý
+	int nPixels = infoHeader.biWidth*infoHeader.biHeight;
 	int nBytesPerRow = infoHeader.biWidth * 3;
 	int nPaddingByresPerRow = 4 - (nBytesPerRow % 4);
 

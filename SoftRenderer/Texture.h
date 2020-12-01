@@ -11,7 +11,7 @@ public:
 
 	void LoadTexture(const char *filename);
 
-	inline Color GetColor(const Vector3& t)
+	Color GetColor(const Vector3& t)
 	{
 		int x, y;
 		float u = t.x * ((float)width - 1.0f);

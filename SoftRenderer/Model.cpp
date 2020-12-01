@@ -24,7 +24,7 @@ Model::Model(const char *filename)
 			Vector3 t;
 			iss >> t.x;
 			iss >> t.y;
-			iss >> t.z;
+			//iss >> t.z;
 			texs.push_back(t);
 		}
 		else if (!line.compare(0, 3, "vn ")) {
@@ -49,6 +49,7 @@ Model::Model(const char *filename)
 	}
 	std::cerr << "v# " << verts.size() <<
 		"		vn# " << norms.size() <<
+		"		vt# " << texs.size() <<
 		"	f# " << faces.size() << std::endl;
 }
 
