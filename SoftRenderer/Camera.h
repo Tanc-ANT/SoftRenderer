@@ -60,8 +60,8 @@ private:
 	//Matrix4 tranformation;
 
 	// for demo
-	float angle = 0.0f;
-	Vector3 axis = { 1.0f, 1.0f, 1.0f };
+	float angle = 180.0f;
+	Vector3 axis = { -1.0f, -0.5f, 1.0f };
 
 	// const number of camera
 	// we don't need change number value here

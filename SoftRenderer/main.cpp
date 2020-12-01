@@ -19,7 +19,9 @@ int main()
 	Device *device = new Device(width, height, window->GetFrameBuffer());
 	Model *model = new Model("../Asset/Obj/crab.obj");
 
-	Texture *texture = new Texture("../Asset/Texture/crab_diffuse.bmp");
+	TextureArray *textures = new TextureArray();
+	textures->LoadTexture("../Asset/Texture/checkerboard.bmp");
+	textures->LoadTexture("../Asset/Texture/crab_diffuse.bmp");
 
 	Vector3 eye(5, 0, 0);
 	Vector3 at(0, 0, 0);
@@ -35,7 +37,7 @@ int main()
 	raster->SetModel(model);
 	raster->SetCamera(camera);
 	raster->SetLight(light);
-	raster->SetTexture(texture);
+	raster->SetTexture(textures);
 
 	while (!window->GetCloseState())
 	{
@@ -43,7 +45,7 @@ int main()
 		//Sleep(1);
 	}
 	delete raster;
-	delete texture;
+	delete textures;
 	delete light;
 	delete camera;
 	delete model;

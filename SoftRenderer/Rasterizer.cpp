@@ -444,7 +444,10 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 							float w = w_ratio * step + A.w;
 							uv = uv / w;
 						}
-						color = texture->GetColor(uv);
+						if (device->GetRenderState() & RENDER_STATE_BOX)
+							color = textures->GetColor(uv, TEXTURE_INDEX_0);
+						else if (device->GetRenderState() & RENDER_STATE_MODEL)
+							color = textures->GetColor(uv, TEXTURE_INDEX_1);
 					}					
 					z_line_buffer[j] = z;
 					DrawPixel(j, y, color.GetIntensity());
@@ -527,7 +530,10 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 							float w = w_ratio * step + A.w;
 							uv = uv / w;
 						}
-						color = texture->GetColor(uv);
+						if(device->GetRenderState() & RENDER_STATE_BOX)
+							color = textures->GetColor(uv,TEXTURE_INDEX_0);
+						else if (device->GetRenderState() & RENDER_STATE_MODEL)
+							color = textures->GetColor(uv, TEXTURE_INDEX_1);
 					}
 					z_line_buffer[j] = z;
 					DrawPixel(j, y, color.GetIntensity());

@@ -31,7 +31,7 @@ public:
 
 	void SetLight(Light* l) { light = l; }
 
-	void SetTexture(Texture* t) { texture = t; }
+	void SetTexture(TextureArray* t) { textures = t; }
 
 	void DrawSomthing();
 
@@ -66,7 +66,7 @@ private:
 	Model* model;
 	Camera* camera;
 	Light* light;
-	Texture* texture;
+	TextureArray* textures;
 
 	bool change_state = false;
 };
