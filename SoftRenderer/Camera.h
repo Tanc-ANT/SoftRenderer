@@ -25,11 +25,15 @@ public:
 	void SetUp(Vector3 u);
 	Vector3 GetUp();
 
-	Matrix4 GetModelMatrix() const{ return model; }
-	Matrix4 GetInvModelMatrix() const { return invModel; }
-	Matrix4 GetViewMatrix() const { return view; }
-	Matrix4 GetProjectionMatrix() const { return proj; }
+	inline Matrix4 GetModelMatrix() const{ return model; }
+	inline Matrix4 GetInvModelMatrix() const { return invModel; }
+	inline Matrix4 GetViewMatrix() const { return view; }
+	inline Matrix4 GetProjectionMatrix() const { return proj; }
 	//Matrix4 GetTranformation() const;
+
+	inline float GetNear() { return Near; }
+	inline float GetFar() { return Far; }
+	inline float GetFovY() { return FovY; }
 
 	void Update();
 

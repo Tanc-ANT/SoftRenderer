@@ -2,12 +2,6 @@
 #include "pch.h"
 #include "Vector3.h"
 
-// Define Color
-//#define RED_COLOR	0x00ff0000
-//#define BLUE_COLOR	0x000000ff
-//#define GREEN_COLOR	0x0000ff00
-//#define WHITH_COLOR 0x00ffffff
-
 class Color
 {
 public:
@@ -46,9 +40,14 @@ public:
 		return intensity; 
 	}
 
-	static Color Lerp(const Color &v1, const Color &v2, float factor)
+	static inline Color ClampLerp(const Color &v1, const Color &v2, float factor)
 	{
 		factor = std::clamp(factor,0.0f, 1.0f);
+		return v1 + (v2 - v1) * factor;
+	}
+
+	static inline Color Lerp(const Color &v1, const Color &v2, float factor)
+	{
 		return v1 + (v2 - v1) * factor;
 	}
 private:

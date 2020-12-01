@@ -40,6 +40,21 @@ public:
 	void SetVertexTexcoord(Vector3 t) { texcoord = t; }
 	Vector3 GetVertexTexcoord() const { return texcoord; }
 
+	static inline Vertex ClampLerp(const Vertex &v1, const Vertex &v2, float factor)
+	{
+		factor = std::clamp(factor, 0.0f, 1.0f);
+		Lerp(v1, v2, factor);
+	}
+
+	static inline Vertex Lerp(const Vertex &v1, const Vertex &v2, float factor)
+	{
+		Vector4 p =  v1.GetVertexPosition() + (v2.GetVertexPosition() - v1.GetVertexPosition()) * factor;
+		Vector4 n = v1.GetVertexNormal() + (v2.GetVertexNormal() - v1.GetVertexNormal()) * factor;
+		Color c = v1.GetVertexColor() + (v2.GetVertexColor() - v1.GetVertexColor()) * factor;
+		Vector3 t = v1.GetVertexTexcoord() + (v2.GetVertexTexcoord() - v1.GetVertexTexcoord()) * factor;
+		return Vertex(p, n, c, t);
+	}
+
 private:
 	Vector4 position;
 	Vector4 normal;

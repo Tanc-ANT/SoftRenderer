@@ -36,9 +36,14 @@ public:
 	double Dot(const Vector4& other) const;
 	Vector4 Cross(const Vector4& other) const;
 
-	static Vector4 Lerp(const Vector4 &v1, const Vector4 &v2, float factor)
+	static inline Vector4 ClampLerp(const Vector4 &v1, const Vector4 &v2, float factor)
 	{
 		factor = std::clamp(factor, 0.0f, 1.0f);
+		return v1 + (v2 - v1) * factor;
+	}
+
+	static inline Vector4 Lerp(const Vector4 &v1, const Vector4 &v2, float factor)
+	{
 		return v1 + (v2 - v1) * factor;
 	}
 

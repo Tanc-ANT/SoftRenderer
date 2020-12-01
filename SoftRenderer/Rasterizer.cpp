@@ -175,15 +175,77 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 		z, w);
 }
 
+void Rasterizer::ClipWithPlane(Vector4 ponint, Vector4 normal, 
+	std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list)
+{
+	int num_vert = vert_list.size();
+	int previous_index, current_index;
+	for (int i = 0; i < num_vert; ++i)
+	{
+		current_index = i;
+		previous_index = (i - 1 + num_vert) % num_vert;
+		Vertex pre_vertex = vert_list[previous_index];
+		Vertex current_vertex = vert_list[current_index];
+
+		Vector4 Q1P = pre_vertex.GetVertexPosition() - ponint;
+		Vector4 Q2P = current_vertex.GetVertexPosition() - ponint;
+		
+		float d1 = Q1P.Dot(normal);
+		float d2 = Q2P.Dot(normal);
+
+		if (d1*d2 < 0)
+		{
+			float t = d1 / (d1 - d2);
+			Vertex I = Vertex::Lerp(pre_vertex, current_vertex, t);
+			in_list.push_back(I);
+		}
+		if (d2 > 0)
+		{
+			in_list.push_back(current_vertex);
+		}
+	}
+}
+
 void Rasterizer::TransformCheckCVV(const Triangle& t)
 {
-	std::vector<Triangle> triangles;
-	triangles.push_back(t);
-	for (const auto& triangle: triangles)
+	std::vector<Vertex> vert_list;
+	std::vector<Vertex> in_list1;
+	std::vector<Vertex> in_list2;
+	std::vector<Vertex> in_list3;
+	std::vector<Vertex> in_list4;
+	std::vector<Vertex> in_list5;
+	std::vector<Vertex> in_list6;
+
+	vert_list.push_back(t.GetV0());
+	vert_list.push_back(t.GetV1());
+	vert_list.push_back(t.GetV2());
+
+	float cosAh = cos(camera->GetFovY() / 2);
+	float sinAh = sin(camera->GetFovY() / 2);
+
+	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(0, cosAh, sinAh, 0), 
+		vert_list, in_list1);	//top
+	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(0, -cosAh, sinAh, 0),
+		in_list1, in_list2);	//bottom
+	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(-cosAh, 0, sinAh, 0),
+		in_list2, in_list3);	//left
+	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(cosAh, 0, sinAh, 0),
+		in_list3, in_list4);	//right
+	ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
+		in_list4, in_list5);	//near
+	ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
+		in_list5, in_list6);	//far
+
+	int num_vertex = (int)in_list6.size() - 2;
+	for (int i = 0; i < num_vertex; ++i)
 	{
+		int index0 = 0;
+		int index1 = i + 1;
+		int index2 = i + 2;
+		Triangle triangle(in_list6[index0],
+			in_list6[index1], in_list6[index2]);
 		DrawTriangle(triangle);
 	}
-
 }
 
 void Rasterizer::LightCalculaiton(Vertex& v)
@@ -318,14 +380,14 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
 			//position lerp
-			Vector4 A = Vector4::Lerp(t0, t2, alpha);
-			Vector4 B = Vector4::Lerp(t0, t1, beta);
+			Vector4 A = Vector4::ClampLerp(t0, t2, alpha);
+			Vector4 B = Vector4::ClampLerp(t0, t1, beta);
 			//color lerp
-			Color C = Color::Lerp(c0, c2, alpha);
-			Color D = Color::Lerp(c0, c1, beta);
+			Color C = Color::ClampLerp(c0, c2, alpha);
+			Color D = Color::ClampLerp(c0, c1, beta);
 			//texcoord lerp
-			Vector3 E = Vector3::Lerp(uv0, uv2, alpha);
-			Vector3 F = Vector3::Lerp(uv0, uv1, beta);
+			Vector3 E = Vector3::ClampLerp(uv0, uv2, alpha);
+			Vector3 F = Vector3::ClampLerp(uv0, uv1, beta);
 			//draw line from left to right
 			if (A.x > B.x)
 			{
@@ -401,14 +463,14 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
 			//position lerp
-			Vector4 A = Vector4::Lerp(t0, t2, alpha);
-			Vector4 B = Vector4::Lerp(t1, t2, beta);
+			Vector4 A = Vector4::ClampLerp(t0, t2, alpha);
+			Vector4 B = Vector4::ClampLerp(t1, t2, beta);
 			//color lerp
-			Color C = Color::Lerp(c0, c2, alpha);
-			Color D = Color::Lerp(c1, c2, beta);
+			Color C = Color::ClampLerp(c0, c2, alpha);
+			Color D = Color::ClampLerp(c1, c2, beta);
 			//texcoord lerp
-			Vector3 E = Vector3::Lerp(uv0, uv2, alpha);
-			Vector3 F = Vector3::Lerp(uv1, uv2, beta);
+			Vector3 E = Vector3::ClampLerp(uv0, uv2, alpha);
+			Vector3 F = Vector3::ClampLerp(uv1, uv2, beta);
 			//draw line from left to right
 			if (A.x > B.x)
 			{
@@ -491,7 +553,7 @@ void Rasterizer::DrawBox(Vertex points[],int n)
 {
 	DrawPlane(points[0], points[1], points[2], points[3]); // front
 	DrawPlane(points[7], points[6], points[5], points[4]); // back
-	DrawPlane(points[0], points[4], points[5], points[1]); // down
+	DrawPlane(points[0], points[4], points[5], points[1]); // bottom
 	DrawPlane(points[1], points[5], points[6], points[2]); // right
 	DrawPlane(points[2], points[6], points[7], points[3]); // up
 	DrawPlane(points[3], points[7], points[4], points[0]); // left

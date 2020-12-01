@@ -41,6 +41,9 @@ private:
 	void SetBoxNormal();
 
 	Vector4 TransformHomogenize(const Vector4& v);
+
+	void ClipWithPlane(Vector4 ponint, Vector4 normal, std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list);
+
 	void TransformCheckCVV(const Triangle& t);
 
 	void LightCalculaiton(Vertex& v);
