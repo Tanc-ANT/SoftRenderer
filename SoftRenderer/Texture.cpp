@@ -16,10 +16,6 @@ Texture::~Texture()
 
 void Texture::LoadTexture(const char *filename)
 {
-	//if (texture)
-	//	free(texture);
-	//texture = nullptr;
-
 	FILE *bmpFile = fopen(filename, "rb");
 
 	if (bmpFile == nullptr)

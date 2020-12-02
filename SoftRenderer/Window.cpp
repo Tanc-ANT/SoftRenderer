@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "pch.h"
+#include <timeapi.h>
 
 HWND Window::screen_handle = nullptr;
 HDC Window::screen_dc = nullptr;
@@ -129,10 +130,47 @@ void Window::Dispatch(void)
 	}
 }
 
+static float  fps = 0;
+static int    frameCount = 0;
+static float  currentTime = 0.0f;
+static float  lastTime = 0.0f;
+
+void Window::ShowFPS(void)
+{	
+	HDC hDC = GetDC(screen_handle);
+	frameCount++;
+	currentTime = timeGetTime()*0.001f;
+
+	if (currentTime - lastTime > 1.0f)
+	{
+		fps = (float)frameCount / (currentTime - lastTime);
+		lastTime = currentTime;
+		frameCount = 0;
+	}
+	SetTextColor(hDC, RGB(255, 255, 255));
+	SetBkMode(hDC, TRANSPARENT);
+	char strFPS[20];
+	sprintf_s(strFPS, 20, "FPS:%0.3f", fps);
+	TextOutA(hDC, 0, 0, strFPS, 10);
+
+	char strVert[20];
+	int n;
+	if (n_triangle < 10) n = 1;
+	else if (n_triangle < 100) n = 2;
+	else if (n_triangle < 1000) n = 3;
+	else if (n_triangle < 10000) n = 4;
+	else if (n_triangle < 100000) n = 4;
+	sprintf_s(strVert, 20, "Triangle:%d", n_triangle);
+	TextOutA(hDC, 0, 20, strVert, 9 + n);
+
+	ReleaseDC(screen_handle, hDC);
+}
+
 void Window::Update(void)
 {
 	HDC hDC = GetDC(screen_handle);
 	BitBlt(hDC, 0, 0, width, height, screen_dc, 0, 0, SRCCOPY);
 	ReleaseDC(screen_handle, hDC);
 	Dispatch();
+	ShowFPS();
 }

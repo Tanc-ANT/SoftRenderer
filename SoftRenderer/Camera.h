@@ -16,14 +16,14 @@ public:
 		:position(p), target(t), up(u), aspect(a) {};
 	~Camera() {};
 
-	void SetPostion(Vector3 p);
-	Vector3 GetPostion();
+	void SetPostion(Vector3 p) { position = p; }
+	Vector3 GetPostion() { return position; }
 
-	void SetTarget(Vector3 d);
-	Vector3 GetTarget();
+	void SetTarget(Vector3 t) { target = t; }
+	Vector3 GetTarget() { return target; }
 
-	void SetUp(Vector3 u);
-	Vector3 GetUp();
+	void SetUp(Vector3 u) { up = u; }
+	Vector3 GetUp() { return up; }
 
 	inline Matrix4 GetModelMatrix() const{ return model; }
 	inline Matrix4 GetInvModelMatrix() const { return invModel; }

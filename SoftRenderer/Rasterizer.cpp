@@ -11,17 +11,6 @@ Vertex mesh[8] = {
 	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},	//7
 };
 
-//Vertex mesh[8] = {
-//   {Vector4(-1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(1.0f,-1.0f,1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(-1.0f, 1.0f,1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(-1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(1.0f,-1.0f,-1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
-//   {Vector4(-1.0f, 1.0f,-1.0f,1.0f),WHITH_COLOR},
-//};
-
 static Vector4 MatrixVectorMul(const Matrix4& m, const Vector4& v)
 {
 	return Vector4(	
@@ -49,46 +38,6 @@ Rasterizer::~Rasterizer()
 {
 
 };
-
-void Rasterizer::SetWindow(Window *w)
-{
-	window = w;
-}
-
-Window* Rasterizer::GetWindow()
-{
-	return window;
-}
-
-void Rasterizer::SetDevice(Device* d)
-{
-	device = d;
-}
-
-Device* Rasterizer::GetDevice()
-{
-	return device;
-}
-
-void Rasterizer::SetModel(Model* m)
-{
-	model = m;
-}
-
-Model* Rasterizer::GetModel()
-{
-	return model;
-}
-
-void Rasterizer::SetCamera(Camera* c)
-{
-	camera = c;
-}
-
-Camera* Rasterizer::GetCamera()
-{
-	return camera;
-}
 
 void Rasterizer::SetBoxNormal()
 {
@@ -334,6 +283,8 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	if (FaceCulling(t0,t1,t2))
 		return;
 
+	nTriangle += 1;
+
 	Color c0 = t.GetV0().GetVertexColor();
 	Color c1 = t.GetV1().GetVertexColor();
 	Color c2 = t.GetV2().GetVertexColor();
@@ -566,7 +517,8 @@ void Rasterizer::DrawBox(Vertex points[],int n)
 }
 
 void Rasterizer::DrawSomthing()
-{	
+{
+	nTriangle = 0;
 	if (device->GetRenderState() & RENDER_STATE_MODEL)
 	{
 		int count = 0;
@@ -629,6 +581,7 @@ void Rasterizer::DrawSomthing()
 		}
 		DrawBox(vert, 8);
 	}
+	window->SetNtri(nTriangle);
 }
 
 void Rasterizer::Update()

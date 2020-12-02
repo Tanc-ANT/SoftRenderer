@@ -17,17 +17,17 @@ public:
 	Rasterizer();
 	~Rasterizer();
 
-	void SetWindow(Window *w);
-	Window* GetWindow();
+	void SetWindow(Window *w) { window = w; }
+	Window* GetWindow() { return window; }
 
-	void SetDevice(Device* d);
-	Device* GetDevice();
+	void SetDevice(Device* d) { device = d; }
+	Device* GetDevice() { return device; }
 
-	void SetModel(Model* m);
-	Model* GetModel();
+	void SetModel(Model* m) { model = m; }
+	Model* GetModel() { return model; }
 
-	void SetCamera(Camera* c);
-	Camera* GetCamera();
+	void SetCamera(Camera* c) { camera = c; }
+	Camera* GetCamera() { return camera; }
 
 	void SetLight(Light* l) { light = l; }
 
@@ -69,5 +69,6 @@ private:
 	TextureArray* textures;
 
 	bool change_state = false;
+	int nTriangle = 0;
 };
 

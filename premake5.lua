@@ -59,7 +59,8 @@ project "SoftRenderer"
 		links
 		{
 			"gdi32.lib",
-			"user32.lib"
+			"user32.lib",
+			"winmm.lib"
 		}
 	
 	filter "configurations:Debug"

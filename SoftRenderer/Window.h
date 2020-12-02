@@ -17,6 +17,8 @@ public:
 	int* GetKey() { return keys; }
 	unsigned char* GetFrameBuffer() { return screen_fb; };
 
+	void SetNtri(int n) { n_triangle = n; }
+
 public:
 	static HWND screen_handle;
 	static HDC screen_dc;
@@ -30,6 +32,7 @@ public:
 private:
 	int Close(void);
 	void Dispatch(void);
+	void ShowFPS(void);
 
 private:
 	static bool exit_state;
@@ -37,5 +40,5 @@ private:
 	int width, height;
 	unsigned char *screen_fb;
 	long screen_pitch = 0;
-	
+	int n_triangle = 0;
 };

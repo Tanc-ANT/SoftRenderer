@@ -1,40 +1,5 @@
 #include "Camera.h"
 
-void Camera::SetPostion(Vector3 p)
-{
-	position = p;
-}
-
-Vector3 Camera::GetPostion()
-{
-	return position;
-}
-
-void Camera::SetTarget(Vector3 d)
-{
-	target = d;
-}
-
-Vector3 Camera::GetTarget()
-{
-	return target;
-}
-
-void Camera::SetUp(Vector3 u)
-{
-	up = u;
-}
-
-Vector3 Camera::GetUp()
-{
-	return up;
-}
-
-//Matrix4 Camera::GetTranformation() const
-//{
-//	return tranformation;
-//}
-
 void Camera::Update()
 {
 	model.SetIdentity();
