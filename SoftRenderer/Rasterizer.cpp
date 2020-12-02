@@ -523,14 +523,16 @@ void Rasterizer::DrawSomthing()
 	{
 		int count = 0;
 		for (int i = 0; i < model->Nfaces(); i++) {
-			std::vector<int> face = model->GetFace(i);
+			std::vector<int> vert_index = model->GetVertIndex(i);
+			std::vector<int> tex_index = model->GetTexIndex(i);
+			std::vector<int> norm_index = model->GetNormIndex(i);
 			Vertex vertex_points[3];
 			Vector4 world_points[3];
 			Vector4 screen_points[3];
 			for (int j = 0; j < 3; j++) {
-				Vector4 v = Vector4(model->GetVert(face[j]), 1.0f);
-				Vector4 n = Vector4(model->GetNorm(face[j]), 0.0f);
-				Vector3 t = model->GetTex(face[j]);
+				Vector4 v = Vector4(model->GetVert(vert_index[j]), 1.0f);
+				Vector3 t = model->GetTex(tex_index[j]);
+				Vector4 n = Vector4(model->GetNorm(norm_index[j]), 0.0f);
 				// Set color
 				vertex_points[j].SetVertexColor(WHITH_COLOR);
 				// Set texcoord
@@ -587,7 +589,7 @@ void Rasterizer::DrawSomthing()
 void Rasterizer::Update()
 {
 	device->Clear();
-	camera->Update();
+	camera->Update(window);
 	DrawSomthing();
 	window->Update();
 	InputKeysEvent();

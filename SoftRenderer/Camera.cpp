@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-void Camera::Update()
+void Camera::Update(Window* window)
 {
 	model.SetIdentity();
 	model.Rotation(axis, angle);

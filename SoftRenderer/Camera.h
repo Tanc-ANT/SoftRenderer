@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Vector3.h"
 #include "Matrix4.h"
+#include "Window.h"
 
 constexpr float EPSILON = 1e-5f;
 constexpr float PI = 3.1415926f;
@@ -35,7 +36,7 @@ public:
 	inline float GetFar() { return Far; }
 	inline float GetFovY() { return FovY; }
 
-	void Update();
+	void Update(Window* window);
 
 	// just for demo
 	void TranslateFront();

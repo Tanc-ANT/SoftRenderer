@@ -16,5 +16,7 @@ Then run this bat file. You can find a new build file has already generated.
 + Gouraud Shading
 + Blinn-Phong Light
 + Texture Mapping and Perspective Correction
++ Multiple texture support
 + Homogeneous space clipping
++ Obj model support
 + FPS and triangle number show

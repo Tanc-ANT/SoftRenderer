@@ -37,20 +37,28 @@ Model::Model(const char *filename)
 			norms.push_back(n);
 		}
 		else if (!line.compare(0, 2, "f ")) {
-			std::vector<int> f;
-			int itrash, idx;
+			std::vector<int> v;
+			std::vector<int> t;
+			std::vector<int> n;
+			int itrash, vi,ti,ni;
 			iss >> trash;
-			while (iss >> idx >> trash >> itrash >> trash >> itrash) {
-				idx--; // in wavefront obj all indices start at 1, not zero
-				f.push_back(idx);
+			while (iss >> vi >> trash >> ti >> trash >> ni) {
+				vi--; // in wavefront obj all indices start at 1, not zero
+				ti--;
+				ni--;
+				v.push_back(vi);
+				t.push_back(ti);
+				n.push_back(ni);
 			}
-			faces.push_back(f);
+			vert_index.push_back(v);
+			tex_index.push_back(t);
+			norm_index.push_back(n);
 		}
 	}
 	std::cerr << "v# " << verts.size() <<
 		"		vn# " << norms.size() <<
 		"		vt# " << texs.size() <<
-		"	f# " << faces.size() << std::endl;
+		"	f# " << vert_index.size() << std::endl;
 }
 
 Model::~Model()
@@ -75,7 +83,7 @@ int Model::Nnorms()
 
 int Model::Nfaces()
 {
-	return (int)faces.size();
+	return (int)vert_index.size();
 }
 
 Vector3 Model::GetVert(long i)
@@ -93,7 +101,17 @@ Vector3 Model::GetNorm(long i)
 	return norms[i];
 }
 
-std::vector<int> Model::GetFace(long idx)
+std::vector<int> Model::GetVertIndex(long idx)
 {
-	return faces[idx];
+	return vert_index[idx];
+}
+
+std::vector<int> Model::GetTexIndex(long idx)
+{
+	return tex_index[idx];
+}
+
+std::vector<int> Model::GetNormIndex(long idx)
+{
+	return norm_index[idx];
 }
