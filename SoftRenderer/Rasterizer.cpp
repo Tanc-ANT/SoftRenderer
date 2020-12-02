@@ -554,7 +554,6 @@ void Rasterizer::DrawSomthing()
 			Triangle t(vertex_points[0], vertex_points[1], vertex_points[2]);
 			TransformCheckCVV(t);
 		}
-		//std::cout << count << std::endl;
 	}
 	else if(device->GetRenderState() & RENDER_STATE_BOX)
 	{

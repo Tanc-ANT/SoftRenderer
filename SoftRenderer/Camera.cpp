@@ -43,12 +43,11 @@ void Camera::ProcessWindowMouseInput(Window* window)
 
 	if (window->GetLeftButtonState())
 	{
-		modelRotLengthX -= dy / 5.0f;
-		modelRotLengthY -= dx / 5.0f;
-		modelRotX += (modelRotLengthX - modelRotX) * 0.1f;
-		modelRotY += (modelRotLengthY - modelRotY) * 0.1f;
+			modelRotLengthX -= dy / 5.0f;
+			modelRotLengthY -= dx / 5.0f;
+			modelRotX += (modelRotLengthX - modelRotX) * 0.1f;
+			modelRotY += (modelRotLengthY - modelRotY) * 0.1f;
 	}
-
 	originX = (int)pos.x; originY = (int)pos.y;
 }
 

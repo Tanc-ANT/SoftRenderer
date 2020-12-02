@@ -25,6 +25,8 @@ Model::Model(const char *filename)
 			iss >> t.x;
 			iss >> t.y;
 			//iss >> t.z;
+			t.x -= std::floor(t.x);
+			t.y -= std::floor(t.y);
 			texs.push_back(t);
 		}
 		else if (!line.compare(0, 3, "vn ")) {
