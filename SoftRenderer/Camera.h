@@ -14,7 +14,10 @@ class Camera
 {
 public:
 	Camera(Vector3 p, Vector3 t, Vector3 u, float a)
-		:position(p), target(t), up(u), aspect(a) {};
+		:position(p), target(t), up(u), aspect(a)
+	{
+		model.SetIdentity();
+	};
 	~Camera() {};
 
 	void SetPostion(Vector3 p) { position = p; }
@@ -55,19 +58,22 @@ private:
 	Matrix4 view;
 	Matrix4 proj;
 
-	int ox = 0;
-	int oy = 0;
-
-	float xRot = 0.0f;
-	float yRot = 0.0f;
+	int originX = 0;
+	int originY = 0;
 
 	float xTrans = 0.0f;
 	float yTrans = 0.0f;
 	float zTrans = 5.0f;
 
-	int buttonState = 0;
-	float xRotLength = 0.0f;
-	float yRotLength = 0.0f;
+	float viewRotX = 0.0f;
+	float viewRotY = 0.0f;
+	float viewRotLengthX = 0.0f;
+	float viewRotLengthY = 0.0f;
+
+	float modelRotX = 0.0f;
+	float modelRotY = 0.0f;
+	float modelRotLengthX = 0.0f;
+	float modelRotLengthY = 0.0f;
 
 	// const number of camera
 	// we don't need change number value here

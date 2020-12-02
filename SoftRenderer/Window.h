@@ -20,7 +20,8 @@ public:
 
 	void SetNtri(int n) { n_triangle = n; }
 
-	bool GetMouseButtonState() { return button_state; }
+	bool GetLeftButtonState() { return left_button_state; }
+	bool GetRightButtonState() { return right_button_state; }
 	Vector3 GetMousePos();
 
 public:
@@ -41,7 +42,8 @@ private:
 private:
 	static bool exit_state;
 	static int keys[512];
-	static bool button_state;
+	static bool left_button_state;
+	static bool right_button_state;
 	int width, height;
 	unsigned char *screen_fb;
 	long screen_pitch = 0;

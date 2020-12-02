@@ -9,7 +9,8 @@ HBITMAP Window::screen_hb = nullptr;
 HBITMAP Window::screen_ob = nullptr;
 bool Window::exit_state = 0;
 int Window::keys[512] = {0};
-bool Window::button_state = false;
+bool Window::left_button_state = false;
+bool Window::right_button_state = false;
 
 LRESULT Window::screen_events(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) {
@@ -17,8 +18,10 @@ LRESULT Window::screen_events(HWND hWnd, UINT msg,
 	case WM_CLOSE: exit_state = 1; break;
 	case WM_KEYDOWN: keys[wParam & 511] = 1; break;
 	case WM_KEYUP: keys[wParam & 511] = 0; break;
-	case WM_LBUTTONDOWN:  button_state = true; break;
-	case WM_LBUTTONUP: button_state = false; break;
+	case WM_LBUTTONDOWN:  left_button_state = true; break;
+	case WM_LBUTTONUP: left_button_state = false; break;
+	case WM_RBUTTONDOWN:  right_button_state = true; break;
+	case WM_RBUTTONUP: right_button_state = false; break;
 	default: return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 	return 0;
