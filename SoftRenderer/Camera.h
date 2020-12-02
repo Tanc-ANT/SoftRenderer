@@ -30,19 +30,15 @@ public:
 	inline Matrix4 GetInvModelMatrix() const { return invModel; }
 	inline Matrix4 GetViewMatrix() const { return view; }
 	inline Matrix4 GetProjectionMatrix() const { return proj; }
-	//Matrix4 GetTranformation() const;
 
 	inline float GetNear() { return Near; }
 	inline float GetFar() { return Far; }
 	inline float GetFovY() { return FovY; }
 
 	void Update(Window* window);
+	void ProcessWindowKeyInput(Window* window);
+	void ProcessWindowMouseInput(Window* window);
 
-	// just for demo
-	void TranslateFront();
-	void TranslateBack();
-	void RotateLeft();
-	void RotateRight();
 
 private:
 	void UpdateViewMatrix();
@@ -58,11 +54,20 @@ private:
 	Matrix4 invModel;
 	Matrix4 view;
 	Matrix4 proj;
-	//Matrix4 tranformation;
 
-	// for demo
-	float angle = 180.0f;
-	Vector3 axis = { -1.0f, -0.5f, 1.0f };
+	int ox = 0;
+	int oy = 0;
+
+	float xRot = 0.0f;
+	float yRot = 0.0f;
+
+	float xTrans = 0.0f;
+	float yTrans = 0.0f;
+	float zTrans = 5.0f;
+
+	int buttonState = 0;
+	float xRotLength = 0.0f;
+	float yRotLength = 0.0f;
 
 	// const number of camera
 	// we don't need change number value here

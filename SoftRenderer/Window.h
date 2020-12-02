@@ -2,6 +2,7 @@
 #include<windows.h>
 #include<wingdi.h>
 #include<tchar.h>
+#include "Vector3.h"
 
 class Window
 {
@@ -18,6 +19,9 @@ public:
 	unsigned char* GetFrameBuffer() { return screen_fb; };
 
 	void SetNtri(int n) { n_triangle = n; }
+
+	bool GetMouseButtonState() { return button_state; }
+	Vector3 GetMousePos();
 
 public:
 	static HWND screen_handle;
@@ -37,8 +41,10 @@ private:
 private:
 	static bool exit_state;
 	static int keys[512];
+	static bool button_state;
 	int width, height;
 	unsigned char *screen_fb;
 	long screen_pitch = 0;
 	int n_triangle = 0;
+	
 };

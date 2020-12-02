@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "pch.h"
+#include <WinUser.h>
 #include <timeapi.h>
 
 HWND Window::screen_handle = nullptr;
@@ -8,6 +9,7 @@ HBITMAP Window::screen_hb = nullptr;
 HBITMAP Window::screen_ob = nullptr;
 bool Window::exit_state = 0;
 int Window::keys[512] = {0};
+bool Window::button_state = false;
 
 LRESULT Window::screen_events(HWND hWnd, UINT msg,
 	WPARAM wParam, LPARAM lParam) {
@@ -15,6 +17,8 @@ LRESULT Window::screen_events(HWND hWnd, UINT msg,
 	case WM_CLOSE: exit_state = 1; break;
 	case WM_KEYDOWN: keys[wParam & 511] = 1; break;
 	case WM_KEYUP: keys[wParam & 511] = 0; break;
+	case WM_LBUTTONDOWN:  button_state = true; break;
+	case WM_LBUTTONUP: button_state = false; break;
 	default: return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 	return 0;
@@ -164,6 +168,14 @@ void Window::ShowFPS(void)
 	TextOutA(hDC, 0, 20, strVert, 9 + n);
 
 	ReleaseDC(screen_handle, hDC);
+}
+
+Vector3 Window::GetMousePos()
+{
+	POINT point;
+	GetCursorPos(&point);
+	ScreenToClient(screen_handle, &point);
+	return Vector3(point.x, point.y, 1.0f);
 }
 
 void Window::Update(void)

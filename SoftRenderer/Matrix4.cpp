@@ -163,6 +163,7 @@ Matrix4 Matrix4::operator/(float k) const
 
 Matrix4 Matrix4::Translation(const Vector3& translate)
 {
+	Matrix4 matrix;
 	m[3][0] = translate.x;
 	m[3][1] = translate.y;
 	m[3][2] = translate.z;
@@ -175,23 +176,24 @@ Matrix4 Matrix4::Rotation(const Vector3& rotate, float theta)
 	n.Normalize();
 	float c = (float)cos(theta);
 	float s = (float)sin(theta);
+	Matrix4 matrix;
+	matrix.m[0][0] = n.x * n.x * (1 - c) + c;
+	matrix.m[1][0] = n.y * n.x * (1 - c) - s * n.z;
+	matrix.m[2][0] = n.z * n.x * (1 - c) + s * n.y;
 
-	m[0][0] = n.x * n.x * (1 - c) + c;
-	m[1][0] = n.y * n.x * (1 - c) - s * n.z;
-	m[2][0] = n.z * n.x * (1 - c) + s * n.y;
+	matrix.m[0][1] = n.x * n.y * (1 - c) + s * n.z;
+	matrix.m[1][1] = n.y * n.y * (1 - c) + c;
+	matrix.m[2][1] = n.z * n.y * (1 - c) - s * n.x;
 
-	m[0][1] = n.x * n.y * (1 - c) + s * n.z;
-	m[1][1] = n.y * n.y * (1 - c) + c;
-	m[2][1] = n.z * n.y * (1 - c) - s * n.x;
+	matrix.m[0][2] = n.x * n.z * (1 - c) - s * n.y;
+	matrix.m[1][2] = n.y * n.z * (1 - c) + s * n.x;
+	matrix.m[2][2] = n.z * n.z * (1 - c) + c;
 
-	m[0][2] = n.x * n.z * (1 - c) - s * n.y;
-	m[1][2] = n.y * n.z * (1 - c) + s * n.x;
-	m[2][2] = n.z * n.z * (1 - c) + c;
+	matrix.m[0][3] = matrix.m[1][3] = matrix.m[2][3] = 0.0f;
+	matrix.m[3][0] = matrix.m[3][1] = matrix.m[3][2] = 0.0f;
+	matrix.m[3][3] = 1.0f;
 
-	m[0][3] = m[1][3] = m[2][3] = 0.0f;
-	m[3][0] = m[3][1] = m[3][2] = 0.0f;
-	m[3][3] = 1.0f;
-
+	*this = *this * matrix;
 	return *this;
 }
 

@@ -2,33 +2,44 @@
 
 void Camera::Update(Window* window)
 {
+	ProcessWindowKeyInput(window);
+	ProcessWindowMouseInput(window);
+
 	model.SetIdentity();
-	model.Rotation(axis, angle);
-	invModel = model.GetinverseTranspose();
+	//invModel = model.GetinverseTranspose();
 	UpdateViewMatrix();
+	view.Translation(Vector3(xTrans, yTrans, zTrans));
+	view.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(xRot));
+	view.Rotation(Vector3(0.0f, 1.0f, 0.0f), TO_RADIANS(yRot));
 	UpdateProjectionMatirx();
-	//Matrix4 t = model * view;
-	//tranformation = t * proj;
 }
 
-void Camera::TranslateFront()
+void Camera::ProcessWindowKeyInput(Window* window)
 {
-	position.x -= 0.01f;
+	if (window->GetKey()['W']) zTrans -= 0.01f;
+	if (window->GetKey()['S']) zTrans += 0.01f;
+	if (window->GetKey()['A']) xTrans += 0.01f;
+	if (window->GetKey()['D']) xTrans -= 0.01f;
+	if (window->GetKey()['Q']) yTrans += 0.01f;
+	if (window->GetKey()['E']) yTrans -= 0.01f;
 }
 
-void Camera::TranslateBack()
+void Camera::ProcessWindowMouseInput(Window* window)
 {
-	position.x += 0.01f;
-}
+	float dx, dy;
+	Vector3 pos = window->GetMousePos();
+	dx = (float)(pos.x - ox);
+	dy = (float)(pos.y - oy);
 
-void Camera::RotateLeft()
-{
-	angle += 0.01f;
-}
+	if (window->GetMouseButtonState())
+	{
+		xRotLength -= dy / 5.0f;
+		yRotLength -= dx / 5.0f;
+		xRot += (xRotLength - xRot) * 0.1f;
+		yRot += (yRotLength - yRot) * 0.1f;
+	}
 
-void Camera::RotateRight()
-{
-	angle -= 0.01f;
+	ox = (int)pos.x; oy = (int)pos.y;
 }
 
 void Camera::UpdateViewMatrix()

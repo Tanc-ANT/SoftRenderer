@@ -613,10 +613,6 @@ bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 
 void Rasterizer::InputKeysEvent()
 {
 	if (window->GetKey()[VK_ESCAPE]) window->SetCloseState(true);
-	if (window->GetKey()[VK_UP]) camera->TranslateFront();
-	if (window->GetKey()[VK_DOWN]) camera->TranslateBack();
-	if (window->GetKey()[VK_LEFT]) camera->RotateLeft();
-	if (window->GetKey()[VK_RIGHT]) camera->RotateRight();
 	if (window->GetKey()[VK_SPACE])
 	{
 		if (!change_state)
