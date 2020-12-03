@@ -106,12 +106,12 @@ void Vector3::Normalize()
 	}
 }
 
-double Vector3::Lenght()
+float Vector3::Lenght()
 {
 	return sqrt(x * x + y * y + z * z);
 }
 
-double Vector3::Dot(const Vector3& other) const
+float Vector3::Dot(const Vector3& other) const
 {
 	return x * other.x + y * other.y + z * other.z;
 }

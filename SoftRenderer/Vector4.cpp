@@ -129,12 +129,12 @@ void Vector4::Normalize()
 	}
 }
 
-double Vector4::Lenght()
+float Vector4::Lenght()
 {
 	return sqrt(x * x + y * y + z * z);
 }
 
-double Vector4::Dot(const Vector4& other) const
+float Vector4::Dot(const Vector4& other) const
 {
 	return x * other.x + y * other.y + z * other.z;
 }

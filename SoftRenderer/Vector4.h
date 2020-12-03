@@ -32,8 +32,8 @@ public:
 
 	//only influnce 3D(xyz)
 	void Normalize();
-	double Lenght();
-	double Dot(const Vector4& other) const;
+	float Lenght();
+	float Dot(const Vector4& other) const;
 	Vector4 Cross(const Vector4& other) const;
 
 	static inline Vector4 ClampLerp(const Vector4 &v1, const Vector4 &v2, float factor)

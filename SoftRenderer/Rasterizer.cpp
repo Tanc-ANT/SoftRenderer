@@ -127,7 +127,7 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 	std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list)
 {
-	int num_vert = vert_list.size();
+	int num_vert = (int)vert_list.size();
 	int previous_index, current_index;
 	for (int i = 0; i < num_vert; ++i)
 	{
@@ -204,7 +204,7 @@ void Rasterizer::LightCalculaiton(Vertex& v)
 		view_dir.Normalize();
 		Vector4 halfway_dir = light_dir + view_dir;
 		halfway_dir.Normalize();
-		specular = std::pow(std::fmax(n.Dot(halfway_dir), 0.0), 32);
+		specular = std::powf(std::fmaxf(n.Dot(halfway_dir), 0.0), 32);
 
 		//blinn-phone
 		Color color = v.GetVertexColor();
@@ -283,9 +283,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 	if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
-		DrawLine(t0.x, t0.y, t1.x, t1.y, WHITH_COLOR);
-		DrawLine(t1.x, t1.y, t2.x, t2.y, WHITH_COLOR);
-		DrawLine(t2.x, t2.y, t0.x, t0.y, WHITH_COLOR);
+		DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, WHITH_COLOR);
+		DrawLine((int)t1.x, (int)t1.y, (int)t2.x, (int)t2.y, WHITH_COLOR);
+		DrawLine((int)t2.x, (int)t2.y, (int)t0.x, (int)t0.y, WHITH_COLOR);
 	}
 	
 	else if(device->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
@@ -308,7 +308,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 		float total_height = t2.y - t0.y;
 		// plus 0.5 for rounding
-		for (int y = (int)(t0.y + 0.5); y <= (int)(t1.y + 0.5); y++)
+		for (int y = (int)(t0.y + 0.5f); y <= (int)(t1.y + 0.5f); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
@@ -357,9 +357,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			Vector3 uv_diff = F - E;
 			Vector3 uv_ratio = uv_diff / scanline_width;
 
-			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
+			for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 			{
-				float step = (float)j - A.x + 0.5;
+				float step = (float)j - A.x + 0.5f;
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				
@@ -393,7 +393,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			}
 		}
 		// plus 0.5 for rounding
-		for (int y = (int)(t1.y + 0.5); y <= (int)(t2.y + 0.5); y++)
+		for (int y = (int)(t1.y + 0.5f); y <= (int)(t2.y + 0.5f); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
 			if (y >= device->GetHeight() || y < 0) break;
@@ -442,9 +442,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			Vector3 uv_diff = F - E;
 			Vector3 uv_ratio = uv_diff / scanline_width;
 
-			for (int j = (int)(A.x + 0.5); j < (int)(B.x + 0.5); ++j)
+			for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 			{
-				float step = (float)j - A.x + 0.5;
+				float step = (float)j - A.x + 0.5f;
 				if (j >= device->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				float w = w_ratio * step + A.w;

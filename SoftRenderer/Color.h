@@ -34,9 +34,9 @@ public:
 
 	UINT32 GetIntensity() const 
 	{ 
-		UINT32 r = color.x * 255;
-		UINT32 g = color.y * 255;
-		UINT32 b = color.z * 255;
+		UINT32 r = (UINT32)(color.x * 255.0f);
+		UINT32 g = (UINT32)(color.y * 255.0f);
+		UINT32 b = (UINT32)(color.z * 255.0f);
 		UINT32 intensity = (r << 16) | (g << 8) | (b);
 		return intensity; 
 	}

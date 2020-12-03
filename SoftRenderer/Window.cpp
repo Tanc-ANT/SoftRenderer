@@ -39,7 +39,7 @@ int Window::Init(int w, int h, const TCHAR *title)
 		// Init bitmap
 		// Because of top left is origin point 
 		BITMAPINFO bi = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB,
-			w * h * 4, 0, 0, 0, 0 } };
+			(DWORD)(w * h * 4), 0, 0, 0, 0 } };
 
 		RECT rect = { 0,0,w,h };
 		int wx, wy, sx, sy;
@@ -178,7 +178,7 @@ Vector3 Window::GetMousePos()
 	POINT point;
 	GetCursorPos(&point);
 	ScreenToClient(screen_handle, &point);
-	return Vector3(point.x, point.y, 1.0f);
+	return Vector3((float)point.x, (float)point.y, 1.0f);
 }
 
 void Window::Update(void)

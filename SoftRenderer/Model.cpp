@@ -42,7 +42,7 @@ Model::Model(const char *filename)
 			std::vector<int> v;
 			std::vector<int> t;
 			std::vector<int> n;
-			int itrash, vi,ti,ni;
+			int vi,ti,ni;
 			iss >> trash;
 			while (iss >> vi >> trash >> ti >> trash >> ni) {
 				vi--; // in wavefront obj all indices start at 1, not zero
