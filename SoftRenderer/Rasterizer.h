@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Window.h"
-#include "Device.h"
+#include "Canvas.h"
 #include "Model.h"
 #include "Vector3.h"
 #include "Vector4.h"
@@ -20,8 +20,8 @@ public:
 	void SetWindow(Window *w) { window = w; }
 	Window* GetWindow() { return window; }
 
-	void SetDevice(Device* d) { device = d; }
-	Device* GetDevice() { return device; }
+	void SetDevice(Canvas* d) { device = d; }
+	Canvas* GetDevice() { return device; }
 
 	void SetModel(Model* m) { model = m; }
 	Model* GetModel() { return model; }
@@ -58,17 +58,23 @@ private:
 
 	bool FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 
-	void InputKeysEvent();
+	void ProcessWindowKeyInput();
+	void ProcessWindowMouseInput();
 
 private:
 	Window* window;
-	Device* device;
+	Canvas* device;
 	Model* model;
 	Camera* camera;
 	Light* light;
 	TextureArray* textures;
-
-	bool change_state = false;
+	
+private:
 	int nTriangle = 0;
+	bool change_state = false;
+	float originX = 0.0f;
+	float originY = 0.0f;
+	Vector3 viewRotLength = { 0.0f,0.0f,0.0f };
+	Vector3 modelRotLength = { 0.0f,0.0f,0.0f };
 };
 

@@ -1,6 +1,6 @@
-#include"Device.h"
+#include"Canvas.h"
 
-Device::Device(int w, int h, void *fb)
+Canvas::Canvas(int w, int h, void *fb)
 {
 	int need = w * h * 8 + sizeof(void*)*(h * 2);
 	char *ptr = (char*)malloc(need);
@@ -30,7 +30,7 @@ Device::Device(int w, int h, void *fb)
 	render_state = RENDER_MODE_ARRAY[render_mode];
 }
 
-Device::~Device()
+Canvas::~Canvas()
 {
 	if (framebuffer)
 		free(framebuffer);
@@ -38,7 +38,7 @@ Device::~Device()
 	zbuffer = nullptr;
 }
 
-void Device::Clear()
+void Canvas::Clear()
 {
 	int y, x;
 	// Clear frame buffer

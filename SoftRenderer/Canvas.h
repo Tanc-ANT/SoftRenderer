@@ -27,11 +27,11 @@ static UINT32 RENDER_MODE_ARRAY[MODE] = {
 	RENDER_STATE_TEXTURE | RENDER_STATE_MODEL | RENDER_STATE_BACKCULL | RENDER_STATE_LIGHT | RENDER_STATE_PERSPECTIVE,
 };
 
-class Device
+class Canvas
 {
 public:
-	Device(int width, int height, void *fb);
-	~Device();
+	Canvas(int width, int height, void *fb);
+	~Canvas();
 
 	void Clear();
 

@@ -1,54 +1,16 @@
 #include "Camera.h"
 
-void Camera::Update(Window* window)
+void Camera::Update()
 {
-	ProcessWindowKeyInput(window);
-	ProcessWindowMouseInput(window);
-
 	model.SetIdentity();
 	//invModel = model.GetinverseTranspose();
-	model.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(modelRotX));
-	model.Rotation(Vector3(0.0f, 0.0f, 1.0f), TO_RADIANS(modelRotY));
+	model.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(modelRot.x));
+	model.Rotation(Vector3(0.0f, 0.0f, 1.0f), TO_RADIANS(modelRot.y));
 	UpdateViewMatrix();
-	view.Translation(Vector3(xTrans, yTrans, zTrans));
-	view.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(viewRotX));
-	view.Rotation(Vector3(0.0f, 1.0f, 0.0f), TO_RADIANS(viewRotY));
+	view.Translation(trans);
+	view.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(viewRot.x));
+	view.Rotation(Vector3(0.0f, 1.0f, 0.0f), TO_RADIANS(viewRot.y));
 	UpdateProjectionMatirx();
-}
-
-void Camera::ProcessWindowKeyInput(Window* window)
-{
-	if (window->GetKey()['W']) zTrans -= 0.01f;
-	if (window->GetKey()['S']) zTrans += 0.01f;
-	if (window->GetKey()['A']) xTrans += 0.01f;
-	if (window->GetKey()['D']) xTrans -= 0.01f;
-	if (window->GetKey()['Q']) yTrans += 0.01f;
-	if (window->GetKey()['E']) yTrans -= 0.01f;
-}
-
-void Camera::ProcessWindowMouseInput(Window* window)
-{
-	float dx, dy;
-	Vector3 pos = window->GetMousePos();
-	dx = (float)(pos.x - originX);
-	dy = (float)(pos.y - originY);
-
-	if (window->GetRightButtonState())
-	{
-		viewRotLengthX -= dy / 5.0f;
-		viewRotLengthY -= dx / 5.0f;
-		viewRotX += (viewRotLengthX - viewRotX) * 0.1f;
-		viewRotY += (viewRotLengthY - viewRotY) * 0.1f;
-	}
-
-	if (window->GetLeftButtonState())
-	{
-			modelRotLengthX -= dy / 5.0f;
-			modelRotLengthY -= dx / 5.0f;
-			modelRotX += (modelRotLengthX - modelRotX) * 0.1f;
-			modelRotY += (modelRotLengthY - modelRotY) * 0.1f;
-	}
-	originX = (int)pos.x; originY = (int)pos.y;
 }
 
 void Camera::UpdateViewMatrix()

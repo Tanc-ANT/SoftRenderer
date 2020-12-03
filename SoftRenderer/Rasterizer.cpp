@@ -572,10 +572,11 @@ void Rasterizer::DrawSomthing()
 void Rasterizer::Update()
 {
 	device->Clear();
-	camera->Update(window);
+	camera->Update();
 	DrawSomthing();
 	window->Update();
-	InputKeysEvent();
+	ProcessWindowKeyInput();
+	ProcessWindowMouseInput();
 }
 
 bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
@@ -593,9 +594,49 @@ bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 
 	}
 }
 
-void Rasterizer::InputKeysEvent()
+void Rasterizer::ProcessWindowKeyInput()
 {
-	if (window->GetKey()[VK_ESCAPE]) window->SetCloseState(true);
+	if (window->GetKey()['W'])
+	{
+		Vector3 trans = camera->GetTrans();
+		trans.z -= 0.01f;
+		camera->SetTrans(trans);
+	}
+
+	if (window->GetKey()['S'])
+	{
+		Vector3 trans = camera->GetTrans();
+		trans.z += 0.01f;
+		camera->SetTrans(trans);
+	}
+	if (window->GetKey()['A'])
+	{
+		Vector3 trans = camera->GetTrans();
+		trans.x += 0.01f;
+		camera->SetTrans(trans);
+	}
+	if (window->GetKey()['D'])
+	{
+		Vector3 trans = camera->GetTrans();
+		trans.x -= 0.01f;
+		camera->SetTrans(trans);
+	}
+	if (window->GetKey()['Q'])
+	{
+		Vector3 trans = camera->GetTrans();
+		trans.y += 0.01f;
+		camera->SetTrans(trans);
+	}
+	if (window->GetKey()['E'])
+	{
+		Vector3 trans = camera->GetTrans();
+		trans.y -= 0.01f;
+		camera->SetTrans(trans);
+	}
+	if (window->GetKey()[VK_ESCAPE])
+	{
+		window->SetCloseState(true);
+	}
 	if (window->GetKey()[VK_SPACE])
 	{
 		if (!change_state)
@@ -611,7 +652,36 @@ void Rasterizer::InputKeysEvent()
 
 	if (device->GetRenderMode() == 0)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
 	else if (device->GetRenderMode() == 6)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if(device->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 0.0f, 0.0f));
+	else if (device->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 0.0f, 0.0f));
 	else if (device->GetRenderMode() == 8)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
 	else if (device->GetRenderMode() == 9)	light->SetColor(Color(0.8f, 0.5f, 0.5f));
+}
+
+void Rasterizer::ProcessWindowMouseInput()
+{
+	float dx, dy;
+	Vector3 pos = window->GetMousePos();
+	dx = (float)(pos.x - originX);
+	dy = (float)(pos.y - originY);
+
+	if (window->GetRightButtonState())
+	{
+		viewRotLength.x -= dy / 5.0f;
+		viewRotLength.y -= dx / 5.0f;
+		Vector3 viewRot = camera->GetViewRot();
+		viewRot.x += (viewRotLength.x - viewRot.x) * 0.1f;
+		viewRot.y += (viewRotLength.y - viewRot.y) * 0.1f;
+		camera->SetViewRot(viewRot);
+	}
+
+	if (window->GetLeftButtonState())
+	{
+		modelRotLength.x -= dy / 5.0f;
+		modelRotLength.y -= dx / 5.0f;
+		Vector3 modelRot = camera->GetModelRot();
+		modelRot.x += (modelRotLength.x - modelRot.x) * 0.1f;
+		modelRot.y += (modelRotLength.y - modelRot.y) * 0.1f;
+		camera->SetModelRot(modelRot);
+	}
+	originX = pos.x; originY = pos.y;
 }

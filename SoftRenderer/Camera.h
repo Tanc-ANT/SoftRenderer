@@ -34,18 +34,25 @@ public:
 	Matrix4 GetViewMatrix() const { return view; }
 	Matrix4 GetProjectionMatrix() const { return proj; }
 
+	void SetTrans(const Vector3& t) { trans = t; }
+	Vector3 GetTrans() const { return trans; }
+
+	void SetViewRot(const Vector3& v) { viewRot = v; }
+	Vector3 GetViewRot() const { return viewRot; }
+
+	void SetModelRot(const Vector3& v) { modelRot = v; }
+	Vector3 GetModelRot() const { return modelRot; }
+
 	float GetNear() { return Near; }
 	float GetFar() { return Far; }
 	float GetFovY() { return FovY; }
 
-	void Update(Window* window);
+	void Update();
 
 private:
 	void UpdateViewMatrix();
 	void UpdateProjectionMatirx();
 
-	void ProcessWindowKeyInput(Window* window);
-	void ProcessWindowMouseInput(Window* window);
 private:
 	Vector3 position;
 	Vector3 target;
@@ -57,22 +64,16 @@ private:
 	Matrix4 view;
 	Matrix4 proj;
 
-	int originX = 0;
-	int originY = 0;
+	//int originX = 0;
+	//int originY = 0;
 
-	float xTrans = 0.0f;
-	float yTrans = 0.0f;
-	float zTrans = 5.0f;
+	Vector3 trans = { 0.0f,0.0f,5.0f };
 
-	float viewRotX = 0.0f;
-	float viewRotY = 0.0f;
-	float viewRotLengthX = 0.0f;
-	float viewRotLengthY = 0.0f;
+	Vector3 viewRot = { 0.0f,0.0f,0.0f };
+	//Vector3 viewRotLength = { 0.0f,0.0f,0.0f };
 
-	float modelRotX = 0.0f;
-	float modelRotY = 0.0f;
-	float modelRotLengthX = 0.0f;
-	float modelRotLengthY = 0.0f;
+	Vector3 modelRot = { 0.0f,0.0f,0.0f };
+	//Vector3 modelRotLength = { 0.0f,0.0f,0.0f };
 
 	// const number of camera
 	// we don't need change number value here

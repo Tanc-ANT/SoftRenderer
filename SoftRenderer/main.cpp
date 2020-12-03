@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Window.h"
-#include "Device.h"
+#include "Canvas.h"
 #include "Model.h"
 #include "Camera.h"
 #include "Light.h"
@@ -16,7 +16,7 @@ int main()
 	TCHAR *title = _T("Soft Renderer");
 	window->Init(width, height, title);
 
-	Device *device = new Device(width, height, window->GetFrameBuffer());
+	Canvas *device = new Canvas(width, height, window->GetFrameBuffer());
 	Model *model = new Model("../Asset/Obj/crab.obj");
 
 	TextureArray *textures = new TextureArray();
