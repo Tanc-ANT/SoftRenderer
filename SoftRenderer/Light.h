@@ -14,11 +14,11 @@ public:
 	}
 	~Light() {};
 
-	inline void SetPosition(const Vector4& d) { position = d; }
-	inline Vector4 GetPosition() { return position; }
+	void SetPosition(const Vector4& d) { position = d; }
+	Vector4 GetPosition() { return position; }
 
-	inline void SetColor(const Color& c) { color = c; }
-	inline Color GetColor() { return color; }
+	void SetColor(const Color& c) { color = c; }
+	Color GetColor() { return color; }
 
 private:
 	Vector4 position;

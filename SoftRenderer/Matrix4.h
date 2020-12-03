@@ -39,19 +39,17 @@ public:
 	void SetIdentity();
 	void SetZero();
 
-	bool operator==(const Matrix4& other);
-	bool operator!=(const Matrix4& other);
+	bool operator==(const Matrix4& other) const;
+	bool operator!=(const Matrix4& other) const;
 
-	Matrix4 operator+(const Matrix4 &other) const;
-	Matrix4 operator-(const Matrix4 &other) const;
-	Matrix4 operator*(const Matrix4 &other) const;
+	Matrix4 operator+(const Matrix4& other) const;
+	Matrix4 operator-(const Matrix4& other) const;
+	Matrix4 operator*(const Matrix4& other) const;
 	Matrix4 operator*(float k) const;
 	Matrix4 operator/(float k) const;
 
-	//Vector4 operator*(const Vector4 &other) const;
-
 	Matrix4 Translation(const Vector3& translate);
-	Matrix4 Rotation(const Vector3& rotate, float theta);
+	Matrix4 Rotation(const Vector3& rotate, const float& theta);
 	Matrix4 Scalation(const Vector3& scale);
 
 	// Form glm

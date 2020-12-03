@@ -15,16 +15,16 @@ public:
 	bool operator==(const Vector3& other);
 	bool operator!=(const Vector3& other);
 
-	Vector3 operator+(const Vector3 &other) const;
-	Vector3 operator-(const Vector3 &other) const;
+	Vector3 operator+(const Vector3& other) const;
+	Vector3 operator-(const Vector3& other) const;
 	Vector3 operator-() const;
-	Vector3 operator*(float k) const;
-	Vector3 operator/(float k) const;
+	Vector3 operator*(const float& k) const;
+	Vector3 operator/(const float& k) const;
 
-	Vector3 &operator+=(const Vector3 &other);
-	Vector3 &operator-=(const Vector3 &other);
-	Vector3 &operator*=(float k);
-	Vector3 &operator/=(float k);
+	Vector3 &operator+=(const Vector3& other);
+	Vector3 &operator-=(const Vector3& other);
+	Vector3 &operator*=(const float& k);
+	Vector3 &operator/=(const float& k);
 
 	//only influnce 3D(xyz)
 	void Normalize();

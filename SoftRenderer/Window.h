@@ -12,13 +12,13 @@ public:
 	int Init(int w, int h, const TCHAR *title);
 	void Update(void);
 	
-	void SetCloseState(bool e) { exit_state = e; }
+	void SetCloseState(const bool& e) { exit_state = e; }
 	bool GetCloseState() {return exit_state;}
 	
 	int* GetKey() { return keys; }
 	unsigned char* GetFrameBuffer() { return screen_fb; };
 
-	void SetNtri(int n) { n_triangle = n; }
+	void SetNtri(const int& n) { n_triangle = n; }
 
 	bool GetLeftButtonState() { return left_button_state; }
 	bool GetRightButtonState() { return right_button_state; }

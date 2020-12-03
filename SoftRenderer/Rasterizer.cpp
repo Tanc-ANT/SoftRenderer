@@ -160,10 +160,6 @@ void Rasterizer::TransformCheckCVV(const Triangle& t)
 	std::vector<Vertex> vert_list;
 	std::vector<Vertex> in_list1;
 	std::vector<Vertex> in_list2;
-	std::vector<Vertex> in_list3;
-	std::vector<Vertex> in_list4;
-	std::vector<Vertex> in_list5;
-	std::vector<Vertex> in_list6;
 
 	vert_list.push_back(t.GetV0());
 	vert_list.push_back(t.GetV1());
@@ -172,27 +168,19 @@ void Rasterizer::TransformCheckCVV(const Triangle& t)
 	float cosAh = cos(camera->GetFovY() / 2);
 	float sinAh = sin(camera->GetFovY() / 2);
 
-	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(0, cosAh, sinAh, 0), 
-		vert_list, in_list1);	//top
-	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(0, -cosAh, sinAh, 0),
-		in_list1, in_list2);	//bottom
-	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(-cosAh, 0, sinAh, 0),
-		in_list2, in_list3);	//left
-	ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(cosAh, 0, sinAh, 0),
-		in_list3, in_list4);	//right
 	ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
-		in_list4, in_list5);	//near
+		vert_list, in_list1);	//near
 	ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
-		in_list5, in_list6);	//far
+		in_list1, in_list2);	//far
 
-	int num_vertex = (int)in_list6.size() - 2;
+	int num_vertex = (int)in_list2.size() - 2;
 	for (int i = 0; i < num_vertex; ++i)
 	{
 		int index0 = 0;
 		int index1 = i + 1;
 		int index2 = i + 2;
-		Triangle triangle(in_list6[index0],
-			in_list6[index1], in_list6[index2]);
+		Triangle triangle(in_list2[index0],
+			in_list2[index1], in_list2[index2]);
 		DrawTriangle(triangle);
 	}
 }
@@ -228,7 +216,7 @@ void Rasterizer::LightCalculaiton(Vertex& v)
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
 	if (((unsigned int)x < (UINT32)device->GetWidth()) && (((unsigned int)y < (UINT32)device->GetHeight()))
-		&& (((unsigned int)x > (UINT32)0)) && (((unsigned int)y > (UINT32)0)))
+		&& (((unsigned int)x >= (UINT32)0)) && (((unsigned int)y >= (UINT32)0)))
 		
 	{
 		//y = device->height - y;

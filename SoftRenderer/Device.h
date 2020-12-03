@@ -35,19 +35,19 @@ public:
 
 	void Clear();
 
-	inline void SetWidth(int w) { width = w; }
-	inline int GetWidth() { return width; }
+	void SetWidth(const int& w) { width = w; }
+	int GetWidth() { return width; }
 
-	inline void SetHeight(int h) { height = h; }
-	inline int GetHeight() { return height; }
+	void SetHeight(const int& h) { height = h; }
+	int GetHeight() { return height; }
 
-	inline UINT32** GetFrameBuffer() { return framebuffer; }
-	inline float** GetZBuffer() { return zbuffer; }
+	UINT32** GetFrameBuffer() { return framebuffer; }
+	float** GetZBuffer() { return zbuffer; }
 	
-	inline int GetRenderMode() { return render_mode; }
+	int GetRenderMode() { return render_mode; }
 
-	inline void SetRenderState(int n) { render_mode = n; render_state = RENDER_MODE_ARRAY[n]; }
-	inline UINT32 GetRenderState() { return render_state; }
+	void SetRenderState(const int& n) { render_mode = n; render_state = RENDER_MODE_ARRAY[n]; }
+	UINT32 GetRenderState() { return render_state; }
 
 private:
 	int width;

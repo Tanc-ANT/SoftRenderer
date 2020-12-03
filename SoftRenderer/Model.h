@@ -7,16 +7,16 @@ class Model
 public:
 	Model(const char *filename);
 	~Model();
-	int Nverts();
-	int Ntexs();
-	int Nnorms();
-	int Nfaces();
-	Vector3 GetVert(long i);
-	Vector3 GetTex(long i);
-	Vector3 GetNorm(long i);
-	std::vector<int> GetVertIndex(long idx);
-	std::vector<int> GetTexIndex(long idx);
-	std::vector<int> GetNormIndex(long idx);
+	int Nverts() { return (int)verts.size(); }
+	int Ntexs() { return (int)texs.size(); }
+	int Nnorms() { return (int)norms.size(); }
+	int Nfaces() { return (int)vert_index.size(); }
+	Vector3 GetVert(const long& i) { return verts[i]; }
+	Vector3 GetTex(const long& i) { return texs[i]; }
+	Vector3 GetNorm(const long& i) { return norms[i]; }
+	std::vector<int> GetVertIndex(long idx) { return vert_index[idx]; }
+	std::vector<int> GetTexIndex(long idx) { return tex_index[idx]; }
+	std::vector<int> GetNormIndex(long idx) { return norm_index[idx]; }
 
 private:
 	std::vector<Vector3> verts;

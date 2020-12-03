@@ -22,17 +22,17 @@ public:
 	};
 	~Color() {};
 
-	Color operator+(const Color &other) const;
-	Color operator-(const Color &other) const;
-	Color operator*(const Color &other) const;
-	Color operator*(float k) const;
-	Color operator/(float k) const;
+	Color operator+(const Color& other) const;
+	Color operator-(const Color& other) const;
+	Color operator*(const Color& other) const;
+	Color operator*(const float& k) const;
+	Color operator/(const float& k) const;
 
 	void SetColor(const float& r, const float& g, const float& b);
 	void SetColor(const Vector3& v);
 	Vector3 GetColor() const;
 
-	inline UINT32 GetIntensity() const 
+	UINT32 GetIntensity() const 
 	{ 
 		UINT32 r = color.x * 255;
 		UINT32 g = color.y * 255;

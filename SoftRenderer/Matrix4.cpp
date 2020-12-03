@@ -44,7 +44,7 @@ Matrix4& Matrix4::operator=(const Matrix4& other)
 	return *this;
 }
 
-bool Matrix4::operator==(const Matrix4& other)
+bool Matrix4::operator==(const Matrix4& other) const
 {
 	bool flag = true;
 	for (int i = 0; i < 4; ++i)
@@ -57,7 +57,7 @@ bool Matrix4::operator==(const Matrix4& other)
 	return flag;
 }
 
-bool Matrix4::operator!=(const Matrix4& other)
+bool Matrix4::operator!=(const Matrix4& other) const
 {
 	bool flag = false;
 	for (int i = 0; i < 4; ++i)
@@ -123,30 +123,6 @@ Matrix4 Matrix4::operator*(float k) const
 	return newMatrix;
 }
 
-//Vector4 Matrix4::operator*(const Vector4& other) const
-//{
-//	return Vector4(
-//		m[0][0] * other.x
-//		+ m[0][1] * other.y
-//		+ m[0][2] * other.z
-//		+ m[0][3] * other.w,
-//
-//		m[1][0] * other.x
-//		+ m[1][1] * other.y
-//		+ m[1][2] * other.z
-//		+ m[1][3] * other.w,
-//
-//		m[2][0] * other.x
-//		+ m[2][1] * other.y
-//		+ m[2][2] * other.z
-//		+ m[2][3] * other.w,
-//
-//		m[3][0] * other.x
-//		+ m[3][1] * other.y
-//		+ m[3][2] * other.z
-//		+ m[3][3] * other.w);
-//}
-
 Matrix4 Matrix4::operator/(float k) const
 {
 	Matrix4 newMatrix;
@@ -170,7 +146,7 @@ Matrix4 Matrix4::Translation(const Vector3& translate)
 	return *this;
 }
 
-Matrix4 Matrix4::Rotation(const Vector3& rotate, float theta)
+Matrix4 Matrix4::Rotation(const Vector3& rotate, const float& theta)
 {
 	Vector3 n = rotate;
 	n.Normalize();

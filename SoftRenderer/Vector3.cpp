@@ -46,14 +46,14 @@ Vector3 Vector3::operator-() const
 	return Vector3(-x, -y, -z);
 }
 
-Vector3 Vector3::operator*(float k) const
+Vector3 Vector3::operator*(const float& k) const
 {
 	return Vector3(x * k,
 		y * k,
 		z * k);
 }
 
-Vector3 Vector3::operator/(float k) const
+Vector3 Vector3::operator/(const float& k) const
 {
 	float oneOver = 1.0f / k;
 	return Vector3(x * oneOver,
@@ -77,7 +77,7 @@ Vector3& Vector3::operator-=(const Vector3 &other)
 	return *this;
 }
 
-Vector3& Vector3::operator*=(float k)
+Vector3& Vector3::operator*=(const float& k)
 {
 	x *= k;
 	y *= k;
@@ -85,7 +85,7 @@ Vector3& Vector3::operator*=(float k)
 	return *this;
 }
 
-Vector3& Vector3::operator/=(float k)
+Vector3& Vector3::operator/=(const float& k)
 {
 	float oneOver = 1.0f / k;
 	x *= oneOver;

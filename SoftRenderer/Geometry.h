@@ -28,16 +28,16 @@ public:
 	}
 	~Vertex() {}
 
-	void SetVertexPosition(Vector4 p) { position = p; }
+	void SetVertexPosition(const Vector4& p) { position = p; }
 	Vector4 GetVertexPosition() const { return position; }
 
-	void SetVertexNormal(Vector4 n) { normal = n; }
+	void SetVertexNormal(const Vector4& n) { normal = n; }
 	Vector4 GetVertexNormal() const { return normal; }
 
-	void SetVertexColor(Color c) { color = c; }
+	void SetVertexColor(const Color& c) { color = c; }
 	Color GetVertexColor() const { return color; }
 
-	void SetVertexTexcoord(Vector3 t) { texcoord = t; }
+	void SetVertexTexcoord(const Vector3& t) { texcoord = t; }
 	Vector3 GetVertexTexcoord() const { return texcoord; }
 
 	static inline Vertex ClampLerp(const Vertex &v1, const Vertex &v2, float factor)
@@ -71,14 +71,14 @@ public:
 	Triangle& operator=(const Triangle& t) { v0 = t.GetV0(); v1 = t.GetV1(); v2 = t.GetV2(); return *this; }
 	~Triangle() {}
 
-	inline void SetV0(Vertex A) { v0 = A; };
-	inline Vertex GetV0() const { return v0; };
+	void SetV0(const Vertex& A) { v0 = A; };
+	Vertex GetV0() const { return v0; };
 
-	inline void SetV1(Vertex B) { v1 = B; };
-	inline Vertex GetV1() const { return v1; };
+	void SetV1(const Vertex& B) { v1 = B; };
+	Vertex GetV1() const { return v1; };
 
-	inline void SetV2(Vertex C) { v2 = C; };
-	inline Vertex GetV2() const { return v2; };
+	void SetV2(const Vertex& C) { v2 = C; };
+	Vertex GetV2() const { return v2; };
 
 private:
 	Vertex v0;

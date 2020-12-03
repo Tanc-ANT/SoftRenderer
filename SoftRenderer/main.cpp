@@ -42,7 +42,6 @@ int main()
 	while (!window->GetCloseState())
 	{
 		raster->Update();
-		//Sleep(1);
 	}
 	delete raster;
 	delete textures;

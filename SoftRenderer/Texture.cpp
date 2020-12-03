@@ -113,6 +113,7 @@ TextureArray::~TextureArray()
 	{
 		delete it;
 	}
+	textures.clear();
 }
 
 void TextureArray::LoadTexture(const char *filename)
