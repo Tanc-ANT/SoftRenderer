@@ -51,12 +51,12 @@ public:
 	{
 		return v1 + (v2 - v1) * factor;
 	}
+
+	static Color WHITH_COLOR;
+	static Color RED_COLOR;
+	static Color BULE_COLOR;
+	static Color GREEN_COLOR;
+
 private:
 	Vector3 color;
 };
-
-static const Color WHITH_COLOR(1.0f, 1.0f, 1.0f);
-static const Color RED_COLOR(1.0f, 0.0f, 0.0f);
-static const Color BULE_COLOR(0.0f, 1.0f, 0.0f);
-static const Color GREEN_COLOR(0.0f, 0.0f, 1.0f);
-

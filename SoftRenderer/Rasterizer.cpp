@@ -283,9 +283,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 	if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
-		DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, WHITH_COLOR);
-		DrawLine((int)t1.x, (int)t1.y, (int)t2.x, (int)t2.y, WHITH_COLOR);
-		DrawLine((int)t2.x, (int)t2.y, (int)t0.x, (int)t0.y, WHITH_COLOR);
+		DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, Color::WHITH_COLOR);
+		DrawLine((int)t1.x, (int)t1.y, (int)t2.x, (int)t2.y, Color::WHITH_COLOR);
+		DrawLine((int)t2.x, (int)t2.y, (int)t0.x, (int)t0.y, Color::WHITH_COLOR);
 	}
 	
 	else if(device->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
@@ -507,22 +507,17 @@ void Rasterizer::DrawSomthing()
 	nTriangle = 0;
 	if (device->GetRenderState() & RENDER_STATE_MODEL)
 	{
-		int count = 0;
 		for (int i = 0; i < model->Nfaces(); i++) {
-			std::vector<int> vert_index = model->GetVertIndex(i);
-			std::vector<int> tex_index = model->GetTexIndex(i);
-			std::vector<int> norm_index = model->GetNormIndex(i);
-			Vertex vertex_points[3];
+			Triangle t = model->GetFaceIndex(i);
+			Vertex vertex_points[3] = { t.GetV0(),t.GetV1(),t.GetV2() };
 			Vector4 world_points[3];
 			Vector4 screen_points[3];
 			for (int j = 0; j < 3; j++) {
-				Vector4 v = Vector4(model->GetVert(vert_index[j]), 1.0f);
-				Vector3 t = model->GetTex(tex_index[j]);
-				Vector4 n = Vector4(model->GetNorm(norm_index[j]), 0.0f);
+				Vector4 v = vertex_points[j].GetVertexPosition();
+				Vector3 t = vertex_points[j].GetVertexTexcoord();
+				Vector4 n = vertex_points[j].GetVertexNormal();
 				// Set color
-				vertex_points[j].SetVertexColor(WHITH_COLOR);
-				// Set texcoord
-				vertex_points[j].SetVertexTexcoord(t);
+				vertex_points[j].SetVertexColor(Color::WHITH_COLOR);
 				// M transform
 				world_points[j] = v * camera->GetModelMatrix();
 				vertex_points[j].SetVertexPosition(world_points[j]);
@@ -537,7 +532,7 @@ void Rasterizer::DrawSomthing()
 				screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
 				vertex_points[j].SetVertexPosition(screen_points[j]);
 			}
-			Triangle t(vertex_points[0], vertex_points[1], vertex_points[2]);
+			t = { vertex_points[0],vertex_points[1],vertex_points[2] };
 			TransformCheckCVV(t);
 		}
 	}
@@ -559,7 +554,7 @@ void Rasterizer::DrawSomthing()
 			if (device->GetRenderState() & RENDER_STATE_COLOR)
 				vert[i].SetVertexColor(mesh[i].GetVertexColor());
 			else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
-				vert[i].SetVertexColor(WHITH_COLOR);
+				vert[i].SetVertexColor(Color::WHITH_COLOR);
 			// Texcoord Set
 			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
 			// Light Calculation

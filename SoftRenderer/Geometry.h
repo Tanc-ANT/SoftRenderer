@@ -10,6 +10,7 @@ public:
 	Vertex() {}
 	Vertex(Vector4 p, Color c) :position(p), color(c) {}
 	Vertex(Vector4 p, Color c, Vector3 t) :position(p), color(c),texcoord(t) {}
+	Vertex(Vector4 p, Vector4 n, Vector3 t) :position(p), normal(n), texcoord(t) {}
 	Vertex(Vector4 p, Vector4 n, Color c,Vector3 t) :position(p), normal(n), color(c),texcoord(t) {}
 	Vertex(const Vertex& v) 
 	{
