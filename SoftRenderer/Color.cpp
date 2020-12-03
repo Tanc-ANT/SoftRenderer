@@ -24,6 +24,13 @@ Color Color::operator*(float k) const
 		color.z * k);
 }
 
+Color Color::operator*(const Color &other) const
+{
+	return Color(color.x * other.GetColor().x,
+		color.y * other.GetColor().y,
+		color.z * other.GetColor().z);
+}
+
 Color Color::operator/(float k) const
 {
 	float oneOver = 1.0f / k;

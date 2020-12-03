@@ -220,7 +220,7 @@ void Rasterizer::LightCalculaiton(Vertex& v)
 
 		//blinn-phone
 		Color color = v.GetVertexColor();
-		color = color * (diffuse+ambient + specular);
+		color = (color * (diffuse + ambient + specular))*light->GetColor();
 		v.SetVertexColor(color);
 	}
 }
@@ -378,17 +378,15 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (z_line_buffer[j] >= z)
 				{
 					Color color;
-					if (device->GetRenderState() & RENDER_STATE_COLOR)
+					color = (color_ratio * step + C);
+					if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 					{
-						color = (color_ratio * step + C);
-						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-						{
-							float w = w_ratio * step + A.w;
-							color = color / w;
-						}
+						float w = w_ratio * step + A.w;
+						color = color / w;
 					}
-					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+					if (device->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
+						Color texcolor;
 						Vector3 uv = (uv_ratio * step + E);
 						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 						{
@@ -396,9 +394,10 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 							uv = uv / w;
 						}
 						if (device->GetRenderState() & RENDER_STATE_BOX)
-							color = textures->GetColor(uv, TEXTURE_INDEX_0);
+							texcolor = textures->GetColor(uv, TEXTURE_INDEX_0);
 						else if (device->GetRenderState() & RENDER_STATE_MODEL)
-							color = textures->GetColor(uv, TEXTURE_INDEX_1);
+							texcolor = textures->GetColor(uv, TEXTURE_INDEX_1);
+						color = color * texcolor;
 					}					
 					z_line_buffer[j] = z;
 					DrawPixel(j, y, color.GetIntensity());
@@ -464,27 +463,26 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (z_line_buffer[(int)j] >= z)
 				{
 					Color color;
-					if (device->GetRenderState() & RENDER_STATE_COLOR)
+					color = (color_ratio * step + C);
+					if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 					{
-						color = (color_ratio * step + C);
-						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-						{
-							float w = w_ratio * step + A.w;
-							color = color / w;
-						}
+						float w = w_ratio * step + A.w;
+						color = color / w;
 					}
-					else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+					if (device->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
+						Color texcolor;
 						Vector3 uv = (uv_ratio * step + E);
 						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 						{
 							float w = w_ratio * step + A.w;
 							uv = uv / w;
 						}
-						if(device->GetRenderState() & RENDER_STATE_BOX)
-							color = textures->GetColor(uv,TEXTURE_INDEX_0);
+						if (device->GetRenderState() & RENDER_STATE_BOX)
+							texcolor = textures->GetColor(uv, TEXTURE_INDEX_0);
 						else if (device->GetRenderState() & RENDER_STATE_MODEL)
-							color = textures->GetColor(uv, TEXTURE_INDEX_1);
+							texcolor = textures->GetColor(uv, TEXTURE_INDEX_1);
+						color = color * texcolor;
 					}
 					z_line_buffer[j] = z;
 					DrawPixel(j, y, color.GetIntensity());
@@ -570,7 +568,10 @@ void Rasterizer::DrawSomthing()
 			n = MatrixVectorMul(n, camera->GetModelMatrix());
 			vert[i].SetVertexNormal(n);
 			// Color Set
-			vert[i].SetVertexColor(mesh[i].GetVertexColor());
+			if (device->GetRenderState() & RENDER_STATE_COLOR)
+				vert[i].SetVertexColor(mesh[i].GetVertexColor());
+			else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+				vert[i].SetVertexColor(WHITH_COLOR);
 			// Texcoord Set
 			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
 			// Light Calculation
@@ -624,4 +625,10 @@ void Rasterizer::InputKeysEvent()
 	}
 	else
 		change_state = false;
+
+	if (device->GetRenderMode() == 0)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if (device->GetRenderMode() == 6)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if(device->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 0.0f, 0.0f));
+	else if (device->GetRenderMode() == 8)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if (device->GetRenderMode() == 9)	light->SetColor(Color(1.0f, 0.0f, 0.0f));
 }

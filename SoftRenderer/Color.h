@@ -24,6 +24,7 @@ public:
 
 	Color operator+(const Color &other) const;
 	Color operator-(const Color &other) const;
+	Color operator*(const Color &other) const;
 	Color operator*(float k) const;
 	Color operator/(float k) const;
 
