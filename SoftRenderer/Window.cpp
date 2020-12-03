@@ -166,7 +166,6 @@ void Window::ShowFPS(void)
 	else if (n_triangle < 100) n = 2;
 	else if (n_triangle < 1000) n = 3;
 	else if (n_triangle < 10000) n = 4;
-	else if (n_triangle < 100000) n = 4;
 	sprintf_s(strVert, 20, "Triangle:%d", n_triangle);
 	TextOutA(hDC, 0, 20, strVert, 9 + n);
 
