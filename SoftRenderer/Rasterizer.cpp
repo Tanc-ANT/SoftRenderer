@@ -518,7 +518,7 @@ void Rasterizer::DrawSomthing()
 			vert[i].SetVertexPosition(world_points[i]);
 			// Normal Calculation
 			Vector4 n = mesh[i].GetVertexNormal();		
-			n = MatrixVectorMul(n, camera->GetModelMatrix());
+			n = n * camera->GetModelMatrix();
 			vert[i].SetVertexNormal(n);
 			// Color Set
 			if (canvas->GetRenderState() & RENDER_STATE_COLOR)
