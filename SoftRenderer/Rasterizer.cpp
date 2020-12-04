@@ -652,9 +652,8 @@ void Rasterizer::ProcessWindowKeyInput()
 
 	if (device->GetRenderMode() == 0)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
 	else if (device->GetRenderMode() == 6)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (device->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 0.0f, 0.0f));
-	else if (device->GetRenderMode() == 8)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (device->GetRenderMode() == 9)	light->SetColor(Color(0.8f, 0.5f, 0.5f));
+	else if (device->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if (device->GetRenderMode() == 8)	light->SetColor(Color(0.8f, 0.5f, 0.5f));
 }
 
 void Rasterizer::ProcessWindowMouseInput()
