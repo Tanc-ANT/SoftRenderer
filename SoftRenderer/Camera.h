@@ -64,16 +64,11 @@ private:
 	Matrix4 view;
 	Matrix4 proj;
 
-	//int originX = 0;
-	//int originY = 0;
-
 	Vector3 trans = { 0.0f,0.0f,5.0f };
 
 	Vector3 viewRot = { 0.0f,0.0f,0.0f };
-	//Vector3 viewRotLength = { 0.0f,0.0f,0.0f };
 
 	Vector3 modelRot = { 0.0f,0.0f,0.0f };
-	//Vector3 modelRotLength = { 0.0f,0.0f,0.0f };
 
 	// const number of camera
 	// we don't need change number value here

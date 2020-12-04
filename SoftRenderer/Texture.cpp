@@ -25,9 +25,6 @@ void Texture::LoadTexture(const char *filename)
 		return;
 	}
 
-	//char signature[2];
-	//fread(&signature, sizeof(char), 2, bmpFile);
-
 	BITMAPFILEHEADER fileHeader;
 	fread(&fileHeader, sizeof(fileHeader), 1, bmpFile);
 
@@ -42,10 +39,6 @@ void Texture::LoadTexture(const char *filename)
 	fread(&infoHeader, sizeof(infoHeader), 1, bmpFile);
 
 	fseek(bmpFile, fileHeader.bfOffBits, SEEK_SET);
-
-	int nPixels = infoHeader.biWidth*infoHeader.biHeight;
-	int nBytesPerRow = infoHeader.biWidth * 3;
-	int nPaddingByresPerRow = 4 - (nBytesPerRow % 4);
 
 	width = infoHeader.biWidth;
 	height = infoHeader.biHeight;

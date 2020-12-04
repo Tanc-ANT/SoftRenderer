@@ -16,7 +16,7 @@ int main()
 	TCHAR *title = _T("Soft Renderer");
 	window->Init(width, height, title);
 
-	Canvas *device = new Canvas(width, height, window->GetFrameBuffer());
+	Canvas *canvas = new Canvas(width, height, window->GetFrameBuffer());
 	Model *model = new Model("../Asset/Obj/crab.obj");
 
 	TextureArray *textures = new TextureArray();
@@ -33,7 +33,7 @@ int main()
 
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
-	raster->SetDevice(device);
+	raster->SetDevice(canvas);
 	raster->SetModel(model);
 	raster->SetCamera(camera);
 	raster->SetLight(light);
@@ -48,7 +48,7 @@ int main()
 	delete light;
 	delete camera;
 	delete model;
-	delete device;
+	delete canvas;
 	delete window;
 
 	return 0;

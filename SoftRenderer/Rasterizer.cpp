@@ -97,18 +97,6 @@ void Rasterizer::SetBoxNormal()
 	Vector4 norm7 = n1 + n2 + n4;
 	norm7.Normalize();
 	mesh[7].SetVertexNormal(norm7);
-
-
-	/*mesh[0].SetVertexNormal(Vector4(-0.57, -0.57, -0.57,1.0f));
-	mesh[1].SetVertexNormal(Vector4(-0.57, 0.57, -0.57, 1.0f));
-	mesh[2].SetVertexNormal(Vector4(0.57, -0.57, -0.57, 1.0f));
-	mesh[3].SetVertexNormal(Vector4(0.57, 0.57, -0.57, 1.0f));
-
-	mesh[4].SetVertexNormal(Vector4(-0.57, -0.57, 0.57, 1.0f));
-	mesh[5].SetVertexNormal(Vector4(-0.57, 0.57, 0.57, 1.0f));
-	mesh[6].SetVertexNormal(Vector4(0.57, -0.57, 0.57, 1.0f));
-	mesh[7].SetVertexNormal(Vector4(0.57, 0.57, 0.57, 1.0f));*/
-
 }
 
 Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
@@ -118,9 +106,9 @@ Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 	float y = v.y * rhw;
 	float z = v.z * rhw;
 	float w = rhw;
-	//z = (z + 1.0f) * 0.5f;
-	return Vector4((x + 1.0f)*device->GetWidth() * 0.5f,
-		(1.0f - y)*device->GetHeight() * 0.5f,
+	z = (z + 1.0f) * 0.5f;
+	return Vector4((x + 1.0f)*canvas->GetWidth() * 0.5f,
+		(1.0f - y)*canvas->GetHeight() * 0.5f,
 		z, w);
 }
 
@@ -187,7 +175,7 @@ void Rasterizer::TransformCheckCVV(const Triangle& t)
 
 void Rasterizer::LightCalculaiton(Vertex& v)
 {
-	if (device->GetRenderState() & RENDER_STATE_LIGHT)
+	if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
 	{
 		float ambient = 0.1f;
 		float diffuse = 0.0f;
@@ -215,12 +203,12 @@ void Rasterizer::LightCalculaiton(Vertex& v)
 
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
-	if (((unsigned int)x < (UINT32)device->GetWidth()) && (((unsigned int)y < (UINT32)device->GetHeight()))
+	if (((unsigned int)x < (UINT32)canvas->GetWidth()) && (((unsigned int)y < (UINT32)canvas->GetHeight()))
 		&& (((unsigned int)x >= (UINT32)0)) && (((unsigned int)y >= (UINT32)0)))
 		
 	{
 		//y = device->height - y;
-		device->GetFrameBuffer()[y][x] = color;
+		canvas->GetFrameBuffer()[y][x] = color;
 	}
 }
 
@@ -281,17 +269,17 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	Vector3 uv1 = t.GetV1().GetVertexTexcoord();
 	Vector3 uv2 = t.GetV2().GetVertexTexcoord();
 
-	if (device->GetRenderState() & RENDER_STATE_WIREFRAME)
+	if (canvas->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
 		DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, Color::WHITH_COLOR);
 		DrawLine((int)t1.x, (int)t1.y, (int)t2.x, (int)t2.y, Color::WHITH_COLOR);
 		DrawLine((int)t2.x, (int)t2.y, (int)t0.x, (int)t0.y, Color::WHITH_COLOR);
 	}
 	
-	else if(device->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
+	else if(canvas->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
 	{
 		
-		if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+		if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 		{
 			c0 = c0 * t0.w;
 			c1 = c1 * t1.w;
@@ -311,7 +299,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		for (int y = (int)(t0.y + 0.5f); y <= (int)(t1.y + 0.5f); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= device->GetHeight() || y < 0) break;
+			if (y >= canvas->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if(std::abs((float)y - t0.y)<0.5f) continue;
 			float segement_height = t1.y - t0.y + EPSILON;
@@ -339,11 +327,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float scanline_depth = B.z - A.z;
 			float scanline_width = B.x - A.x;
 			float depth_ratio = scanline_depth / scanline_width;
-			float *z_line_buffer = device->GetZBuffer()[y];
+			float *z_line_buffer = canvas->GetZBuffer()[y];
 
 			//w caculation
 			float w_ratio = 1.0f;
-			if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+			if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 			{
 				float w_diff = B.w - A.w;
 				w_ratio = w_diff / scanline_width;
@@ -360,30 +348,30 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 			{
 				float step = (float)j - A.x + 0.5f;
-				if (j >= device->GetWidth() || j < 0) break;
+				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				
 				if (z_line_buffer[j] >= z)
 				{
 					Color color;
 					color = (color_ratio * step + C);
-					if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+					if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 					{
 						float w = w_ratio * step + A.w;
 						color = color / w;
 					}
-					if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+					if (canvas->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Color texcolor;
 						Vector3 uv = (uv_ratio * step + E);
-						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+						if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 						{
 							float w = w_ratio * step + A.w;
 							uv = uv / w;
 						}
-						if (device->GetRenderState() & RENDER_STATE_BOX)
+						if (canvas->GetRenderState() & RENDER_STATE_BOX)
 							texcolor = textures->GetColor(uv, TEXTURE_INDEX_0);
-						else if (device->GetRenderState() & RENDER_STATE_MODEL)
+						else if (canvas->GetRenderState() & RENDER_STATE_MODEL)
 							texcolor = textures->GetColor(uv, TEXTURE_INDEX_1);
 						color = color * texcolor;
 					}					
@@ -396,7 +384,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 		for (int y = (int)(t1.y + 0.5f); y <= (int)(t2.y + 0.5f); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= device->GetHeight() || y < 0) break;
+			if (y >= canvas->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if (std::abs((float)y - t1.y) < 0.5f) continue;
 			float segement_height = t2.y - t1.y + EPSILON;
@@ -424,11 +412,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			float scanline_depth = B.z - A.z; 
 			float scanline_width = B.x - A.x;
 			float depth_ratio = scanline_depth / scanline_width;
-			float *z_line_buffer = device->GetZBuffer()[y];
+			float *z_line_buffer = canvas->GetZBuffer()[y];
 
 			//w caculation
 			float w_ratio = 1.0f;
-			if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+			if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 			{
 				float w_diff = B.w - A.w;
 				w_ratio = w_diff / scanline_width;
@@ -445,30 +433,30 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 			{
 				float step = (float)j - A.x + 0.5f;
-				if (j >= device->GetWidth() || j < 0) break;
+				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				float w = w_ratio * step + A.w;
 				if (z_line_buffer[(int)j] >= z)
 				{
 					Color color;
 					color = (color_ratio * step + C);
-					if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+					if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 					{
 						float w = w_ratio * step + A.w;
 						color = color / w;
 					}
-					if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+					if (canvas->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Color texcolor;
 						Vector3 uv = (uv_ratio * step + E);
-						if (device->GetRenderState() & RENDER_STATE_PERSPECTIVE)
+						if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
 						{
 							float w = w_ratio * step + A.w;
 							uv = uv / w;
 						}
-						if (device->GetRenderState() & RENDER_STATE_BOX)
+						if (canvas->GetRenderState() & RENDER_STATE_BOX)
 							texcolor = textures->GetColor(uv, TEXTURE_INDEX_0);
-						else if (device->GetRenderState() & RENDER_STATE_MODEL)
+						else if (canvas->GetRenderState() & RENDER_STATE_MODEL)
 							texcolor = textures->GetColor(uv, TEXTURE_INDEX_1);
 						color = color * texcolor;
 					}
@@ -505,7 +493,7 @@ void Rasterizer::DrawBox(Vertex points[],int n)
 void Rasterizer::DrawSomthing()
 {
 	nTriangle = 0;
-	if (device->GetRenderState() & RENDER_STATE_MODEL)
+	if (canvas->GetRenderState() & RENDER_STATE_MODEL)
 	{
 		for (int i = 0; i < model->Nfaces(); i++) {
 			Triangle t = model->GetFaceIndex(i);
@@ -536,7 +524,7 @@ void Rasterizer::DrawSomthing()
 			TransformCheckCVV(t);
 		}
 	}
-	else if(device->GetRenderState() & RENDER_STATE_BOX)
+	else if(canvas->GetRenderState() & RENDER_STATE_BOX)
 	{
 		Vertex vert[8];
 		Vector4 world_points[8];
@@ -551,9 +539,9 @@ void Rasterizer::DrawSomthing()
 			n = MatrixVectorMul(n, camera->GetModelMatrix());
 			vert[i].SetVertexNormal(n);
 			// Color Set
-			if (device->GetRenderState() & RENDER_STATE_COLOR)
+			if (canvas->GetRenderState() & RENDER_STATE_COLOR)
 				vert[i].SetVertexColor(mesh[i].GetVertexColor());
-			else if (device->GetRenderState() & RENDER_STATE_TEXTURE)
+			else if (canvas->GetRenderState() & RENDER_STATE_TEXTURE)
 				vert[i].SetVertexColor(Color::WHITH_COLOR);
 			// Texcoord Set
 			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
@@ -571,7 +559,7 @@ void Rasterizer::DrawSomthing()
 
 void Rasterizer::Update()
 {
-	device->Clear();
+	canvas->Clear();
 	camera->Update();
 	DrawSomthing();
 	window->Update();
@@ -581,7 +569,7 @@ void Rasterizer::Update()
 
 bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
 {
-	if (device->GetRenderState() & RENDER_STATE_BACKCULL)
+	if (canvas->GetRenderState() & RENDER_STATE_BACKCULL)
 	{
 		Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
 		Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
@@ -642,18 +630,18 @@ void Rasterizer::ProcessWindowKeyInput()
 		if (!change_state)
 		{
 			change_state = true;
-			int m = device->GetRenderMode();
+			int m = canvas->GetRenderMode();
 			m = (m + 1) % MODE;
-			device->SetRenderState(m);
+			canvas->SetRenderState(m);
 		}
 	}
 	else
 		change_state = false;
 
-	if (device->GetRenderMode() == 0)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (device->GetRenderMode() == 6)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (device->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (device->GetRenderMode() == 8)	light->SetColor(Color(0.8f, 0.5f, 0.5f));
+	if (canvas->GetRenderMode() == 0)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if (canvas->GetRenderMode() == 6)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if (canvas->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	else if (canvas->GetRenderMode() == 8)	light->SetColor(Color(0.8f, 0.5f, 0.5f));
 }
 
 void Rasterizer::ProcessWindowMouseInput()

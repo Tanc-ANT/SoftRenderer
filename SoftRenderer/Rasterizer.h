@@ -20,8 +20,8 @@ public:
 	void SetWindow(Window *w) { window = w; }
 	Window* GetWindow() { return window; }
 
-	void SetDevice(Canvas* d) { device = d; }
-	Canvas* GetDevice() { return device; }
+	void SetDevice(Canvas* d) { canvas = d; }
+	Canvas* GetDevice() { return canvas; }
 
 	void SetModel(Model* m) { model = m; }
 	Model* GetModel() { return model; }
@@ -63,7 +63,7 @@ private:
 
 private:
 	Window* window;
-	Canvas* device;
+	Canvas* canvas;
 	Model* model;
 	Camera* camera;
 	Light* light;
