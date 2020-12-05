@@ -47,7 +47,7 @@ private:
 
 	void TransformCheckCVV(const Triangle& t);
 
-	void LightCalculaiton(Vertex& v);
+	
 
 	void DrawPixel(int x, int y, UINT32 color);
 	// Bresenham's Line Drawing Algorithm

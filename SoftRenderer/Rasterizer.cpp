@@ -155,34 +155,6 @@ void Rasterizer::TransformCheckCVV(const Triangle& t)
 	}
 }
 
-void Rasterizer::LightCalculaiton(Vertex& v)
-{
-	if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
-	{
-		float ambient = 0.1f;
-		float diffuse = 0.0f;
-		float specular = 0.0f;
-
-		//diffuse caculation
-		Vector4 n = v.GetVertexNormal();
-		Vector4 light_dir =  light->GetPosition() - v.GetVertexPosition();
-		light_dir.Normalize();
-		diffuse = n.Dot(light_dir);
-
-		//specular caculaiton
-		Vector4 view_dir = Vector4(camera->GetPostion(),1.0f) - v.GetVertexPosition();
-		view_dir.Normalize();
-		Vector4 halfway_dir = light_dir + view_dir;
-		halfway_dir.Normalize();
-		specular = std::powf(std::fmaxf(n.Dot(halfway_dir), 0.0), 32);
-
-		//blinn-phone
-		Color color = v.GetVertexColor();
-		color = (color * (diffuse + ambient + specular))*light->GetColor();
-		v.SetVertexColor(color);
-	}
-}
-
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
 	if (((unsigned int)x < (UINT32)canvas->GetWidth()) && (((unsigned int)y < (UINT32)canvas->GetHeight()))
@@ -230,6 +202,8 @@ void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
 
 void Rasterizer::DrawTriangle(const Triangle& t)
 {
+	Triangle triangle = t;
+
 	Vector4 t0 = t.GetV0().GetVertexPosition();
 	Vector4 t1 = t.GetV1().GetVertexPosition();
 	Vector4 t2 = t.GetV2().GetVertexPosition();
@@ -241,6 +215,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	if (FaceCulling(t0,t1,t2))
 		return;
 
+	// Count number of trinagl
 	nTriangle += 1;
 
 	Color c0 = t.GetV0().GetVertexColor();
@@ -418,7 +393,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				float w = w_ratio * step + A.w;
-				if (z_line_buffer[(int)j] >= z)
+				if (z_line_buffer[j] >= z)
 				{
 					Color color;
 					color = (color_ratio * step + C);
@@ -495,8 +470,12 @@ void Rasterizer::DrawSomthing()
 				n = n * camera->GetModelMatrix();
 				vertex_points[j].SetVertexNormal(n);
 				// light caculation
-				LightCalculaiton(vertex_points[j]);
-				
+				if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
+				{
+					light->LightCalculaiton(
+						Vector4(camera->GetPostion(), 1.0f),
+						vertex_points[j]);
+				}
 				// VP transform
 				screen_points[j] = world_points[j] * camera->GetViewMatrix();
 				screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
@@ -528,7 +507,12 @@ void Rasterizer::DrawSomthing()
 			// Texcoord Set
 			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
 			// Light Calculation
-			LightCalculaiton(vert[i]);
+			if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
+			{
+				light->LightCalculaiton(
+					Vector4(camera->GetPostion(), 1.0f),
+					vert[i]);
+			}
 			// VP transform
 			screen_points[i] = world_points[i] * camera->GetViewMatrix();
 			screen_points[i] = screen_points[i] * camera->GetProjectionMatrix();
