@@ -7,8 +7,8 @@
 #include "Texture.h"
 #include "Rasterizer.h"
 
-static int width = 800;
-static int height = 600;
+const int width = 800;
+const int height = 600;
 
 int main()
 {
@@ -17,11 +17,11 @@ int main()
 	window->Init(width, height, title);
 
 	Canvas *canvas = new Canvas(width, height, window->GetFrameBuffer());
-	Model *model = new Model("../Asset/Obj/crab.obj");
+	Model *model = new Model("../Asset/Obj/box.obj");
 
 	TextureArray *textures = new TextureArray();
-	textures->LoadTexture("../Asset/Texture/checkerboard.bmp");
 	textures->LoadTexture("../Asset/Texture/crab_diffuse.bmp");
+	textures->LoadTexture("../Asset/Texture/checkerboard.bmp");
 
 	Vector3 eye(5, 0, 0);
 	Vector3 at(0, 0, 0);
@@ -34,7 +34,7 @@ int main()
 
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
-	raster->SetDevice(canvas);
+	raster->SetCanvas(canvas);
 	raster->SetModel(model);
 	raster->SetCamera(camera);
 	raster->SetLight(light);

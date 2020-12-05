@@ -20,8 +20,8 @@ public:
 	void SetWindow(Window *w) { window = w; }
 	Window* GetWindow() { return window; }
 
-	void SetDevice(Canvas* d) { canvas = d; }
-	Canvas* GetDevice() { return canvas; }
+	void SetCanvas(Canvas* d) { canvas = d; }
+	Canvas* GetCanvas() { return canvas; }
 
 	void SetModel(Model* m) { model = m; }
 	Model* GetModel() { return model; }

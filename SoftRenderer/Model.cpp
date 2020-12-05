@@ -28,8 +28,8 @@ Model::Model(const char *filename)
 			Vector3 t;
 			iss >> t.x;
 			iss >> t.y;
-			t.x -= std::floor(t.x);
-			t.y -= std::floor(t.y);
+			if(t.x >1.0f) t.x -= std::floor(t.x);
+			if(t.y >1.0f) t.y -= std::floor(t.y);
 			t.z = 0.0f;
 			texs.push_back(t);
 		}
