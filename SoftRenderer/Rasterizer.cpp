@@ -450,75 +450,44 @@ void Rasterizer::DrawBox(Vertex points[],int n)
 void Rasterizer::DrawSomthing()
 {
 	nTriangle = 0;
-	if (canvas->GetRenderState() & RENDER_STATE_MODEL)
-	{
-		for (int i = 0; i < model->Nfaces(); i++) {
-			Triangle t = model->GetFaceIndex(i);
-			Vertex vertex_points[3] = { t.GetV0(),t.GetV1(),t.GetV2() };
-			Vector4 world_points[3];
-			Vector4 screen_points[3];
-			for (int j = 0; j < 3; j++) {
-				Vector4 v = vertex_points[j].GetVertexPosition();
-				Vector3 t = vertex_points[j].GetVertexTexcoord();
-				Vector4 n = vertex_points[j].GetVertexNormal();
-				// Set color
-				vertex_points[j].SetVertexColor(Color::WHITH_COLOR);
-				// M transform
-				world_points[j] = v * camera->GetModelMatrix();
-				vertex_points[j].SetVertexPosition(world_points[j]);
-				// normal set
-				n = n * camera->GetModelMatrix();
-				vertex_points[j].SetVertexNormal(n);
-				// light caculation
-				if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
-				{
-					light->LightCalculaiton(
-						Vector4(camera->GetPostion(), 1.0f),
-						vertex_points[j]);
-				}
-				// VP transform
-				screen_points[j] = world_points[j] * camera->GetViewMatrix();
-				screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
-				vertex_points[j].SetVertexPosition(screen_points[j]);
-			}
-			t = { vertex_points[0],vertex_points[1],vertex_points[2] };
-			TransformCheckCVV(t);
-		}
-	}
-	else if(canvas->GetRenderState() & RENDER_STATE_BOX)
-	{
-		Vertex vert[8];
-		Vector4 world_points[8];
-		Vector4 screen_points[8];
-		for (int i = 0; i < 8; ++i)
-		{
+	Model *model;
+
+	if (canvas->GetRenderState() & RENDER_STATE_BOX)
+		model = models->GetModel(MODEL_INDEX_0);
+	else if (canvas->GetRenderState() & RENDER_STATE_MODEL)
+		model = models->GetModel(MODEL_INDEX_1);
+
+	for (int i = 0; i < model->Nfaces(); i++) {
+		Triangle t = model->GetFaceIndex(i);
+		Vertex vertex_points[3] = { t.GetV0(),t.GetV1(),t.GetV2() };
+		Vector4 world_points[3];
+		Vector4 screen_points[3];
+		for (int j = 0; j < 3; j++) {
+			Vector4 v = vertex_points[j].GetVertexPosition();
+			Vector3 t = vertex_points[j].GetVertexTexcoord();
+			Vector4 n = vertex_points[j].GetVertexNormal();
+			// Set color
+			vertex_points[j].SetVertexColor(Color::WHITH_COLOR);
 			// M transform
-			world_points[i] = mesh[i].GetVertexPosition() * camera->GetModelMatrix();
-			vert[i].SetVertexPosition(world_points[i]);
-			// Normal Calculation
-			Vector4 n = mesh[i].GetVertexNormal();		
+			world_points[j] = v * camera->GetModelMatrix();
+			vertex_points[j].SetVertexPosition(world_points[j]);
+			// normal set
 			n = n * camera->GetModelMatrix();
-			vert[i].SetVertexNormal(n);
-			// Color Set
-			if (canvas->GetRenderState() & RENDER_STATE_COLOR)
-				vert[i].SetVertexColor(mesh[i].GetVertexColor());
-			else if (canvas->GetRenderState() & RENDER_STATE_TEXTURE)
-				vert[i].SetVertexColor(Color::WHITH_COLOR);
-			// Texcoord Set
-			vert[i].SetVertexTexcoord(mesh[i].GetVertexTexcoord());
-			// Light Calculation
+			vertex_points[j].SetVertexNormal(n);
+			// light caculation
 			if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
 			{
 				light->LightCalculaiton(
 					Vector4(camera->GetPostion(), 1.0f),
-					vert[i]);
+					vertex_points[j]);
 			}
 			// VP transform
-			screen_points[i] = world_points[i] * camera->GetViewMatrix();
-			screen_points[i] = screen_points[i] * camera->GetProjectionMatrix();
-			vert[i].SetVertexPosition(screen_points[i]);
+			screen_points[j] = world_points[j] * camera->GetViewMatrix();
+			screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
+			vertex_points[j].SetVertexPosition(screen_points[j]);
 		}
-		DrawBox(vert, 8);
+		t = { vertex_points[0],vertex_points[1],vertex_points[2] };
+		TransformCheckCVV(t);
 	}
 	window->SetNtri(nTriangle);
 }

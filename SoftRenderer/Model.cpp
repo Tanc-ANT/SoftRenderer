@@ -2,6 +2,16 @@
 
 Model::Model(const char *filename)
 {
+	LoadModel(filename);
+}
+
+Model::~Model()
+{
+
+}
+
+void Model::LoadModel(const char *filename)
+{
 	std::vector<Vector4> verts;
 	std::vector<Vector3> texs;
 	std::vector<Vector4> norms;
@@ -28,8 +38,8 @@ Model::Model(const char *filename)
 			Vector3 t;
 			iss >> t.x;
 			iss >> t.y;
-			if(t.x >1.0f) t.x -= std::floor(t.x);
-			if(t.y >1.0f) t.y -= std::floor(t.y);
+			if (t.x > 1.0f) t.x -= std::floor(t.x);
+			if (t.y > 1.0f) t.y -= std::floor(t.y);
 			t.z = 0.0f;
 			texs.push_back(t);
 		}
@@ -73,7 +83,24 @@ Model::Model(const char *filename)
 		"	f# " << faces.size() << std::endl;
 }
 
-Model::~Model()
+ModelArray::ModelArray()
 {
 
 }
+
+ModelArray::~ModelArray()
+{
+	for (auto& it : models)
+	{
+		delete it;
+	}
+	models.clear();
+}
+
+void ModelArray::LoadModel(const char *filename)
+{
+	Model *model = new Model(filename);
+	models.push_back(model);
+}
+
+

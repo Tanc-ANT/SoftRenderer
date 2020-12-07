@@ -18,20 +18,16 @@ public:
 	~Rasterizer();
 
 	void SetWindow(Window *w) { window = w; }
-	Window* GetWindow() { return window; }
 
 	void SetCanvas(Canvas* d) { canvas = d; }
-	Canvas* GetCanvas() { return canvas; }
-
-	void SetModel(Model* m) { model = m; }
-	Model* GetModel() { return model; }
 
 	void SetCamera(Camera* c) { camera = c; }
-	Camera* GetCamera() { return camera; }
 
 	void SetLight(Light* l) { light = l; }
 
-	void SetTexture(TextureArray* t) { textures = t; }
+	void SetModelArray(ModelArray* m) { models = m; }
+
+	void SetTextureArray(TextureArray* t) { textures = t; }
 
 	void DrawSomthing();
 
@@ -64,9 +60,9 @@ private:
 private:
 	Window* window;
 	Canvas* canvas;
-	Model* model;
 	Camera* camera;
 	Light* light;
+	ModelArray* models;
 	TextureArray* textures;
 	
 private:

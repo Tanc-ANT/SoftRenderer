@@ -17,11 +17,14 @@ int main()
 	window->Init(width, height, title);
 
 	Canvas *canvas = new Canvas(width, height, window->GetFrameBuffer());
-	Model *model = new Model("../Asset/Obj/box.obj");
+
+	ModelArray *models = new ModelArray();
+	models->LoadModel("../Asset/Obj/box.obj");
+	models->LoadModel("../Asset/Obj/crab.obj");
 
 	TextureArray *textures = new TextureArray();
-	textures->LoadTexture("../Asset/Texture/crab_diffuse.bmp");
 	textures->LoadTexture("../Asset/Texture/checkerboard.bmp");
+	textures->LoadTexture("../Asset/Texture/crab_diffuse.bmp");
 
 	Vector3 eye(5, 0, 0);
 	Vector3 at(0, 0, 0);
@@ -35,10 +38,10 @@ int main()
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
 	raster->SetCanvas(canvas);
-	raster->SetModel(model);
+	raster->SetModelArray(models);
 	raster->SetCamera(camera);
 	raster->SetLight(light);
-	raster->SetTexture(textures);
+	raster->SetTextureArray(textures);
 
 	while (!window->GetCloseState())
 	{
@@ -48,7 +51,7 @@ int main()
 	delete textures;
 	delete light;
 	delete camera;
-	delete model;
+	delete models;
 	delete canvas;
 	delete window;
 
