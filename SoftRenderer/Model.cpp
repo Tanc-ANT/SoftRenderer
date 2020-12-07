@@ -70,9 +70,10 @@ void Model::LoadModel(const char *filename)
 			vx--; tx--; nx--;
 			vy--; ty--; ny--;
 			vz--; tz--; nz--;
-			Vertex vert0(verts[vx], norms[nx], texs[tx]);
-			Vertex vert1(verts[vy], norms[ny], texs[ty]);
-			Vertex vert2(verts[vz], norms[nz], texs[tz]);
+			// default color of vertex is white
+			Vertex vert0(verts[vx], norms[nx], Color::WHITH_COLOR, texs[tx]);
+			Vertex vert1(verts[vy], norms[ny], Color::WHITH_COLOR, texs[ty]);
+			Vertex vert2(verts[vz], norms[nz], Color::WHITH_COLOR, texs[tz]);
 			Triangle triangle(vert0, vert1, vert2);
 			faces.push_back(triangle);
 		}
@@ -81,6 +82,7 @@ void Model::LoadModel(const char *filename)
 		"		vn# " << norms.size() <<
 		"		vt# " << texs.size() <<
 		"	f# " << faces.size() << std::endl;
+	in.close();
 }
 
 ModelArray::ModelArray()

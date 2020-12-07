@@ -31,6 +31,8 @@ public:
 
 	Model* GetModel(const int& index) { return models[index]; }
 
+	size_t GetSize() { return models.size(); }
+
 private:
 	std::vector<Model*> models;
 };

@@ -6,7 +6,8 @@ class Color
 {
 public:
 	Color() {};
-	Color(float r, float g, float b) :color(r, g, b) {};
+	Color(const float& r, const float& g, const float& b) :color(r, g, b) {};
+	Color(const Vector3& v) :color(v) {};
 	Color(const Color& c)
 	{
 		color.x = std::clamp(c.color.x, 0.0f, 1.0f);

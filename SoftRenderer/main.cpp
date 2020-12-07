@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Texture.h"
+#include "Scene.h"
 #include "Rasterizer.h"
 
 const int width = 800;
@@ -18,40 +19,28 @@ int main()
 
 	Canvas *canvas = new Canvas(width, height, window->GetFrameBuffer());
 
-	ModelArray *models = new ModelArray();
-	models->LoadModel("../Asset/Obj/box.obj");
-	models->LoadModel("../Asset/Obj/crab.obj");
-
-	TextureArray *textures = new TextureArray();
-	textures->LoadTexture("../Asset/Texture/checkerboard.bmp");
-	textures->LoadTexture("../Asset/Texture/crab_diffuse.bmp");
-
 	Vector3 eye(5, 0, 0);
 	Vector3 at(0, 0, 0);
 	Vector3 up(0, 0, 1);
 	float aspect = (float)width / (float)height;
 	Camera* camera = new Camera(eye, at, up, aspect);
 
-	Light *light = new PointLight(Vector4(5, -5, 0, 1));
-	light->SetColor(Color(1.0f, 1.0f, 1.0f));
+	SceneManager *scene_manager = new SceneManager();
+	scene_manager->LoadScene("../Asset/Scene/box.scn");
+	scene_manager->LoadScene("../Asset/Scene/crab.scn");
 
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);
 	raster->SetCanvas(canvas);
-	raster->SetModelArray(models);
 	raster->SetCamera(camera);
-	raster->SetLight(light);
-	raster->SetTextureArray(textures);
+	raster->SetSceneManager(scene_manager);
 
 	while (!window->GetCloseState())
 	{
 		raster->Update();
 	}
 	delete raster;
-	delete textures;
-	delete light;
 	delete camera;
-	delete models;
 	delete canvas;
 	delete window;
 

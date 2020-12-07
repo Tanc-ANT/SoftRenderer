@@ -1,0 +1,20 @@
+#wireframe color texture
+mode: texture
+
+#on off
+backcull: on
+
+lighting:
+    tpye: point
+    position: 5.0 -5.0 0
+    color: 1.0 1.0 1.0
+	
+#lighting:
+#    tpye: driect
+#    direction: 5.0 -5.0 0
+#    color: 1.0 1.0 1.0
+
+models: 1
+    model:
+        mesh: crab.obj
+        texture: crab_diffuse.bmp

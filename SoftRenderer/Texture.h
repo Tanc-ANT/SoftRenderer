@@ -30,7 +30,10 @@ public:
 	~TextureArray();
 
 	void LoadTexture(const char *filename);
+
 	Color GetColor(const Vector3& t, int index);
+
+	size_t GetSize() { return textures.size(); }
 
 private:
 	std::vector<Texture*> textures;

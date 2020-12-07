@@ -1,85 +1,14 @@
 #include "Rasterizer.h"
 
-Vertex mesh[8] = {
-	{Vector4(-1.0f,-1.0f,1.0f,1.0f),Color(1.0f,0.2f,0.2f)},  //0
-	{Vector4(1.0f,-1.0f,1.0f,1.0f),Color(0.2f,1.0f,0.2f)},	//1
-	{Vector4(1.0f, 1.0f,1.0f,1.0f),Color(0.2f,0.2f,1.0f)},	//2
-	{Vector4(-1.0f, 1.0f,1.0f,1.0f),Color(1.0f,0.2f,1.0f)},	//3
-	{Vector4(-1.0f,-1.0f,-1.0f,1.0f),Color(1.0f,1.0f,0.2f)},	//4
-	{Vector4(1.0f,-1.0f,-1.0f,1.0f),Color(0.2f,1.0f,1.0f)},	//5
-	{Vector4(1.0f, 1.0f,-1.0f,1.0f),Color(1.0f,0.3f,0.3f)},	//6
-	{Vector4(-1.0f, 1.0f,-1.0f,1.0f),Color(0.2f,1.0f,0.3f)},	//7
-};
-
 Rasterizer::Rasterizer()
 {
-	SetBoxNormal();
+
 };
 
 Rasterizer::~Rasterizer()
 {
 
 };
-
-void Rasterizer::SetBoxNormal()
-{
-
-	Vector4 v0 = mesh[1].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v1 = mesh[2].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n0 = v0.Cross(v1);
-
-	Vector4 v2 = mesh[6].GetVertexPosition() - mesh[7].GetVertexPosition();
-	Vector4 v3 = mesh[5].GetVertexPosition() - mesh[7].GetVertexPosition();
-	Vector4 n1 = v2.Cross(v3);
-
-	Vector4 v4 = mesh[7].GetVertexPosition() - mesh[3].GetVertexPosition();
-	Vector4 v5 = mesh[4].GetVertexPosition() - mesh[3].GetVertexPosition();
-	Vector4 n2 = v4.Cross(v5);
-
-	Vector4 v6 = mesh[5].GetVertexPosition() - mesh[1].GetVertexPosition();
-	Vector4 v7 = mesh[6].GetVertexPosition() - mesh[1].GetVertexPosition();
-	Vector4 n3 = v6.Cross(v7);
-
-	Vector4 v8 = mesh[6].GetVertexPosition() - mesh[2].GetVertexPosition();
-	Vector4 v9 = mesh[7].GetVertexPosition() - mesh[2].GetVertexPosition();
-	Vector4 n4 = v8.Cross(v9);
-
-	Vector4 v10 = mesh[4].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 v11 = mesh[5].GetVertexPosition() - mesh[0].GetVertexPosition();
-	Vector4 n5 = v10.Cross(v11);
-
-	Vector4 norm0 = n0 + n2 + n5;
-	norm0.Normalize();
-	mesh[0].SetVertexNormal(norm0);
-
-	Vector4 norm1 = n0 + n3 + n5;
-	norm1.Normalize();
-	mesh[1].SetVertexNormal(norm1);
-
-	Vector4 norm2 = n0 + n3 + n4;
-	norm2.Normalize();
-	mesh[2].SetVertexNormal(norm2);
-
-	Vector4 norm3 = n0 + n2 + n4;
-	norm3.Normalize();
-	mesh[3].SetVertexNormal(norm3);
-
-	Vector4 norm4 = n1 + n2 + n5;
-	norm4.Normalize();
-	mesh[4].SetVertexNormal(norm4);
-
-	Vector4 norm5 = n1 + n3 + n5;
-	norm5.Normalize();
-	mesh[5].SetVertexNormal(norm5);
-
-	Vector4 norm6 = n1 + n3 + n4;
-	norm6.Normalize();
-	mesh[6].SetVertexNormal(norm6);
-
-	Vector4 norm7 = n1 + n2 + n4;
-	norm7.Normalize();
-	mesh[7].SetVertexNormal(norm7);
-}
 
 Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
 {
@@ -125,7 +54,7 @@ void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 	}
 }
 
-void Rasterizer::TransformCheckCVV(const Triangle& t)
+void Rasterizer::ClipCVV(const Triangle& t)
 {
 	std::vector<Vertex> vert_list;
 	std::vector<Vertex> in_list1;
@@ -226,26 +155,22 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	Vector3 uv1 = t.GetV1().GetVertexTexcoord();
 	Vector3 uv2 = t.GetV2().GetVertexTexcoord();
 
-	if (canvas->GetRenderState() & RENDER_STATE_WIREFRAME)
+	if (scnManager->GetRenderState() & RENDER_STATE_WIREFRAME)
 	{
 		DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, Color::WHITH_COLOR);
 		DrawLine((int)t1.x, (int)t1.y, (int)t2.x, (int)t2.y, Color::WHITH_COLOR);
 		DrawLine((int)t2.x, (int)t2.y, (int)t0.x, (int)t0.y, Color::WHITH_COLOR);
 	}
 	
-	else if(canvas->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
+	else if(scnManager->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
 	{
-		
-		if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-		{
-			c0 = c0 * t0.w;
-			c1 = c1 * t1.w;
-			c2 = c2 * t2.w;
-
-			uv0 = uv0 * t0.w;
-			uv1 = uv1 * t1.w;
-			uv2 = uv2 * t2.w;
-		}
+		c0 = c0 * t0.w;
+		c1 = c1 * t1.w;
+		c2 = c2 * t2.w;
+		// Perspective correction
+		uv0 = uv0 * t0.w;
+		uv1 = uv1 * t1.w;
+		uv2 = uv2 * t2.w;
 		
 		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); std::swap(uv0, uv1); }
 		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); std::swap(uv0, uv2); }
@@ -288,11 +213,9 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 			//w caculation
 			float w_ratio = 1.0f;
-			if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-			{
-				float w_diff = B.w - A.w;
-				w_ratio = w_diff / scanline_width;
-			}
+			float w_diff = B.w - A.w;
+			w_ratio = w_diff / scanline_width;
+			
 
 			//color caculation
 			Color color_diff = D - C;
@@ -312,24 +235,17 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				{
 					Color color;
 					color = (color_ratio * step + C);
-					if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-					{
-						float w = w_ratio * step + A.w;
-						color = color / w;
-					}
-					if (canvas->GetRenderState() & RENDER_STATE_TEXTURE)
+					float w = w_ratio * step + A.w;
+					color = color / w;
+
+					if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Color texcolor;
 						Vector3 uv = (uv_ratio * step + E);
-						if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-						{
-							float w = w_ratio * step + A.w;
-							uv = uv / w;
-						}
-						if (canvas->GetRenderState() & RENDER_STATE_BOX)
-							texcolor = textures->GetColor(uv, TEXTURE_INDEX_0);
-						else if (canvas->GetRenderState() & RENDER_STATE_MODEL)
-							texcolor = textures->GetColor(uv, TEXTURE_INDEX_1);
+						float w = w_ratio * step + A.w;
+						// Perspective correction
+						uv = uv / w;
+						texcolor = scnManager->GetCurrentTextures()->GetColor(uv, currModelIndex);
 						color = color * texcolor;
 					}					
 					z_line_buffer[j] = z;
@@ -373,11 +289,8 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 
 			//w caculation
 			float w_ratio = 1.0f;
-			if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-			{
-				float w_diff = B.w - A.w;
-				w_ratio = w_diff / scanline_width;
-			}
+			float w_diff = B.w - A.w;
+			w_ratio = w_diff / scanline_width;
 
 			//color caculation
 			Color color_diff = D - C;
@@ -397,24 +310,17 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				{
 					Color color;
 					color = (color_ratio * step + C);
-					if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-					{
-						float w = w_ratio * step + A.w;
-						color = color / w;
-					}
-					if (canvas->GetRenderState() & RENDER_STATE_TEXTURE)
+					float w = w_ratio * step + A.w;
+					color = color / w;
+
+					if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Color texcolor;
 						Vector3 uv = (uv_ratio * step + E);
-						if (canvas->GetRenderState() & RENDER_STATE_PERSPECTIVE)
-						{
-							float w = w_ratio * step + A.w;
-							uv = uv / w;
-						}
-						if (canvas->GetRenderState() & RENDER_STATE_BOX)
-							texcolor = textures->GetColor(uv, TEXTURE_INDEX_0);
-						else if (canvas->GetRenderState() & RENDER_STATE_MODEL)
-							texcolor = textures->GetColor(uv, TEXTURE_INDEX_1);
+						float w = w_ratio * step + A.w;
+						// Perspective correction
+						uv = uv / w;
+						texcolor = scnManager->GetCurrentTextures()->GetColor(uv, currModelIndex);
 						color = color * texcolor;
 					}
 					z_line_buffer[j] = z;
@@ -433,18 +339,8 @@ void Rasterizer::DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d)
 	c.SetVertexTexcoord({ 1,0,0 });
 	d.SetVertexTexcoord({ 1,1,0 });
 
-	TransformCheckCVV(Triangle(a, b, c));
-	TransformCheckCVV(Triangle(c, d, a));
-}
-
-void Rasterizer::DrawBox(Vertex points[],int n)
-{
-	DrawPlane(points[0], points[1], points[2], points[3]); // front
-	DrawPlane(points[7], points[6], points[5], points[4]); // back
-	DrawPlane(points[0], points[4], points[5], points[1]); // bottom
-	DrawPlane(points[1], points[5], points[6], points[2]); // right
-	DrawPlane(points[2], points[6], points[7], points[3]); // up
-	DrawPlane(points[3], points[7], points[4], points[0]); // left
+	ClipCVV(Triangle(a, b, c));
+	ClipCVV(Triangle(c, d, a));
 }
 
 void Rasterizer::DrawSomthing()
@@ -452,42 +348,41 @@ void Rasterizer::DrawSomthing()
 	nTriangle = 0;
 	Model *model;
 
-	if (canvas->GetRenderState() & RENDER_STATE_BOX)
-		model = models->GetModel(MODEL_INDEX_0);
-	else if (canvas->GetRenderState() & RENDER_STATE_MODEL)
-		model = models->GetModel(MODEL_INDEX_1);
+	int max_models = (int)scnManager->GetCurrentModels()->GetSize();
+	for (currModelIndex = 0; currModelIndex < max_models; ++currModelIndex)
+	{
+		model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
 
-	for (int i = 0; i < model->Nfaces(); i++) {
-		Triangle t = model->GetFaceIndex(i);
-		Vertex vertex_points[3] = { t.GetV0(),t.GetV1(),t.GetV2() };
-		Vector4 world_points[3];
-		Vector4 screen_points[3];
-		for (int j = 0; j < 3; j++) {
-			Vector4 v = vertex_points[j].GetVertexPosition();
-			Vector3 t = vertex_points[j].GetVertexTexcoord();
-			Vector4 n = vertex_points[j].GetVertexNormal();
-			// Set color
-			vertex_points[j].SetVertexColor(Color::WHITH_COLOR);
-			// M transform
-			world_points[j] = v * camera->GetModelMatrix();
-			vertex_points[j].SetVertexPosition(world_points[j]);
-			// normal set
-			n = n * camera->GetModelMatrix();
-			vertex_points[j].SetVertexNormal(n);
-			// light caculation
-			if (canvas->GetRenderState() & RENDER_STATE_LIGHT)
-			{
-				light->LightCalculaiton(
-					Vector4(camera->GetPostion(), 1.0f),
-					vertex_points[j]);
+		for (int i = 0; i < model->Nfaces(); i++) {
+			Triangle t = model->GetFaceIndex(i);
+			Vertex vertex_points[3] = { t.GetV0(),t.GetV1(),t.GetV2() };
+			Vector4 world_points[3];
+			Vector4 screen_points[3];
+			for (int j = 0; j < 3; j++) {
+				Vector4 v = vertex_points[j].GetVertexPosition();
+				Vector3 t = vertex_points[j].GetVertexTexcoord();
+				Vector4 n = vertex_points[j].GetVertexNormal();
+				// M transform
+				world_points[j] = v * camera->GetModelMatrix();
+				vertex_points[j].SetVertexPosition(world_points[j]);
+				// normal set
+				n = n * camera->GetModelMatrix();
+				vertex_points[j].SetVertexNormal(n);
+				// light caculation
+				if (scnManager->GetRenderState() & RENDER_STATE_LIGHT)
+				{
+					scnManager->GetCurrentLight()->LightCalculaiton(
+						Vector4(camera->GetPostion(), 1.0f),
+						vertex_points[j]);
+				}
+				// VP transform
+				screen_points[j] = world_points[j] * camera->GetViewMatrix();
+				screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
+				vertex_points[j].SetVertexPosition(screen_points[j]);
 			}
-			// VP transform
-			screen_points[j] = world_points[j] * camera->GetViewMatrix();
-			screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
-			vertex_points[j].SetVertexPosition(screen_points[j]);
+			t = { vertex_points[0],vertex_points[1],vertex_points[2] };
+			ClipCVV(t);
 		}
-		t = { vertex_points[0],vertex_points[1],vertex_points[2] };
-		TransformCheckCVV(t);
 	}
 	window->SetNtri(nTriangle);
 }
@@ -504,7 +399,7 @@ void Rasterizer::Update()
 
 bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
 {
-	if (canvas->GetRenderState() & RENDER_STATE_BACKCULL)
+	if (scnManager->GetRenderState() & RENDER_STATE_BACKCULL)
 	{
 		Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
 		Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
@@ -562,21 +457,14 @@ void Rasterizer::ProcessWindowKeyInput()
 	}
 	if (window->GetKey()[VK_SPACE])
 	{
-		if (!change_state)
+		if (!changeState)
 		{
-			change_state = true;
-			int m = canvas->GetRenderMode();
-			m = (m + 1) % MODE;
-			canvas->SetRenderState(m);
+			changeState = true;
+			scnManager->SwitchNextScene();
 		}
 	}
 	else
-		change_state = false;
-
-	if (canvas->GetRenderMode() == 0)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (canvas->GetRenderMode() == 6)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (canvas->GetRenderMode() == 7)	light->SetColor(Color(1.0f, 1.0f, 1.0f));
-	else if (canvas->GetRenderMode() == 8)	light->SetColor(Color(0.8f, 0.5f, 0.5f));
+		changeState = false;
 }
 
 void Rasterizer::ProcessWindowMouseInput()

@@ -26,8 +26,6 @@ Canvas::Canvas(int w, int h, void *fb)
 	}
 	width = w;
 	height = h;
-	render_mode = 0;
-	render_state = RENDER_MODE_ARRAY[render_mode];
 }
 
 Canvas::~Canvas()

@@ -27,9 +27,15 @@ private:
 class PointLight :public Light
 {
 public:
-	PointLight(Vector4& p)
+	PointLight() {}
+	PointLight(const Vector4& p)
 	{
 		position = p;
+	}
+	PointLight(const Vector4& p, const Color& c)
+	{
+		position = p;
+		SetColor(c);
 	}
 	~PointLight() {};
 
@@ -45,9 +51,15 @@ private:
 class DirectLight :public Light
 {
 public:
-	DirectLight(Vector4& p)
+	DirectLight() {};
+	DirectLight(const Vector4& d)
 	{
-		direction = p;
+		direction = d;
+	}
+	DirectLight(const Vector4& d,const Color& c)
+	{
+		direction = d;
+		SetColor(c);
 	}
 	~DirectLight() {};
 
