@@ -64,7 +64,7 @@ private:
 	Matrix4 view;
 	Matrix4 proj;
 
-	Vector3 trans = { 0.0f,0.0f,5.0f };
+	Vector3 trans = { 0.0f,0.0f,10.0f };
 
 	Vector3 viewRot = { 0.0f,0.0f,0.0f };
 

@@ -2,6 +2,11 @@
 #include <windows.h>
 #include <wingdi.h>
 
+Texture::Texture()
+{
+	CreateEmptyTexture();
+}
+
 Texture::Texture(const char *filename)
 {
 	LoadTexture(filename);
@@ -79,6 +84,36 @@ void Texture::LoadTexture(const char *filename)
 	fclose(bmpFile);
 }
 
+void Texture::CreateEmptyTexture()
+{
+	width = 256;
+	height = 256;
+	int need = width * height * 4 + sizeof(void*)*(height);
+	char *ptr = (char*)malloc(need);
+	assert(ptr);
+	char *tex;
+
+	texture = (UINT32 **)ptr;
+	// The line number index of texture
+	ptr += sizeof(void*) * height;
+
+	tex = (char*)ptr;
+	ptr += width * height * 4;
+
+	for (int j = 0; j < height; ++j)
+	{
+		texture[j] = (UINT32 *)(tex + width * 4 * j);
+	}
+
+	for (int j = 0; j < height; ++j)
+	{
+		for (int i = 0; i < width; ++i)
+		{
+			texture[j][i] = 0xffffffff;
+		}
+	}
+}
+
 Color Texture::GetColor(const Vector3& t)
 {
 	int x, y;
@@ -97,7 +132,7 @@ Color Texture::GetColor(const Vector3& t)
 
 TextureArray::TextureArray()
 {
-
+	
 }
 
 TextureArray::~TextureArray()
@@ -112,6 +147,12 @@ TextureArray::~TextureArray()
 void TextureArray::LoadTexture(const char *filename)
 {
 	Texture* texure = new Texture(filename);
+	textures.push_back(texure);
+}
+
+void TextureArray::LoadEmptyTexture()
+{
+	Texture* texure = new Texture();
 	textures.push_back(texure);
 }
 

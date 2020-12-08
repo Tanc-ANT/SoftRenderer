@@ -44,8 +44,6 @@ void Scene::LoadScene(const char *filename)
 			iss >> dummy; iss >> data;
 			if (data == "on")
 				renderState |= RENDER_STATE_BACKCULL;
-			else if (data == "off")
-				renderState &= !(RENDER_STATE_BACKCULL);
 		}
 		else if (!line.compare(0, 9, "lighting:"))
 			ReadLight(in);
@@ -131,8 +129,15 @@ void Scene::ReadModel(std::ifstream& in)
 	iss >> dummy; iss >> data;
 	if (dummy == "texture:")
 	{
-		std::string path = texturePath + data;
-		textures->LoadTexture(path.c_str());
+		if (data != "none")
+		{
+			std::string path = texturePath + data;
+			textures->LoadTexture(path.c_str());
+		}
+		else if (data == "none")
+		{
+			textures->LoadEmptyTexture();
+		}
 	}
 }
 

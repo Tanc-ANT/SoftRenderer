@@ -1,8 +1,8 @@
 #wireframe color texture
-mode: color
+mode: texture
 
 #on off
-backcull: on
+backcull: off
 
 #lighting:
 #    tpye: point
@@ -14,7 +14,10 @@ lighting:
     direction: -1.0 1.0 1.0
     color: 1.0 1.0 1.0
 
-models: 1
+models: 2
     model:
         mesh: box.obj
 		texture: checkerboard.bmp
+    model:
+        mesh: plane.obj
+		texture: none

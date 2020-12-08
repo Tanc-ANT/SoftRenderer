@@ -9,10 +9,13 @@
 class Texture
 {
 public:
+	Texture();
 	Texture(const char *filename);
 	~Texture();
 
 	void LoadTexture(const char *filename);
+
+	void CreateEmptyTexture();
 
 	Color GetColor(const Vector3& t);
 	
@@ -30,6 +33,8 @@ public:
 	~TextureArray();
 
 	void LoadTexture(const char *filename);
+
+	void LoadEmptyTexture();
 
 	Color GetColor(const Vector3& t, int index);
 

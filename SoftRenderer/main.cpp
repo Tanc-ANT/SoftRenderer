@@ -19,15 +19,16 @@ int main()
 
 	Canvas *canvas = new Canvas(width, height, window->GetFrameBuffer());
 
-	Vector3 eye(5, 0, 0);
+	Vector3 eye(0, 0, 10);
 	Vector3 at(0, 0, 0);
-	Vector3 up(0, 0, 1);
+	Vector3 up(0, 1, 0);
 	float aspect = (float)width / (float)height;
 	Camera* camera = new Camera(eye, at, up, aspect);
 
 	SceneManager *scene_manager = new SceneManager();
-	scene_manager->LoadScene("../Asset/Scene/box.scn");
-	scene_manager->LoadScene("../Asset/Scene/crab.scn");
+	//scene_manager->LoadScene("../Asset/Scene/box.scn");
+	//scene_manager->LoadScene("../Asset/Scene/crab.scn");
+	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
 
 	Rasterizer *raster = new Rasterizer();
 	raster->SetWindow(window);

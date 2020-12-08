@@ -58,7 +58,7 @@ void Rasterizer::ClipCVV(const Triangle& t)
 {
 	std::vector<Vertex> vert_list;
 	std::vector<Vertex> in_list1;
-	std::vector<Vertex> in_list2;
+	//std::vector<Vertex> in_list2;
 
 	vert_list.push_back(t.GetV0());
 	vert_list.push_back(t.GetV1());
@@ -69,17 +69,17 @@ void Rasterizer::ClipCVV(const Triangle& t)
 
 	ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
 		vert_list, in_list1);	//near
-	ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
-		in_list1, in_list2);	//far
+	//ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
+	//	in_list1, in_list2);	//far
 
-	int num_vertex = (int)in_list2.size() - 2;
+	int num_vertex = (int)in_list1.size() - 2;
 	for (int i = 0; i < num_vertex; ++i)
 	{
 		int index0 = 0;
 		int index1 = i + 1;
 		int index2 = i + 2;
-		Triangle triangle(in_list2[index0],
-			in_list2[index1], in_list2[index2]);
+		Triangle triangle(in_list1[index0],
+			in_list1[index1], in_list1[index2]);
 		DrawTriangle(triangle);
 	}
 }

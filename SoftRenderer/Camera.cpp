@@ -5,7 +5,7 @@ void Camera::Update()
 	model.SetIdentity();
 	//invModel = model.GetinverseTranspose();
 	model.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(modelRot.x));
-	model.Rotation(Vector3(0.0f, 0.0f, 1.0f), TO_RADIANS(modelRot.y));
+	model.Rotation(Vector3(0.0f, 1.0f, 0.0f), TO_RADIANS(modelRot.y));
 	UpdateViewMatrix();
 	view.Translation(trans);
 	view.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(viewRot.x));
