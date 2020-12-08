@@ -1,10 +1,12 @@
 # SoftRenderer
 Windows platform soft renderer. I adopt framework from skywind3000's [mini3d](https://github.com/skywind3000/mini3d)
 
+This project is still under construction. If you want to find a stable version with some demo exhibition, please see release.
+
 ## Build
 It is very easy to build this project.
 
-You can open the bat file with any editor in Scripts. And change the version of MSCV to your own computer.
+You can open the bat file in Scripts with any text editor. And change the version of MSCV to your own computer.
 
 Then run this bat file. You can find a new build file has already generated in project file.
 
@@ -21,8 +23,8 @@ Then run this bat file. You can find a new build file has already generated in p
 + Homogeneous Space Clipping
 + Obj Model Support
 + FPS and Triangle Number Show
-+ FPS Camera and Rotation model
++ FPS Camera and Rotation Model
 
 ## Exhibition
-![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_texture.JPG)
+![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_texture.JPG)  
 Obj file from [zauonlok/renderer](https://github.com/zauonlok/renderer/tree/master/assets/crab)
