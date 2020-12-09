@@ -35,7 +35,7 @@ void DirectLight::LightColorCalculaiton(const Vector4& camera_pos, Vertex& v)
 
 	//diffuse caculation
 	Vector4 n = v.GetVertexNormal();
-	Vector4 light_dir = direction;
+	Vector4 light_dir = -direction;
 	light_dir.Normalize();
 	diffuse = n.Dot(light_dir);
 
@@ -102,10 +102,13 @@ void DirectLight::UpdateOrthogonalMatrix()
 
 	float z_range = far - near;
 	Matrix4 matrix;
+
+	matrix.SetIdentity();
+
 	matrix.m[0][0] = 1 / right;
 	matrix.m[1][1] = 1 / top;
 	matrix.m[2][2] = 2 / z_range;
-	matrix.m[2][3] = (near + far) / z_range;
+	matrix.m[3][2] = (near + far) / z_range;
 	
 	SetPorjectionMatrix(matrix);
 }

@@ -30,20 +30,29 @@ public:
 
 private:
 	Vector4 TransformHomogenize(const Vector4& v);
+	Vector4 InvTransformHomogenize(const Vector4& v);
 
 	void ClipWithPlane(const Vector4& ponint, const Vector4& normal, 
 		std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list);
 
-	void ClipCVV(const Triangle& t);
+	void ClipCVV(const Triangle& cam_tri, const Triangle& lig_tri);
 
-	Triangle CameraVertexTransfrom(Triangle triangle);
-	Triangle LightVertexTransfrom(Triangle triangle);
+	Triangle CameraTriangleTransfrom(const Triangle& triangle);
+	Triangle LightTriangleTransfrom(const Triangle& triangle);
+	Vector4 LightVertexTransfrom(const Vector4& vert);
+
+	Triangle CameraTriangleToLightTriangle(const Triangle& triangle);
 
 	void DrawPixel(int x, int y, UINT32 color);
 	void DrawDepth(int x, int y, float z);
+
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
-	void DrawTriangle(const Triangle& t);
+
+	void DrawTriangleDepth(const Triangle& lig_t);
+	void DrawTriangleColor(const Triangle& cam_t);
+
+	bool TestVertexInShadow(const Vector4& vert);
 
 	bool FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 

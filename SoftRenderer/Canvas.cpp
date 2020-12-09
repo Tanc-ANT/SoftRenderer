@@ -37,9 +37,10 @@ Canvas::~Canvas()
 		free(frameBuffer);
 	frameBuffer = nullptr;
 	zBuffer = nullptr;
+	shadowBuffer = nullptr;
 }
 
-void Canvas::Clear()
+void Canvas::ClearFrameBuffer()
 {
 	int y, x;
 	// Clear frame buffer
@@ -49,11 +50,27 @@ void Canvas::Clear()
 		for (x = width; x > 0; ++dst, --x)
 			dst[0] = 0;
 	}
+}
+
+void Canvas::ClearZBuffer()
+{
+	int y, x;
 	for (y = 0; y < height; ++y)
 	{
 		float *dst = zBuffer[y];
 		for (x = width; x > 0; ++dst, --x)
 			dst[0] = 1.0f;
+	}
+}
+
+void Canvas::ClearShadowBuffer()
+{
+	int y, x;
+	for (y = 0; y < height; ++y)
+	{
+		float *dst = shadowBuffer[y];
+		for (x = width; x > 0; ++dst, --x)
+			dst[0] = 100.0f;
 	}
 }
 

@@ -31,8 +31,12 @@ public:
 
 	Matrix4 GetModelMatrix() const{ return model; }
 	Matrix4 GetInvModelMatrix() const { return invModel; }
+
 	Matrix4 GetViewMatrix() const { return view; }
+	Matrix4 GetInvViewMatrix() const { return invView; }
+
 	Matrix4 GetProjectionMatrix() const { return proj; }
+	Matrix4 GetInvProjectionMatrix() const { return invProj; }
 
 	void SetTrans(const Vector3& t) { trans = t; }
 	Vector3 GetTrans() const { return trans; }
@@ -62,7 +66,9 @@ private:
 	Matrix4 model;
 	Matrix4 invModel;
 	Matrix4 view;
+	Matrix4 invView;
 	Matrix4 proj;
+	Matrix4 invProj;
 
 	Vector3 trans = { 0.0f,0.0f,10.0f };
 

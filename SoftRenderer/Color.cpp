@@ -2,6 +2,7 @@
 
 
 Color Color::WHITH_COLOR = { 1.0f, 1.0f, 1.0f };
+Color Color::BLACK_COLOR = { 0.0f, 0.0f, 0.0f };
 Color Color::RED_COLOR = { 1.0f, 0.0f, 0.0f };
 Color Color::BULE_COLOR = { 0.0f, 1.0f, 0.0f };
 Color Color::GREEN_COLOR = { 0.0f, 0.0f, 1.0f };

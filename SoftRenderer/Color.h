@@ -54,6 +54,7 @@ public:
 	}
 
 	static Color WHITH_COLOR;
+	static Color BLACK_COLOR;
 	static Color RED_COLOR;
 	static Color BULE_COLOR;
 	static Color GREEN_COLOR;

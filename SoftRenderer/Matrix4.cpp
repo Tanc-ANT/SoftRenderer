@@ -181,7 +181,33 @@ Matrix4 Matrix4::Scalation(const Vector3& scale)
 	return *this;
 }
 
-Matrix4 Matrix4::GetinverseTranspose()
+Matrix4 Matrix4::GetTranspose()
+{
+	Matrix4 Transpose;
+
+	Transpose.m[0][0] = m[0][0];
+	Transpose.m[1][0] = m[0][1];
+	Transpose.m[2][0] = m[0][2];
+	Transpose.m[3][0] = m[0][3];
+
+	Transpose.m[0][1] = m[1][0];
+	Transpose.m[1][1] = m[1][1];
+	Transpose.m[2][1] = m[1][2];
+	Transpose.m[3][1] = m[1][3];
+
+	Transpose.m[0][2] = m[2][0];
+	Transpose.m[1][2] = m[2][1];
+	Transpose.m[2][2] = m[2][2];
+	Transpose.m[3][2] = m[2][3];
+
+	Transpose.m[0][3] = m[3][0];
+	Transpose.m[1][3] = m[3][1];
+	Transpose.m[2][3] = m[3][2];
+	Transpose.m[3][3] = m[3][3];
+	return Transpose;
+}
+
+Matrix4 Matrix4::GetInverseTranspose()
 {
 	float SubFactor00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
 	float SubFactor01 = m[2][1] * m[3][3] - m[3][1] * m[2][3];

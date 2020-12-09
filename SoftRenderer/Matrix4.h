@@ -52,8 +52,9 @@ public:
 	Matrix4 Rotation(const Vector3& rotate, const float& theta);
 	Matrix4 Scalation(const Vector3& scale);
 
-	// Form glm
-	Matrix4 GetinverseTranspose();
+	Matrix4 GetTranspose();
+	// From glm
+	Matrix4 GetInverseTranspose();
 
 	float m[4][4] = { 0.0f };
 };
