@@ -15,12 +15,14 @@ public:
 	void SetHeight(const int& h) { height = h; }
 	int GetHeight() { return height; }
 
-	UINT32** GetFrameBuffer() { return framebuffer; }
-	float** GetZBuffer() { return zbuffer; }
+	UINT32** GetFrameBuffer() { return frameBuffer; }
+	float** GetZBuffer() { return zBuffer; }
+	float** GetShadowBuffer() { return shadowBuffer; }
 
 private:
 	int width;
 	int height;
-	UINT32 **framebuffer;
-	float **zbuffer;
+	UINT32 **frameBuffer;
+	float **zBuffer;
+	float **shadowBuffer;
 };

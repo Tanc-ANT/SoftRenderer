@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Vector4.h"
+#include "Matrix4.h"
 #include "Color.h"
 #include "Geometry.h"
 
@@ -10,18 +11,27 @@ public:
 	Light() {};
 	Light(const Color& c)
 	{
-		
 		color = c;
 	}
 	~Light() {};
 
-	virtual void LightCalculaiton(const Vector4& camera_pos, Vertex& v) {};
+	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) {};
+
+	virtual void Update() {};
+
+	void SetViewMatrix(const Matrix4& m) { view = m; }
+	Matrix4 GetViewMatrix() { return view; };
+
+	void SetPorjectionMatrix(const Matrix4& m) { proj = m; }
+	Matrix4 GetProjectionMatrix() { return proj; };
 
 	void SetColor(const Color& c) { color = c; }
 	Color GetColor() { return color; }
 
 private:
 	Color color;
+	Matrix4 view;
+	Matrix4 proj;
 };
 
 class PointLight :public Light
@@ -39,7 +49,7 @@ public:
 	}
 	~PointLight() {};
 
-	virtual void LightCalculaiton(const Vector4& camera_pos, Vertex& v) override;
+	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
 
 	void SetPosition(const Vector4& d) { position = d; }
 	Vector4 GetPosition() { return position; }
@@ -63,10 +73,16 @@ public:
 	}
 	~DirectLight() {};
 
-	virtual void LightCalculaiton(const Vector4& camera_pos, Vertex& v) override;
+	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
+
+	virtual void Update() override;
 
 	void SetDirection(const Vector4& d) { direction = d; }
 	Vector4 GetDirection() { return direction; }
+
+private:
+	void UpdateViewMatrix();
+	void UpdateOrthogonalMatrix();
 
 private:
 	Vector4 direction;

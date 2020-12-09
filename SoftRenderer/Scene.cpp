@@ -45,6 +45,15 @@ void Scene::LoadScene(const char *filename)
 			if (data == "on")
 				renderState |= RENDER_STATE_BACKCULL;
 		}
+		else if (!line.compare(0, 7, "shadow:"))
+		{
+			iss >> dummy; iss >> data;
+			if (data == "on")
+			{
+				renderState |= RENDER_STATE_SHADOW;
+				renderPass = 2;
+			}
+		}
 		else if (!line.compare(0, 9, "lighting:"))
 			ReadLight(in);
 		else if (!line.compare(0, 6, "models"))

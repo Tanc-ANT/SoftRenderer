@@ -17,6 +17,9 @@ public:
 
 	void CreateEmptyTexture();
 
+	void ClearTexture();
+
+	void SetColor(const Vector3& t,const Color& c);
 	Color GetColor(const Vector3& t);
 	
 

@@ -56,43 +56,120 @@ void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 
 void Rasterizer::ClipCVV(const Triangle& t)
 {
-	std::vector<Vertex> vert_list;
-	std::vector<Vertex> in_list1;
-	//std::vector<Vertex> in_list2;
-
-	vert_list.push_back(t.GetV0());
-	vert_list.push_back(t.GetV1());
-	vert_list.push_back(t.GetV2());
-
-	float cosAh = cos(camera->GetFovY() / 2);
-	float sinAh = sin(camera->GetFovY() / 2);
-
-	ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
-		vert_list, in_list1);	//near
-	//ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
-	//	in_list1, in_list2);	//far
-
-	int num_vertex = (int)in_list1.size() - 2;
-	for (int i = 0; i < num_vertex; ++i)
+	if (renderPass == 1)
 	{
-		int index0 = 0;
-		int index1 = i + 1;
-		int index2 = i + 2;
-		Triangle triangle(in_list1[index0],
-			in_list1[index1], in_list1[index2]);
-		DrawTriangle(triangle);
+		DrawTriangle(t);
 	}
+	else if (renderPass == 0)
+	{
+		std::vector<Vertex> vert_list;
+		std::vector<Vertex> in_list1;
+		//std::vector<Vertex> in_list2;
+
+		vert_list.push_back(t.GetV0());
+		vert_list.push_back(t.GetV1());
+		vert_list.push_back(t.GetV2());
+
+		float cosAh = cos(camera->GetFovY() / 2);
+		float sinAh = sin(camera->GetFovY() / 2);
+
+		ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
+			vert_list, in_list1);	//near
+		//ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
+		//	in_list1, in_list2);	//far
+
+		int num_vertex = (int)in_list1.size() - 2;
+		for (int i = 0; i < num_vertex; ++i)
+		{
+			int index0 = 0;
+			int index1 = i + 1;
+			int index2 = i + 2;
+			Triangle triangle(in_list1[index0],
+				in_list1[index1], in_list1[index2]);
+			DrawTriangle(triangle);
+		}
+	}
+}
+
+Triangle Rasterizer::CameraVertexTransfrom(Triangle triangle)
+{
+	Vertex vertex_points[3] = { triangle.GetV0(),triangle.GetV1(),triangle.GetV2() };
+	Vector4 world_points[3];
+	Vector4 screen_points[3];
+
+	Matrix4 M; Matrix4 V; Matrix4 P;
+
+	M = camera->GetModelMatrix();
+	V = camera->GetViewMatrix();
+	P = camera->GetProjectionMatrix();
+
+	for (int j = 0; j < 3; j++) {
+		Vector4 v = vertex_points[j].GetVertexPosition();
+		Vector3 t = vertex_points[j].GetVertexTexcoord();
+		Vector4 n = vertex_points[j].GetVertexNormal();
+		// M transform
+		world_points[j] = v * M;
+		vertex_points[j].SetVertexPosition(world_points[j]);
+
+		// normal set
+		vertex_points[j].SetVertexNormal(n);
+		n = n * M;
+
+		// light caculation
+		if (scnManager->GetRenderState() & RENDER_STATE_LIGHT)
+		{
+			scnManager->GetCurrentLight()->LightColorCalculaiton(
+				Vector4(camera->GetPostion(), 1.0f),
+				vertex_points[j]);
+		}
+		// VP transform
+		screen_points[j] = world_points[j] * V;
+		screen_points[j] = screen_points[j] * P;
+		vertex_points[j].SetVertexPosition(screen_points[j]);
+	}
+	return Triangle(vertex_points[0], vertex_points[1], vertex_points[2]);
+}
+
+Triangle Rasterizer::LightVertexTransfrom(Triangle triangle)
+{
+	Vertex vertex_points[3] = { triangle.GetV0(),triangle.GetV1(),triangle.GetV2() };
+	Vector4 world_points[3];
+	Vector4 screen_points[3];
+
+	Matrix4 M; Matrix4 V; Matrix4 P;
+
+	M = camera->GetModelMatrix();
+	V = scnManager->GetCurrentLight()->GetViewMatrix();
+	P = scnManager->GetCurrentLight()->GetProjectionMatrix();
+
+	for (int j = 0; j < 3; j++) {
+		Vector4 v = vertex_points[j].GetVertexPosition();
+		Vector3 t = vertex_points[j].GetVertexTexcoord();
+		Vector4 n = vertex_points[j].GetVertexNormal();
+		// M transform
+		world_points[j] = v * M;
+		vertex_points[j].SetVertexPosition(world_points[j]);
+
+		// VP transform
+		screen_points[j] = world_points[j] * V;
+		screen_points[j] = screen_points[j] * P;
+		vertex_points[j].SetVertexPosition(screen_points[j]);
+	}
+	return Triangle(vertex_points[0], vertex_points[1], vertex_points[2]);
 }
 
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 {
 	if (((unsigned int)x < (UINT32)canvas->GetWidth()) && (((unsigned int)y < (UINT32)canvas->GetHeight()))
 		&& (((unsigned int)x >= (UINT32)0)) && (((unsigned int)y >= (UINT32)0)))
-		
 	{
-		//y = device->height - y;
 		canvas->GetFrameBuffer()[y][x] = color;
 	}
+}
+
+void Rasterizer::DrawDepth(int x, int y, float z)
+{
+	canvas->GetShadowBuffer()[y][x] = z;
 }
 
 void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
@@ -141,11 +218,12 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 	t1 = TransformHomogenize(t1);
 	t2 = TransformHomogenize(t2);
 
-	if (FaceCulling(t0,t1,t2))
+	if (renderPass == 0 && FaceCulling(t0,t1,t2))
 		return;
 
 	// Count number of trinagl
-	nTriangle += 1;
+	if(renderPass == 0)
+		nTriangle += 1;
 
 	Color c0 = t.GetV0().GetVertexColor();
 	Color c1 = t.GetV1().GetVertexColor();
@@ -184,7 +262,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			if (y >= canvas->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if(std::abs((float)y - t0.y)<0.5f) continue;
-			float segement_height = t1.y - t0.y + EPSILON;
+			float segement_height = t1.y - t0.y;
 			//if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
@@ -231,9 +309,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				
-				if (z_line_buffer[j] >= z)
+				if (z_line_buffer[j] > z)
 				{
 					Color color;
+					Vector3 uv;
+
 					color = (color_ratio * step + C);
 					float w = w_ratio * step + A.w;
 					color = color / w;
@@ -241,7 +321,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 					if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Color texcolor;
-						Vector3 uv = (uv_ratio * step + E);
+						uv = (uv_ratio * step + E);
 						float w = w_ratio * step + A.w;
 						// Perspective correction
 						uv = uv / w;
@@ -249,7 +329,13 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 						color = color * texcolor;
 					}					
 					z_line_buffer[j] = z;
-					DrawPixel(j, y, color.GetIntensity());
+					if (renderPass == 0)
+					{
+						UINT32 temp = color.GetIntensity();
+						DrawPixel(j, y, color.GetIntensity());
+					}
+					else if (renderPass == 1)
+						DrawDepth(j, y, z);
 				}
 			}
 		}
@@ -260,7 +346,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 			if (y >= canvas->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if (std::abs((float)y - t1.y) < 0.5f) continue;
-			float segement_height = t2.y - t1.y + EPSILON;
+			float segement_height = t2.y - t1.y;
 			//if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
@@ -306,9 +392,11 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				float w = w_ratio * step + A.w;
-				if (z_line_buffer[j] >= z)
+				if (z_line_buffer[j] > z)
 				{
 					Color color;
+					Vector3 uv;
+
 					color = (color_ratio * step + C);
 					float w = w_ratio * step + A.w;
 					color = color / w;
@@ -316,7 +404,7 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 					if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
 					{
 						Color texcolor;
-						Vector3 uv = (uv_ratio * step + E);
+						uv = (uv_ratio * step + E);
 						float w = w_ratio * step + A.w;
 						// Perspective correction
 						uv = uv / w;
@@ -324,23 +412,17 @@ void Rasterizer::DrawTriangle(const Triangle& t)
 						color = color * texcolor;
 					}
 					z_line_buffer[j] = z;
-					DrawPixel(j, y, color.GetIntensity());
+					if (renderPass == 0)
+					{
+						UINT32 temp = color.GetIntensity();
+						DrawPixel(j, y, color.GetIntensity());
+					}
+					else if (renderPass == 1)
+						DrawDepth(j, y, z);
 				}
 			}
 		}
 	}
-}
-
-void Rasterizer::DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d)
-{
-	// Set texcoord
-	a.SetVertexTexcoord({ 0,1,0 });
-	b.SetVertexTexcoord({ 0,0,0 });
-	c.SetVertexTexcoord({ 1,0,0 });
-	d.SetVertexTexcoord({ 1,1,0 });
-
-	ClipCVV(Triangle(a, b, c));
-	ClipCVV(Triangle(c, d, a));
 }
 
 void Rasterizer::DrawSomthing()
@@ -354,33 +436,11 @@ void Rasterizer::DrawSomthing()
 		model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
 
 		for (int i = 0; i < model->Nfaces(); i++) {
-			Triangle t = model->GetFaceIndex(i);
-			Vertex vertex_points[3] = { t.GetV0(),t.GetV1(),t.GetV2() };
-			Vector4 world_points[3];
-			Vector4 screen_points[3];
-			for (int j = 0; j < 3; j++) {
-				Vector4 v = vertex_points[j].GetVertexPosition();
-				Vector3 t = vertex_points[j].GetVertexTexcoord();
-				Vector4 n = vertex_points[j].GetVertexNormal();
-				// M transform
-				world_points[j] = v * camera->GetModelMatrix();
-				vertex_points[j].SetVertexPosition(world_points[j]);
-				// normal set
-				n = n * camera->GetModelMatrix();
-				vertex_points[j].SetVertexNormal(n);
-				// light caculation
-				if (scnManager->GetRenderState() & RENDER_STATE_LIGHT)
-				{
-					scnManager->GetCurrentLight()->LightCalculaiton(
-						Vector4(camera->GetPostion(), 1.0f),
-						vertex_points[j]);
-				}
-				// VP transform
-				screen_points[j] = world_points[j] * camera->GetViewMatrix();
-				screen_points[j] = screen_points[j] * camera->GetProjectionMatrix();
-				vertex_points[j].SetVertexPosition(screen_points[j]);
-			}
-			t = { vertex_points[0],vertex_points[1],vertex_points[2] };
+			Triangle t;
+			if (renderPass == 1)
+				t = LightVertexTransfrom(model->GetFaceIndex(i));
+			else if (renderPass == 0)
+				t = CameraVertexTransfrom(model->GetFaceIndex(i));
 			ClipCVV(t);
 		}
 	}
@@ -389,9 +449,14 @@ void Rasterizer::DrawSomthing()
 
 void Rasterizer::Update()
 {
-	canvas->Clear();
-	camera->Update();
-	DrawSomthing();
+	renderPass = scnManager->GetRenderPass();
+	while (renderPass--)
+	{
+		canvas->Clear();
+		camera->Update();
+		scnManager->GetCurrentLight()->Update();
+		DrawSomthing();
+	}
 	window->Update();
 	ProcessWindowKeyInput();
 	ProcessWindowMouseInput();

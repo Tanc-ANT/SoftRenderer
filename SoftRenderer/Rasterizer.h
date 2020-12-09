@@ -36,11 +36,14 @@ private:
 
 	void ClipCVV(const Triangle& t);
 
+	Triangle CameraVertexTransfrom(Triangle triangle);
+	Triangle LightVertexTransfrom(Triangle triangle);
+
 	void DrawPixel(int x, int y, UINT32 color);
+	void DrawDepth(int x, int y, float z);
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 	void DrawTriangle(const Triangle& t);
-	void DrawPlane(Vertex& a, Vertex& b, Vertex& c, Vertex& d);
 
 	bool FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 
@@ -57,6 +60,7 @@ private:
 	int currModelIndex = 0;
 	int nTriangle = 0;
 	bool changeState = false;
+	UINT32 renderPass = 1;
 
 	//For camera
 	float originX = 0.0f;

@@ -2,27 +2,30 @@
 
 Canvas::Canvas(int w, int h, void *fb)
 {
-	int need = w * h * 8 + sizeof(void*)*(h * 2);
+	int need = w * h * 12 + sizeof(void*)*(h * 3);
 	char *ptr = (char*)malloc(need);
-	char *framebuf,*zbuf;
+	char *framebuf,*zbuf,*shadowbuf;
 	assert(ptr);
 	// Allocate index memeory
 	// The line number index of frame buffer
-	framebuffer = (UINT32 **)ptr;
+	frameBuffer = (UINT32 **)ptr;
 	// The line number index of z buffer
-	zbuffer = (float **)(ptr + sizeof(void*) * h);
-	ptr += sizeof(void*) * h * 2;
+	zBuffer = (float **)(ptr + sizeof(void*) * h);
+	shadowBuffer = (float **)(ptr + sizeof(void*) * 2 * h);
+	ptr += sizeof(void*) * h * 3;
 
 	// Allocate buffer memory
 	framebuf = (char*)ptr;
 	zbuf = (char*)ptr + w * h * 4;
-	ptr += w * h * 8;
+	shadowbuf = (char*)ptr + w * h * 8;
+	ptr += w * h * 12;
 
 	if (fb != nullptr) framebuf = (char*)fb;
 	for (int j = 0; j < h; ++j)
 	{
-		framebuffer[j] = (UINT32 *)(framebuf + w * 4 * j);
-		zbuffer[j] = (float *)(zbuf + w * 4 * j);
+		frameBuffer[j] = (UINT32 *)(framebuf + w * 4 * j);
+		zBuffer[j] = (float *)(zbuf + w * 4 * j);
+		shadowBuffer[j] = (float *)(shadowbuf + w * 4 * j);
 	}
 	width = w;
 	height = h;
@@ -30,10 +33,10 @@ Canvas::Canvas(int w, int h, void *fb)
 
 Canvas::~Canvas()
 {
-	if (framebuffer)
-		free(framebuffer);
-	framebuffer = nullptr;
-	zbuffer = nullptr;
+	if (frameBuffer)
+		free(frameBuffer);
+	frameBuffer = nullptr;
+	zBuffer = nullptr;
 }
 
 void Canvas::Clear()
@@ -42,13 +45,13 @@ void Canvas::Clear()
 	// Clear frame buffer
 	for (y = 0; y < height; ++y)
 	{
-		UINT32 *dst = framebuffer[y];
+		UINT32 *dst = frameBuffer[y];
 		for (x = width; x > 0; ++dst, --x)
 			dst[0] = 0;
 	}
 	for (y = 0; y < height; ++y)
 	{
-		float *dst = zbuffer[y];
+		float *dst = zBuffer[y];
 		for (x = width; x > 0; ++dst, --x)
 			dst[0] = 1.0f;
 	}

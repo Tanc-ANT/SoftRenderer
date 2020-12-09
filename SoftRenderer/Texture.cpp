@@ -86,8 +86,8 @@ void Texture::LoadTexture(const char *filename)
 
 void Texture::CreateEmptyTexture()
 {
-	width = 256;
-	height = 256;
+	width = 512;
+	height = 512;
 	int need = width * height * 4 + sizeof(void*)*(height);
 	char *ptr = (char*)malloc(need);
 	assert(ptr);
@@ -112,6 +112,29 @@ void Texture::CreateEmptyTexture()
 			texture[j][i] = 0xffffffff;
 		}
 	}
+}
+
+void Texture::ClearTexture()
+{
+	for (int j = 0; j < height; ++j)
+	{
+		for (int i = 0; i < width; ++i)
+		{
+			texture[j][i] = 0xffffffff;
+		}
+	}
+}
+
+void Texture::SetColor(const Vector3& t, const Color& c)
+{
+	int x, y;
+	float u = t.x * ((float)width - 1.0f);
+	float v = t.y * ((float)height - 1.0f);
+	x = (int)(u + 0.5f);
+	y = (int)(v + 0.5f);
+	x = std::clamp(x, 0, width - 1);
+	y = std::clamp(y, 0, height - 1);
+	texture[y][x] = c.GetIntensity();
 }
 
 Color Texture::GetColor(const Vector3& t)

@@ -11,6 +11,7 @@
 #define RENDER_STATE_MODEL			16	// Render model
 #define RENDER_STATE_BACKCULL		32	// Back culling or not
 #define RENDER_STATE_LIGHT			64	// Calculate light or not
+#define RENDER_STATE_SHADOW			128	// Shadow map on or off
 
 class Scene
 {
@@ -19,6 +20,8 @@ public:
 	~Scene();
 
 	UINT32 GetRenderState() { return renderState; }
+	UINT32 GetRenderPass() { return renderPass; }
+
 	Light* GetLight() { return light; }
 	ModelArray* GetModels() { return models; }
 	TextureArray* GetTextures() { return textures; }
@@ -37,6 +40,7 @@ private:
 	TextureArray* textures;
 
 	UINT32 renderState = 0;
+	UINT32 renderPass = 1;// default value is one
 	const std::string modelPath = "../Asset/Obj/";
 	const std::string texturePath = "../Asset/Texture/";
 };
@@ -52,6 +56,8 @@ public:
 	void SwitchNextScene();
 
 	UINT32 GetRenderState() { return scenes[index]->GetRenderState(); }
+	UINT32 GetRenderPass() { return scenes[index]->GetRenderPass(); }
+
 	Scene* GetCurrentScene() { return scenes[index]; }
 	Light* GetCurrentLight() { return scenes[index]->GetLight(); }
 	ModelArray* GetCurrentModels(){ return scenes[index]->GetModels(); }
