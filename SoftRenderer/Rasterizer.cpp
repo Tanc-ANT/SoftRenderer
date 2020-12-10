@@ -128,9 +128,9 @@ Triangle Rasterizer::CameraTriangleTransfrom(const Triangle& triangle)
 		vertex_points[j].SetVertexPosition(world_points[j]);
 
 		// normal set
-		vertex_points[j].SetVertexNormal(n);
 		n = n * M;
-
+		vertex_points[j].SetVertexNormal(n);
+		
 		// light caculation
 		if (scnManager->GetRenderState() & RENDER_STATE_LIGHT)
 		{
@@ -269,6 +269,9 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	t1 = TransformHomogenize(t1);
 	t2 = TransformHomogenize(t2);
 
+	//if (FrontFaceCulling(t0, t1, t2))
+	//	return;
+
 	if (t0.y > t1.y) { std::swap(t0, t1); }
 	if (t0.y > t2.y) { std::swap(t0, t2); }
 	if (t1.y > t2.y) { std::swap(t1, t2); }
@@ -376,7 +379,7 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 	t1 = TransformHomogenize(t1);
 	t2 = TransformHomogenize(t2);
 	
-	if (FaceCulling(t0, t1, t2))
+	if (BackFaceCulling(t0, t1, t2))
 		return;
 	else
 		nTriangle++;
@@ -389,6 +392,10 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 	Vector3 uv1 = cam_t.GetV1().GetVertexTexcoord();
 	Vector3 uv2 = cam_t.GetV2().GetVertexTexcoord();
 
+	Vector4 n0 = cam_t.GetV0().GetVertexNormal();
+	Vector4 n1 = cam_t.GetV1().GetVertexNormal();
+	Vector4 n2 = cam_t.GetV2().GetVertexNormal();
+
 	if (renderPass == 0 && (scnManager->GetRenderState() & RENDER_STATE_WIREFRAME))
 	{
 		DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, Color::WHITH_COLOR);
@@ -398,17 +405,22 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 	
 	else if(scnManager->GetRenderState() & (RENDER_STATE_COLOR | RENDER_STATE_TEXTURE))
 	{
+		// Perspective correction
 		c0 = c0 * t0.w;
 		c1 = c1 * t1.w;
 		c2 = c2 * t2.w;
-		// Perspective correction
+		
 		uv0 = uv0 * t0.w;
 		uv1 = uv1 * t1.w;
 		uv2 = uv2 * t2.w;
+
+		n0 = n0 * t0.w;
+		n1 = n1 * t1.w;
+		n2 = n2 * n2.w;
 		
-		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); std::swap(uv0, uv1); }
-		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); std::swap(uv0, uv2); }
-		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); std::swap(uv1, uv2); }
+		if (t0.y > t1.y) { std::swap(t0, t1); std::swap(c0, c1); std::swap(uv0, uv1); std::swap(n0, n1); }
+		if (t0.y > t2.y) { std::swap(t0, t2); std::swap(c0, c2); std::swap(uv0, uv2); std::swap(n0, n2); }
+		if (t1.y > t2.y) { std::swap(t1, t2); std::swap(c1, c2); std::swap(uv1, uv2); std::swap(n1, n2); }
 
 		float total_height = t2.y - t0.y;
 		// plus 0.5 for rounding
@@ -431,12 +443,17 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			//texcoord lerp
 			Vector3 E = Vector3::ClampLerp(uv0, uv2, alpha);
 			Vector3 F = Vector3::ClampLerp(uv0, uv1, beta);
+			//normal lerp
+			Vector4 G = Vector4::ClampLerp(n0, n2, alpha);
+			Vector4 H = Vector4::ClampLerp(n0, n1, alpha);
+
 			//draw line from left to right
 			if (A.x > B.x)
 			{
 				std::swap(A, B);
 				std::swap(C, D);
 				std::swap(E, F);
+				std::swap(G, H);
 			}
 
 			//zbuffer caculation
@@ -446,9 +463,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			float *z_line_buffer = canvas->GetZBuffer()[y];
 
 			//w caculation
-			float w_ratio = 1.0f;
 			float w_diff = B.w - A.w;
-			w_ratio = w_diff / scanline_width;
+			float w_ratio = w_diff / scanline_width;
 			
 
 			//color caculation
@@ -459,13 +475,22 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			Vector3 uv_diff = F - E;
 			Vector3 uv_ratio = uv_diff / scanline_width;
 
+			//normal caculation
+			Vector4 norm_diff = H - G;
+			Vector4 norm_ratio = norm_diff / scanline_width;
+
 			for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 			{
 				float step = (float)j - A.x + 0.5f;
 				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				float w = w_ratio * step + A.w;
-				if (z_line_buffer[j] > z && !TestVertexInShadow(Vector4(j, y, z, w)))
+
+				Vector4 normal;
+				normal = (norm_ratio * step + G);
+				normal = normal / w;
+
+				if (z_line_buffer[j] > z && !TestVertexInShadow(Vector4(j, y, z, w), normal))
 				{
 					Color color;
 					Vector3 uv;
@@ -508,12 +533,16 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			//texcoord lerp
 			Vector3 E = Vector3::ClampLerp(uv0, uv2, alpha);
 			Vector3 F = Vector3::ClampLerp(uv1, uv2, beta);
+			//normal lerp
+			Vector4 G = Vector4::ClampLerp(n0, n2, alpha);
+			Vector4 H = Vector4::ClampLerp(n0, n1, alpha);
 			//draw line from left to right
 			if (A.x > B.x)
 			{
 				std::swap(A, B);
 				std::swap(C, D);
 				std::swap(E, F);
+				std::swap(G, H);
 			}
 
 			//for zbuffer caculation
@@ -523,9 +552,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			float *z_line_buffer = canvas->GetZBuffer()[y];
 
 			//w caculation
-			float w_ratio = 1.0f;
 			float w_diff = B.w - A.w;
-			w_ratio = w_diff / scanline_width;
+			float w_ratio = w_diff / scanline_width;
 
 			//color caculation
 			Color color_diff = D - C;
@@ -535,13 +563,22 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			Vector3 uv_diff = F - E;
 			Vector3 uv_ratio = uv_diff / scanline_width;
 
+			//normal caculation
+			Vector4 norm_diff = H - G;
+			Vector4 norm_ratio = norm_diff / scanline_width;
+
 			for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 			{
 				float step = (float)j - A.x + 0.5f;
 				if (j >= canvas->GetWidth() || j < 0) break;
 				float z = depth_ratio * step + A.z;
 				float w = w_ratio * step + A.w;
-				if (z_line_buffer[j] > z && !TestVertexInShadow(Vector4(j,y,z,w)))
+
+				Vector4 normal;
+				normal = (norm_ratio * step + G);
+				normal = normal / w;
+
+				if (z_line_buffer[j] > z && !TestVertexInShadow(Vector4(j, y, z, w), normal))
 				{
 					Color color;
 					Vector3 uv;
@@ -569,7 +606,7 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 	}
 }
 
-bool Rasterizer::TestVertexInShadow(const Vector4& vert)
+bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 {
 	
 	Vector4 screen_point = InvTransformHomogenize(vert);
@@ -588,8 +625,12 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert)
 	if (y >= canvas->GetHeight() || x > canvas->GetWidth() || y<= 0|| x<0)
 		return false;
 
-	float depth = canvas->GetShadowBuffer()[y][x];
-	if (canvas->GetShadowBuffer()[y][x] < z)
+	DirectLight* light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
+	Vector4 light_dir = light->GetDirection();
+	float bias = std::fmaxf(0.012 * (1.0 - normal.Dot(light_dir)), 0.005);
+	float closestDepth = canvas->GetShadowBuffer()[y][x];
+	float currentDepth = z - bias;
+	if (closestDepth < currentDepth)
 		return true;
 	else
 		return false;
@@ -606,10 +647,10 @@ void Rasterizer::DrawSomthing()
 		model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
 
 		for (int i = 0; i < model->Nfaces(); i++) {
-			Triangle camera_tri,light_tir;
-			light_tir = LightTriangleTransfrom(model->GetFaceIndex(i));
+			Triangle camera_tri,light_tri;
+			light_tri = LightTriangleTransfrom(model->GetFaceIndex(i));
 			camera_tri = CameraTriangleTransfrom(model->GetFaceIndex(i));
-			ClipCVV(camera_tri,light_tir);
+			ClipCVV(camera_tri,light_tri);
 		}
 	}
 	window->SetNtri(nTriangle);
@@ -632,7 +673,7 @@ void Rasterizer::Update()
 	ProcessWindowMouseInput();
 }
 
-bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
+bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
 {
 	if (scnManager->GetRenderState() & RENDER_STATE_BACKCULL)
 	{
@@ -645,6 +686,14 @@ bool Rasterizer::FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 
 	{
 		return false;
 	}
+}
+
+bool Rasterizer::FrontFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2)
+{
+	Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
+	Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
+	Vector3 n = v1.Cross(v2);
+	return n.z >= 0;
 }
 
 void Rasterizer::ProcessWindowKeyInput()

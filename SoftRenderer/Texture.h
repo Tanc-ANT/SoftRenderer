@@ -3,9 +3,6 @@
 #include "Vector3.h"
 #include "Color.h"
 
-#define TEXTURE_INDEX_0		0
-#define TEXTURE_INDEX_1		1
-
 class Texture
 {
 public:

@@ -52,9 +52,10 @@ private:
 	void DrawTriangleDepth(const Triangle& lig_t);
 	void DrawTriangleColor(const Triangle& cam_t);
 
-	bool TestVertexInShadow(const Vector4& vert);
+	bool TestVertexInShadow(const Vector4& vert,const Vector4& normal);
 
-	bool FaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
+	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
+	bool FrontFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2);
 
 	void ProcessWindowKeyInput();
 	void ProcessWindowMouseInput();

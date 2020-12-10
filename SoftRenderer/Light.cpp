@@ -97,18 +97,20 @@ void DirectLight::UpdateOrthogonalMatrix()
 {
 	float near = 0.0f;
 	float far = 10.0f;
-	float right = 1.0f;
-	float top = 1.0f;
+	float right = 10.0f;
+	float left = -10.0f;
+	float top = 10.0f;
+	float bottom = -10.0f;
 
-	float z_range = far - near;
 	Matrix4 matrix;
 
-	matrix.SetIdentity();
-
-	matrix.m[0][0] = 1 / right;
-	matrix.m[1][1] = 1 / top;
-	matrix.m[2][2] = 2 / z_range;
-	matrix.m[3][2] = (near + far) / z_range;
+	matrix.m[0][0] = 2 / (right-left);
+	matrix.m[1][1] = 2 / (top - bottom);
+	matrix.m[2][2] = 2 / (far - near);
+	matrix.m[3][0] = (left + right) / (left - right);
+	matrix.m[3][1] = (bottom + top) / (bottom - top);
+	matrix.m[3][2] = (near + far) / (far - near);
+	matrix.m[3][3] = 1.0f;
 	
 	SetPorjectionMatrix(matrix);
 }

@@ -2,7 +2,7 @@
 mode: color
 
 #on off
-backcull: off
+backcull: on
 
 #on off
 shadow: on

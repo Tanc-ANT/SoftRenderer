@@ -3,9 +3,6 @@
 #include "Vector3.h"
 #include "Geometry.h"
 
-#define MODEL_INDEX_0		0
-#define MODEL_INDEX_1		1
-
 class Model
 {
 public:
