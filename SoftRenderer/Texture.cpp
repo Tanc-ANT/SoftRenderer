@@ -132,8 +132,8 @@ void Texture::SetColor(const Vector3& t, const Color& c)
 	float v = t.y * ((float)height - 1.0f);
 	x = (int)(u + 0.5f);
 	y = (int)(v + 0.5f);
-	x = std::clamp(x, 0, width - 1);
-	y = std::clamp(y, 0, height - 1);
+	x = CLAMP(x, 0, width - 1);
+	y = CLAMP(y, 0, height - 1);
 	texture[y][x] = c.GetIntensity();
 }
 
@@ -144,8 +144,8 @@ Color Texture::GetColor(const Vector3& t)
 	float v = t.y * ((float)height - 1.0f);
 	x = (int)(u + 0.5f);
 	y = (int)(v + 0.5f);
-	x = std::clamp(x, 0, width - 1);
-	y = std::clamp(y, 0, height - 1);
+	x = CLAMP(x, 0, width - 1);
+	y = CLAMP(y, 0, height - 1);
 	UINT32 color = texture[y][x];
 	float r = ((color >> 16) & 0xff) / 255.0f;
 	float g = ((color >> 8) & 0xff) / 255.0f;

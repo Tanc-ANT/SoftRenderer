@@ -49,6 +49,8 @@ private:
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 
+	void DrawScanline(const Vertex& A, const Vertex& B, const int& y);
+
 	void DrawTriangleDepth(const Triangle& lig_t);
 	void DrawTriangleColor(const Triangle& cam_t);
 

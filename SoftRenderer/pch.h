@@ -10,3 +10,6 @@
 #include <sstream>
 #include <exception>
 #include <algorithm>
+
+inline int CLAMP(int x, int min, int max) { return (x < min) ? min : ((x > max) ? max : x); }
+inline float CLAMP(float x, float min, float max) { return (x < min) ? min : ((x > max) ? max : x); }

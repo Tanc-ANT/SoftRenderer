@@ -10,15 +10,15 @@ public:
 	Color(const Vector3& v) :color(v) {};
 	Color(const Color& c)
 	{
-		color.x = std::clamp(c.color.x, 0.0f, 1.0f);
-		color.y = std::clamp(c.color.y, 0.0f, 1.0f);
-		color.z = std::clamp(c.color.z, 0.0f, 1.0f);
+		color.x = CLAMP(c.color.x, 0.0f, 1.0f);
+		color.y = CLAMP(c.color.y, 0.0f, 1.0f);
+		color.z = CLAMP(c.color.z, 0.0f, 1.0f);
 	};
 	Color& operator=(const Color& c) 
 	{
-		color.x = std::clamp(c.color.x, 0.0f, 1.0f);
-		color.y = std::clamp(c.color.y, 0.0f, 1.0f);
-		color.z = std::clamp(c.color.z, 0.0f, 1.0f);
+		color.x = CLAMP(c.color.x, 0.0f, 1.0f);
+		color.y = CLAMP(c.color.y, 0.0f, 1.0f);
+		color.z = CLAMP(c.color.z, 0.0f, 1.0f);
 		return  *this;
 	};
 	~Color() {};
@@ -44,7 +44,7 @@ public:
 
 	static inline Color ClampLerp(const Color &v1, const Color &v2, float factor)
 	{
-		factor = std::clamp(factor,0.0f, 1.0f);
+		factor = CLAMP(factor,0.0f, 1.0f);
 		return v1 + (v2 - v1) * factor;
 	}
 

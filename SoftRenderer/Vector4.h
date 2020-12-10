@@ -38,7 +38,7 @@ public:
 
 	static inline Vector4 ClampLerp(const Vector4 &v1, const Vector4 &v2, float factor)
 	{
-		factor = std::clamp(factor, 0.0f, 1.0f);
+		factor = CLAMP(factor, 0.0f, 1.0f);
 		return v1 + (v2 - v1) * factor;
 	}
 

@@ -43,8 +43,8 @@ public:
 
 	static inline Vertex ClampLerp(const Vertex &v1, const Vertex &v2, float factor)
 	{
-		factor = std::clamp(factor, 0.0f, 1.0f);
-		Lerp(v1, v2, factor);
+		factor = CLAMP(factor, 0.0f, 1.0f);
+		return Lerp(v1, v2, factor);
 	}
 
 	static inline Vertex Lerp(const Vertex &v1, const Vertex &v2, float factor)
