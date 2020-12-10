@@ -626,10 +626,11 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 
 	DirectLight* light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
 	Vector4 light_dir = -light->GetDirection();
+	light_dir.Normalize();
 	// we have bise here. we don't need front culling anymore.
 	float dot = normal.Dot(light_dir);
 	//dot = std::clamp(dot, 0.0f, 1.0f);
-	float bias = std::fmaxf(0.5f * (1.0 - dot), 0.15);
+	float bias = std::fmaxf(0.20f * (1.0 - dot), 0.05f);
 	float closestDepth = canvas->GetShadowBuffer()[y][x];
 	float currentDepth = z - bias;
 	if (closestDepth < currentDepth)
