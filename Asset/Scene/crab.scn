@@ -2,7 +2,10 @@
 mode: texture
 
 #on off
-backcull: on
+backcull: off
+
+#on off
+shadow: off
 
 lighting:
     tpye: point

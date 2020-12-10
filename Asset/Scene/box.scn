@@ -1,8 +1,11 @@
 #wireframe color texture
-mode: color
+mode: wireframe
 
 #on off
 backcull: on
+
+#on off
+shadow: off
 
 #lighting:
 #    tpye: point
@@ -11,7 +14,7 @@ backcull: on
 	
 lighting:
     tpye: direct
-    direction: -1.0 1.0 1.0
+    direction: 10.0 -10.0 -10.0
     color: 1.0 1.0 1.0
 
 models: 1
