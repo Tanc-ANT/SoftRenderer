@@ -55,7 +55,6 @@ private:
 	bool TestVertexInShadow(const Vector4& vert,const Vector4& normal);
 
 	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
-	bool FrontFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2);
 
 	void ProcessWindowKeyInput();
 	void ProcessWindowMouseInput();

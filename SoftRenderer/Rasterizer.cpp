@@ -269,9 +269,6 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	t1 = TransformHomogenize(t1);
 	t2 = TransformHomogenize(t2);
 
-	//if (FrontFaceCulling(t0, t1, t2))
-	//	return;
-
 	if (t0.y > t1.y) { std::swap(t0, t1); }
 	if (t0.y > t2.y) { std::swap(t0, t2); }
 	if (t1.y > t2.y) { std::swap(t1, t2); }
@@ -490,7 +487,7 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 				normal = (norm_ratio * step + G);
 				normal = normal / w;
 
-				if (z_line_buffer[j] > z && !TestVertexInShadow(Vector4(j, y, z, w), normal))
+				if (z_line_buffer[j] > z)
 				{
 					Color color;
 					Vector3 uv;
@@ -508,7 +505,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 						color = color * texcolor;
 					}					
 					z_line_buffer[j] = z;
-					UINT32 temp = color.GetIntensity();
+					if (TestVertexInShadow(Vector4(j, y, z, w), normal))
+						color = color * Color(0.15f, 0.15f, 0.15f);
 					DrawPixel(j, y, color.GetIntensity());
 				}
 			}
@@ -578,7 +576,7 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 				normal = (norm_ratio * step + G);
 				normal = normal / w;
 
-				if (z_line_buffer[j] > z && !TestVertexInShadow(Vector4(j, y, z, w), normal))
+				if (z_line_buffer[j] > z)
 				{
 					Color color;
 					Vector3 uv;
@@ -598,7 +596,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 						color = color * texcolor;
 					}
 					z_line_buffer[j] = z;
-					
+					if (TestVertexInShadow(Vector4(j, y, z, w), normal))
+						color = color * Color(0.15f, 0.15f, 0.15f);
 					DrawPixel(j, y, color.GetIntensity());
 				}
 			}
@@ -626,8 +625,11 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 		return false;
 
 	DirectLight* light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
-	Vector4 light_dir = light->GetDirection();
-	float bias = std::fmaxf(0.012 * (1.0 - normal.Dot(light_dir)), 0.005);
+	Vector4 light_dir = -light->GetDirection();
+	// we have bise here. we don't need front culling anymore.
+	float dot = normal.Dot(light_dir);
+	//dot = std::clamp(dot, 0.0f, 1.0f);
+	float bias = std::fmaxf(0.5f * (1.0 - dot), 0.15);
 	float closestDepth = canvas->GetShadowBuffer()[y][x];
 	float currentDepth = z - bias;
 	if (closestDepth < currentDepth)
@@ -686,14 +688,6 @@ bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vect
 	{
 		return false;
 	}
-}
-
-bool Rasterizer::FrontFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2)
-{
-	Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
-	Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
-	Vector3 n = v1.Cross(v2);
-	return n.z >= 0;
 }
 
 void Rasterizer::ProcessWindowKeyInput()
