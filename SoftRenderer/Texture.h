@@ -40,6 +40,10 @@ public:
 
 	size_t GetSize() { return textures.size(); }
 
+	Texture* GetTexture(int index) { return textures[index]; }
+
+	std::vector<Texture*>& GetArray() { return textures; }
+
 private:
 	std::vector<Texture*> textures;
 };

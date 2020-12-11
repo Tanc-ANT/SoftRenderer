@@ -313,7 +313,7 @@ void Rasterizer::DrawScanline(const Vertex& A, const Vertex& B, const int& y)
 				float w = w_ratio * step + position_A.w;
 				// Perspective correction
 				uv = uv / w;
-				texcolor = scnManager->GetCurrentTextures()->GetColor(uv, currModelIndex);
+				texcolor = scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetCurrentColor(uv);
 				color = color * texcolor;
 			}
 			z_line_buffer[j] = z;

@@ -24,7 +24,6 @@ public:
 
 	Light* GetLight() { return light; }
 	ModelArray* GetModels() { return models; }
-	TextureArray* GetTextures() { return textures; }
 
 private:
 	void LoadScene(const char *filename);
@@ -37,7 +36,6 @@ private:
 private:
 	Light* light;
 	ModelArray* models;
-	TextureArray* textures;
 
 	UINT32 renderState = 0;
 	UINT32 renderPass = 1;// default value is one
@@ -61,7 +59,6 @@ public:
 	Scene* GetCurrentScene() { return scenes[index]; }
 	Light* GetCurrentLight() { return scenes[index]->GetLight(); }
 	ModelArray* GetCurrentModels(){ return scenes[index]->GetModels(); }
-	TextureArray* GetCurrentTextures() { return scenes[index]->GetTextures(); }
 
 private:
 	int index = 0;

@@ -3,11 +3,12 @@
 Model::Model(const char *filename)
 {
 	LoadModel(filename);
+	textures = new TextureArray();
 }
 
 Model::~Model()
 {
-
+	delete textures;
 }
 
 void Model::LoadModel(const char *filename)
@@ -83,6 +84,16 @@ void Model::LoadModel(const char *filename)
 		"		vt# " << texs.size() <<
 		"	f# " << faces.size() << std::endl;
 	in.close();
+}
+
+void Model::LoadTexture(const char *fliename)
+{
+	textures->LoadTexture(fliename);
+}
+
+void Model::LoadEmptyTexture()
+{
+	textures->LoadEmptyTexture();
 }
 
 ModelArray::ModelArray()

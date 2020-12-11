@@ -4,14 +4,12 @@
 Scene::Scene(const char *filename)
 {
 	models = new ModelArray();
-	textures = new TextureArray();
 	LoadScene(filename);
 }
 
 Scene::~Scene()
 {
 	delete models;
-	delete textures;
 	delete light;
 }
 
@@ -142,11 +140,13 @@ void Scene::ReadModel(std::ifstream& in)
 		if (data != "none")
 		{
 			std::string path = texturePath + data;
-			textures->LoadTexture(path.c_str());
+			size_t index = models->GetSize() - 1;
+			models->GetModel(index)->LoadTexture(path.c_str());
 		}
 		else if (data == "none")
 		{
-			textures->LoadEmptyTexture();
+			size_t index = models->GetSize() - 1;
+			models->GetModel(index)->LoadEmptyTexture();
 		}
 	}
 }

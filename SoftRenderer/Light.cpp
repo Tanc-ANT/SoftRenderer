@@ -107,12 +107,12 @@ void DirectLight::UpdateOrthogonalMatrix()
 {
 	Matrix4 matrix;
 
-	matrix.m[0][0] = 2 / (right-left);
-	matrix.m[1][1] = 2 / (top - bottom);
-	matrix.m[2][2] = 2 / (far - near);
-	matrix.m[3][0] = (left + right) / (left - right);
-	matrix.m[3][1] = (bottom + top) / (bottom - top);
-	matrix.m[3][2] = (near + far) / (far - near);
+	matrix.m[0][0] = 2 / (Right-Left);
+	matrix.m[1][1] = 2 / (Top - Bottom);
+	matrix.m[2][2] = 2 / (Far - Near);
+	matrix.m[3][0] = (Left + Right) / (Left - Right);
+	matrix.m[3][1] = (Bottom + Top) / (Bottom - Top);
+	matrix.m[3][2] = (Near + Far) / (Far - Near);
 	matrix.m[3][3] = 1.0f;
 	
 	SetPorjectionMatrix(matrix);
