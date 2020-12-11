@@ -44,7 +44,6 @@ private:
 	Triangle CameraTriangleToLightTriangle(const Triangle& triangle);
 
 	void DrawPixel(int x, int y, UINT32 color);
-	void DrawDepth(int x, int y, float z);
 
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);

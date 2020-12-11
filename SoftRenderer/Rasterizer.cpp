@@ -68,7 +68,8 @@ void Rasterizer::ClipCVV(const Triangle& cam_tri, const Triangle& lig_tri)
 {
 	if (renderPass == 1)
 	{
-		DrawTriangleDepth(lig_tri);
+		if(scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetCastShadow())
+			DrawTriangleDepth(lig_tri);
 	}
 	else if (renderPass == 0)
 	{
@@ -210,11 +211,6 @@ void Rasterizer::DrawPixel(int x, int y, UINT32 color)
 	{
 		canvas->GetFrameBuffer()[y][x] = color;
 	}
-}
-
-void Rasterizer::DrawDepth(int x, int y, float z)
-{
-	canvas->GetShadowBuffer()[y][x] = z;
 }
 
 void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
@@ -533,7 +529,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 
 bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 {
-	if (scnManager->GetRenderState() & RENDER_STATE_SHADOW)
+	if ((scnManager->GetRenderState() & RENDER_STATE_SHADOW) && 
+		scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetReceiveShadow())
 	{
 		Vector4 screen_point = InvTransformHomogenize(vert);
 		screen_point = screen_point * camera->GetInvProjectionMatrix();
@@ -571,8 +568,11 @@ void Rasterizer::DrawSomthing()
 
 		for (int i = 0; i < model->Nfaces(); i++) {
 			Triangle camera_tri,light_tri;
-			if(scnManager->GetRenderState()&RENDER_STATE_SHADOW)
+			if ((scnManager->GetRenderState()&RENDER_STATE_SHADOW)&&
+				scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetCastShadow())
+			{
 				light_tri = LightTriangleTransfrom(model->GetFaceIndex(i));
+			}
 			camera_tri = CameraTriangleTransfrom(model->GetFaceIndex(i));
 			ClipCVV(camera_tri,light_tri);
 		}

@@ -11,7 +11,7 @@ shadow: off
 #    tpye: point
 #    position: -5.0 5.0 5.0
 #    color: 1.0 1.0 1.0
-	
+
 lighting:
     tpye: direct
     direction: 10.0 -10.0 -10.0
@@ -20,4 +20,6 @@ lighting:
 models: 1
     model:
         mesh: box.obj
-		texture: checkerboard.bmp
+        texture: checkerboard.bmp
+        castshadow: false
+        receiveshadow: false

@@ -23,9 +23,18 @@ public:
 	size_t Nfaces() { return (int)faces.size(); }
 	Triangle GetFaceIndex(long idx) { return faces[idx]; }
 
+	void SetCastShadow(bool cast) { castShadow = cast; }
+	bool GetCastShadow() { return castShadow; }
+
+	void SetReceiveShadow(bool receive) { receiveShadow = receive; }
+	bool GetReceiveShadow() { return receiveShadow; }
+
 private:
 	std::vector<Triangle> faces;
 	TextureArray* textures;
+	bool castShadow = true;
+	bool receiveShadow = true;
+	Vector4 center;
 };
 
 class ModelArray

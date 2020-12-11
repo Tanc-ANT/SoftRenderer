@@ -62,6 +62,8 @@ void Scene::LoadScene(const char *filename)
 			while (count--)
 				ReadModel(in);
 		}
+		else
+			continue;
 	}
 }
 
@@ -124,6 +126,8 @@ void Scene::ReadModel(std::ifstream& in)
 	std::string dummy;
 	std::string data;
 	std::istringstream iss;
+	Model* model;
+
 	ReadOneLine(in, line, iss);
 	ReadOneLine(in, line, iss);
 
@@ -132,6 +136,9 @@ void Scene::ReadModel(std::ifstream& in)
 	{
 		std::string path = modelPath + data;
 		models->LoadModel(path.c_str());
+		// prepare for model attributes
+		size_t index = models->GetSize() - 1;
+		model = models->GetModel(index);
 	}
 	ReadOneLine(in, line, iss);
 	iss >> dummy; iss >> data;
@@ -140,14 +147,31 @@ void Scene::ReadModel(std::ifstream& in)
 		if (data != "none")
 		{
 			std::string path = texturePath + data;
-			size_t index = models->GetSize() - 1;
-			models->GetModel(index)->LoadTexture(path.c_str());
+			model->LoadTexture(path.c_str());
 		}
 		else if (data == "none")
 		{
 			size_t index = models->GetSize() - 1;
-			models->GetModel(index)->LoadEmptyTexture();
+			model->LoadEmptyTexture();
 		}
+	}
+	ReadOneLine(in, line, iss);
+	iss >> dummy; iss >> data;
+	if (dummy == "castshadow:")
+	{
+		if (data == "true")
+			model->SetCastShadow(true);
+		else if (data == "false")
+			model->SetCastShadow(false);
+	}
+	ReadOneLine(in, line, iss);
+	iss >> dummy; iss >> data;
+	if (dummy == "receiveshadow:")
+	{
+		if (data == "true")
+			model->SetReceiveShadow(true);
+		else if (data == "false")
+			model->SetReceiveShadow(false);
 	}
 }
 
