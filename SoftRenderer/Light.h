@@ -17,6 +17,8 @@ public:
 
 	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) {};
 
+	virtual float LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal) { return 0.0f; };
+
 	virtual void Update() {};
 
 	void SetViewMatrix(const Matrix4& m) { view = m; }
@@ -51,6 +53,9 @@ public:
 
 	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
 
+	//TODO
+	virtual float LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal) { return 0.0f; }
+
 	void SetPosition(const Vector4& d) { position = d; }
 	Vector4 GetPosition() { return position; }
 
@@ -75,6 +80,8 @@ public:
 
 	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
 
+	virtual float LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal);
+
 	virtual void Update() override;
 
 	void SetDirection(const Vector4& d) { direction = d; }
@@ -86,4 +93,11 @@ private:
 
 private:
 	Vector4 direction;
+
+	const float Near = 0.0f;
+	const float Far = 10.0f;
+	const float Right = 10.0f;
+	const float Left = -10.0f;
+	const float Top = 10.0f;
+	const float Bottom = -10.0f;
 };

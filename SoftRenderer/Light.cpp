@@ -52,6 +52,16 @@ void DirectLight::LightColorCalculaiton(const Vector4& camera_pos, Vertex& v)
 	v.SetVertexColor(color);
 }
 
+float DirectLight::LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal)
+{
+	Vector4 light_dir = -direction;
+	light_dir.Normalize();
+	float dot = normal.Dot(light_dir);
+	float bias = std::fmaxf(0.20f * (1.0f - dot), 0.05f);
+	float currentDepth = screen_pos.z - bias;
+	return currentDepth;
+}
+
 void DirectLight::Update()
 {
 	UpdateViewMatrix();
@@ -95,13 +105,6 @@ void DirectLight::UpdateViewMatrix()
 
 void DirectLight::UpdateOrthogonalMatrix()
 {
-	float near = 0.0f;
-	float far = 10.0f;
-	float right = 10.0f;
-	float left = -10.0f;
-	float top = 10.0f;
-	float bottom = -10.0f;
-
 	Matrix4 matrix;
 
 	matrix.m[0][0] = 2 / (right-left);

@@ -45,6 +45,7 @@ void Scene::LoadScene(const char *filename)
 			if (data == "on")
 				renderState |= RENDER_STATE_BACKCULL;
 		}
+		// Only support direct light
 		else if (!line.compare(0, 7, "shadow:"))
 		{
 			iss >> dummy; iss >> data;

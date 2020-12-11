@@ -26,8 +26,8 @@ int main()
 	Camera* camera = new Camera(eye, at, up, aspect);
 
 	SceneManager *scene_manager = new SceneManager();
-	//scene_manager->LoadScene("../Asset/Scene/box.scn");
-	//scene_manager->LoadScene("../Asset/Scene/crab.scn");
+	scene_manager->LoadScene("../Asset/Scene/box.scn");
+	scene_manager->LoadScene("../Asset/Scene/crab.scn");
 	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
 
 	Rasterizer *raster = new Rasterizer();
