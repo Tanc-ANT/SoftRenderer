@@ -65,7 +65,7 @@ float DirectLight::LightDepthCalculation(const Vector4& screen_pos, const Vector
 void DirectLight::Update()
 {
 	UpdateViewMatrix();
-	UpdateOrthogonalMatrix();
+	UpdateOrthographicMatrix();
 }
 
 void DirectLight::UpdateViewMatrix()
@@ -103,7 +103,7 @@ void DirectLight::UpdateViewMatrix()
 	SetViewMatrix(matrix);
 }
 
-void DirectLight::UpdateOrthogonalMatrix()
+void DirectLight::UpdateOrthographicMatrix()
 {
 	Matrix4 matrix;
 
@@ -112,7 +112,7 @@ void DirectLight::UpdateOrthogonalMatrix()
 	matrix.m[2][2] = 2 / (Far - Near);
 	matrix.m[3][0] = (Left + Right) / (Left - Right);
 	matrix.m[3][1] = (Bottom + Top) / (Bottom - Top);
-	matrix.m[3][2] = (Near + Far) / (Far - Near);
+	matrix.m[3][2] = (Near + Far) / (Near - Far);
 	matrix.m[3][3] = 1.0f;
 	
 	SetPorjectionMatrix(matrix);

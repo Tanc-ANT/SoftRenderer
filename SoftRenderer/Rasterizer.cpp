@@ -344,7 +344,7 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 		if (y >= canvas->GetHeight() || y < 0) break;
 		// This check  additional pixel 
 		//if(std::abs((float)y - t0.y)<0.5f) continue;
-		float segement_height = t1.y - t0.y;
+		float segement_height = t1.y - t0.y + EPSILON;
 		//if(segement_height < 1.0f) continue;
 		float alpha = (float)(y - t0.y) / total_height;
 		float beta = (float)(y - t0.y) / segement_height;
@@ -378,6 +378,8 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 			if (shadow_line_buffer[j] > z)
 			{
 				shadow_line_buffer[j] = z;
+				//Color color(z, z, z);
+				//DrawPixel(j, y, color.GetIntensity());
 			}
 		}
 	}
@@ -388,7 +390,7 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 		if (y >= canvas->GetHeight() || y < 0) break;
 		// This check  additional pixel 
 		//if (std::abs((float)y - t1.y) < 0.5f) continue;
-		float segement_height = t2.y - t1.y;
+		float segement_height = t2.y - t1.y + EPSILON;
 		//if (segement_height < 1.0f) continue;
 		float alpha = (float)(y - t0.y) / total_height;
 		float beta = (float)(y - t1.y) / segement_height;
@@ -422,6 +424,8 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 			if (shadow_line_buffer[j] > z)
 			{
 				shadow_line_buffer[j] = z;
+				//Color color(z, z, z);
+				//DrawPixel(j, y, color.GetIntensity());
 			}
 		}
 	}
@@ -486,7 +490,7 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			if (y >= canvas->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if(std::abs((float)y - t0.y)<0.5f) continue;
-			float segement_height = t1.y - t0.y;
+			float segement_height = t1.y - t0.y + EPSILON;
 			//if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t0.y) / segement_height;
@@ -509,7 +513,7 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 			if (y >= canvas->GetHeight() || y < 0) break;
 			// This check  additional pixel 
 			//if (std::abs((float)y - t1.y) < 0.5f) continue;
-			float segement_height = t2.y - t1.y;
+			float segement_height = t2.y - t1.y + EPSILON;
 			//if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
 			float beta = (float)(y - t1.y) / segement_height;
@@ -583,6 +587,7 @@ void Rasterizer::DrawSomthing()
 void Rasterizer::Update()
 {
 	renderPass = scnManager->GetRenderPass();
+	//renderPass = 1;
 	canvas->ClearShadowBuffer();
 	while (renderPass--)
 	{
