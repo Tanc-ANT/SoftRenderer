@@ -47,21 +47,31 @@ Color Color::operator/(const float& k) const
 		color.z * oneOver);
 }
 
-void Color::SetColor(const float& r, const float& g, const float& b)
+void Color::SetColor(const float& r, const float& g, const float& b,const float& a)
 {
 	color.x = CLAMP(r, 0.0f, 1.0f);
 	color.y = CLAMP(g, 0.0f, 1.0f);
 	color.z = CLAMP(b, 0.0f, 1.0f);
+	color.w = CLAMP(a, 0.0f, 1.0f);
 }
 
-void Color::SetColor(const Vector3& v)
+void Color::SetColor(const Vector3& v, const float& a)
 {
 	color.x = CLAMP(v.x, 0.0f, 1.0f);
 	color.y = CLAMP(v.y, 0.0f, 1.0f);
 	color.z = CLAMP(v.z, 0.0f, 1.0f);
+	color.w = CLAMP(a, 0.0f, 1.0f);
 }
 
-Vector3 Color::GetColor() const
+void Color::SetColor(const Vector4& v)
+{
+	color.x = CLAMP(v.x, 0.0f, 1.0f);
+	color.y = CLAMP(v.y, 0.0f, 1.0f);
+	color.z = CLAMP(v.z, 0.0f, 1.0f);
+	color.w = CLAMP(v.w, 0.0f, 1.0f);
+}
+
+Vector4 Color::GetColor() const
 {
 	return color;
 }

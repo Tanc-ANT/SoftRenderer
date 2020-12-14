@@ -311,7 +311,7 @@ void Rasterizer::DrawScanline(const Vertex& A, const Vertex& B, const int& y)
 				color = color * texcolor;
 			}
 			z_line_buffer[j] = z;
-			if (TestVertexInShadow(Vector4(j, y, z, w), normal))
+			if (TestVertexInShadow(Vector4((float)j, (float)y, z, w), normal))
 				color = color * Color(0.15f, 0.15f, 0.15f);
 			DrawPixel(j, y, color.GetIntensity());
 		}

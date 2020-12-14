@@ -1,13 +1,15 @@
 #pragma once
 #include "pch.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 class Color
 {
 public:
 	Color() {};
-	Color(const float& r, const float& g, const float& b) :color(r, g, b) {};
-	Color(const Vector3& v) :color(v) {};
+	Color(const float& r, const float& g, const float& b) :color(r, g, b,1.0f) {};
+	Color(const float& r, const float& g, const float& b,const float& a) :color(r, g, b, a) {};
+	Color(const Vector4& v) :color(v) {};
 	Color(const Color& c)
 	{
 		color.x = CLAMP(c.color.x, 0.0f, 1.0f);
@@ -29,16 +31,19 @@ public:
 	Color operator*(const float& k) const;
 	Color operator/(const float& k) const;
 
-	void SetColor(const float& r, const float& g, const float& b);
-	void SetColor(const Vector3& v);
-	Vector3 GetColor() const;
+	void SetColor(const float& r, const float& g, const float& b, const float& a = 1.0f);
+	void SetColor(const Vector3& v, const float& a = 1.0f);
+	void SetColor(const Vector4& v);
+
+	Vector4 GetColor() const;
 
 	UINT32 GetIntensity() const 
 	{ 
 		UINT32 r = (UINT32)(color.x * 255.0f);
 		UINT32 g = (UINT32)(color.y * 255.0f);
 		UINT32 b = (UINT32)(color.z * 255.0f);
-		UINT32 intensity = (r << 16) | (g << 8) | (b);
+		UINT32 a = (UINT32)(color.w * 255.0f);
+		UINT32 intensity = (a << 24) | (r << 16) | (g << 8) | (b);
 		return intensity; 
 	}
 
@@ -60,5 +65,5 @@ public:
 	static Color GREEN_COLOR;
 
 private:
-	Vector3 color;
+	Vector4 color;
 };

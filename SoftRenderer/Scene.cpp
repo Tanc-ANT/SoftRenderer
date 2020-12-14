@@ -86,7 +86,7 @@ void Scene::ReadLight(std::ifstream& in)
 	{
 		ReadOneLine(in, line, iss);
 		Vector4 p;
-		Vector3 c;
+		Vector4 c;
 		iss >> dummy;
 		iss >> p.x;
 		iss >> p.y;
@@ -97,6 +97,7 @@ void Scene::ReadLight(std::ifstream& in)
 		iss >> c.x;
 		iss >> c.y;
 		iss >> c.z;
+		c.w = 1.0f;
 		light = new PointLight(p, c);
 		renderState |= RENDER_STATE_LIGHT;
 	}
@@ -104,7 +105,7 @@ void Scene::ReadLight(std::ifstream& in)
 	{
 		ReadOneLine(in, line, iss);
 		Vector4 p;
-		Vector3 c;
+		Vector4 c;
 		iss >> dummy;
 		iss >> p.x;
 		iss >> p.y;
@@ -115,6 +116,7 @@ void Scene::ReadLight(std::ifstream& in)
 		iss >> c.x;
 		iss >> c.y;
 		iss >> c.z;
+		c.w = 1.0f;
 		light = new DirectLight(p, c);
 		renderState |= RENDER_STATE_LIGHT;
 	}
@@ -137,7 +139,7 @@ void Scene::ReadModel(std::ifstream& in)
 		std::string path = modelPath + data;
 		models->LoadModel(path.c_str());
 		// prepare for model attributes
-		size_t index = models->GetSize() - 1;
+		int index = (int)models->GetSize() - 1;
 		model = models->GetModel(index);
 	}
 	ReadOneLine(in, line, iss);

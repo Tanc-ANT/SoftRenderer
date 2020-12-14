@@ -1,5 +1,5 @@
 #wireframe color texture
-mode: color
+mode: texture
 
 #on off
 backcull: on
@@ -19,12 +19,12 @@ lighting:
 
 models: 2
     model:
-        mesh: box.obj
-        texture: checkerboard.bmp
+        mesh: crab.obj
+        texture: crab_diffuse.bmp
         castshadow: true
         receiveshadow: true
     model:
         mesh: plane.obj
-        texture: none
+        texture: checkerboard.bmp
         castshadow: true
         receiveshadow: true
