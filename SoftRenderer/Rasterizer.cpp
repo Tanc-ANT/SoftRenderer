@@ -87,8 +87,6 @@ void Rasterizer::ClipCVV(const Triangle& cam_tri, const Triangle& lig_tri)
 
 		int num_vertex = (int)in_list1.size() - 2;
 
-		Vector4 world_pos[3];
-
 		for (int i = 0; i < num_vertex; ++i)
 		{
 			int index0 = 0;

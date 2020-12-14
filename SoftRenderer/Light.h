@@ -95,7 +95,7 @@ private:
 	Vector4 direction;
 
 	const float Near = 0.0f;
-	const float Far = 50.0f;
+	const float Far = 20.0f;
 	const float Right = 10.0f;
 	const float Left = -10.0f;
 	const float Top = 10.0f;

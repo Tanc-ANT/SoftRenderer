@@ -21,9 +21,9 @@ void PointLight::LightColorCalculaiton(const Vector4& camera_pos, Vertex& v)
 	specular = std::powf(std::fmaxf(n.Dot(halfway_dir), 0.0), 32);
 
 	//blinn-phone
-	Color color = v.GetVertexColor();
-	color = (color * (diffuse + ambient + specular))*GetColor();
-	v.SetVertexColor(color);
+	Color vertex_color = v.GetVertexColor();
+	vertex_color = (vertex_color * (diffuse + ambient + specular))* GetColor();
+	v.SetVertexColor(vertex_color);
 }
 
 void DirectLight::LightColorCalculaiton(const Vector4& camera_pos, Vertex& v)
@@ -57,7 +57,7 @@ float DirectLight::LightDepthCalculation(const Vector4& screen_pos, const Vector
 	Vector4 light_dir = -direction;
 	light_dir.Normalize();
 	float dot = normal.Dot(light_dir);
-	float bias = std::fmaxf(0.20f * (1.0f - dot), 0.05f);
+	float bias = std::fmaxf(0.050f * (1.0f - dot), 0.010f);
 	float currentDepth = screen_pos.z - bias;
 	return currentDepth;
 }
