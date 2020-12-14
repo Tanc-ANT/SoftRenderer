@@ -16,7 +16,7 @@
 class Scene
 {
 public:
-	Scene(const char *filename);
+	explicit Scene(const char *filename);
 	~Scene();
 
 	UINT32 GetRenderState() { return renderState; }
@@ -46,9 +46,11 @@ private:
 class SceneManager
 {
 public:
-	SceneManager();
-	~SceneManager();
-
+	static SceneManager& GetInstance() {
+		static SceneManager instance;
+		return instance;
+	}
+	
 	void LoadScene(const char *filename);
 	
 	void SwitchNextScene();
@@ -61,7 +63,11 @@ public:
 	ModelArray* GetCurrentModels(){ return scenes[index]->GetModels(); }
 
 private:
-	int index = 0;
+	SceneManager();
+	~SceneManager();
+
+private:
+	int index;
 	std::vector<Scene*> scenes;
 };
 

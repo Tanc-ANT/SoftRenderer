@@ -177,7 +177,8 @@ void Scene::ReadModel(std::ifstream& in)
 	}
 }
 
-SceneManager::SceneManager()
+SceneManager::SceneManager():
+	index(0)
 {
 
 }

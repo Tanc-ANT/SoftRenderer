@@ -36,16 +36,20 @@ Canvas::~Canvas()
 	zBuffer = nullptr;
 }
 
-void Canvas::ClearFrameBuffer()
+void Canvas::ClearFrameBuffer(void *fb)
 {
-	int y, x;
+	// memset is more faster
+	int buffer_size = width * height * 4;
+	char *ptr = (char*)fb;
+	memset(ptr, 0, buffer_size);
+	/*int y, x;
 	// Clear frame buffer
 	for (y = 0; y < height; ++y)
 	{
 		UINT32 *dst = frameBuffer[y];
 		for (x = width; x > 0; ++dst, --x)
 			dst[0] = 0;
-	}
+	}*/
 }
 
 void Canvas::ClearZBuffer()

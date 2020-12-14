@@ -57,7 +57,7 @@ float DirectLight::LightDepthCalculation(const Vector4& screen_pos, const Vector
 	Vector4 light_dir = -direction;
 	light_dir.Normalize();
 	float dot = normal.Dot(light_dir);
-	float bias = std::fmaxf(0.125f * (1.0f - dot), 0.010f);
+	float bias = std::fmaxf(0.025f * (1.0f - dot), 0.010f);
 	float currentDepth = screen_pos.z - bias;
 	return currentDepth;
 }

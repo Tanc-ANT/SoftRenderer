@@ -7,7 +7,7 @@
 class Window
 {
 public:
-	Window() {};
+	Window():screen_pitch(0),n_triangle(0){};
 	~Window() {};
 	int Init(int w, int h, const TCHAR *title);
 	void Update(void);
@@ -46,7 +46,7 @@ private:
 	static bool right_button_state;
 	int width, height;
 	unsigned char *screen_fb;
-	long screen_pitch = 0;
-	int n_triangle = 0;
+	long screen_pitch;
+	int n_triangle;
 	
 };

@@ -13,11 +13,11 @@ public:
 	{
 		color = c;
 	}
-	~Light() {};
+	virtual ~Light() {};
 
-	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) {};
+	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) = 0;
 
-	virtual float LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal) { return 0.0f; };
+	virtual float LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal) = 0;
 
 	virtual void Update() {};
 
@@ -36,7 +36,7 @@ private:
 	Matrix4 proj;
 };
 
-class PointLight :public Light
+class PointLight final:public Light
 {
 public:
 	PointLight() {}
@@ -49,7 +49,7 @@ public:
 		position = p;
 		SetColor(c);
 	}
-	~PointLight() {};
+	virtual ~PointLight() {};
 
 	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
 
@@ -63,7 +63,7 @@ private:
 	Vector4 position;
 };
 
-class DirectLight :public Light
+class DirectLight final :public Light
 {
 public:
 	DirectLight() {};
@@ -71,12 +71,12 @@ public:
 	{
 		direction = d;
 	}
-	DirectLight(const Vector4& d,const Color& c)
+	DirectLight(const Vector4& d, const Color& c)
 	{
 		direction = d;
 		SetColor(c);
 	}
-	~DirectLight() {};
+	virtual ~DirectLight() {};
 
 	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
 

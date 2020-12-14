@@ -1,6 +1,8 @@
 #include "Model.h"
 
-Model::Model(const char *filename)
+Model::Model(const char *filename):
+	castShadow(true),
+	receiveShadow(true)
 {
 	LoadModel(filename);
 	textures = new TextureArray();

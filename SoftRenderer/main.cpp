@@ -27,7 +27,7 @@ int main()
 
 	Texture* shadow_map = new Texture();
 
-	SceneManager *scene_manager = new SceneManager();
+	SceneManager *scene_manager = &SceneManager::GetInstance();
 	scene_manager->LoadScene("../Asset/Scene/box.scn");
 	scene_manager->LoadScene("../Asset/Scene/crab.scn");
 	scene_manager->LoadScene("../Asset/Scene/shadow.scn");

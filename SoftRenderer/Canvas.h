@@ -7,7 +7,7 @@ public:
 	Canvas(int width, int height, void *fb);
 	~Canvas();
 
-	void ClearFrameBuffer();
+	void ClearFrameBuffer(void *fb);
 	void ClearZBuffer();
 
 	void SetWidth(const int& w) { width = w; }

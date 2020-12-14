@@ -616,7 +616,7 @@ void Rasterizer::Update()
 	shadowMap->ClearTextureDepth();
 	while (renderPass--)
 	{
-		canvas->ClearFrameBuffer();
+		canvas->ClearFrameBuffer(window->GetFrameBuffer());
 		canvas->ClearZBuffer();
 		camera->Update();
 		scnManager->GetCurrentLight()->Update();

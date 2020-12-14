@@ -7,7 +7,7 @@ class Texture
 {
 public:
 	Texture();
-	Texture(const char *filename);
+	explicit Texture(const char *filename);
 	~Texture();
 
 	void LoadColorTexture(const char *filename);

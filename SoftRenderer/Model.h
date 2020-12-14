@@ -7,7 +7,7 @@
 class Model
 {
 public:
-	Model(const char *filename);
+	explicit Model(const char *filename);
 	~Model();
 
 	void LoadModel(const char *filename);
@@ -32,8 +32,8 @@ public:
 private:
 	std::vector<Triangle> faces;
 	TextureArray* textures;
-	bool castShadow = true;
-	bool receiveShadow = true;
+	bool castShadow;
+	bool receiveShadow;
 	Vector4 center;
 };
 
