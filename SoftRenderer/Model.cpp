@@ -10,7 +10,7 @@ Model::Model(const char *filename):
 
 Model::~Model()
 {
-	delete textures;
+	SAFE_DELETE(textures);
 }
 
 void Model::LoadModel(const char *filename)
@@ -107,7 +107,7 @@ ModelArray::~ModelArray()
 {
 	for (auto& it : models)
 	{
-		delete it;
+		SAFE_DELETE(it);
 	}
 	models.clear();
 }

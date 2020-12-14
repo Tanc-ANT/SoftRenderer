@@ -43,10 +43,10 @@ int main()
 	{
 		raster->Update();
 	}
-	delete raster;
-	delete camera;
-	delete canvas;
-	delete window;
+	SAFE_DELETE(raster);
+	SAFE_DELETE(camera);
+	SAFE_DELETE(canvas);
+	SAFE_DELETE(window);
 
 	return 0;
 }

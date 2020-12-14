@@ -10,20 +10,27 @@ Canvas::Canvas(int w, int h, void *fb)
 	// The line number index of frame buffer
 	frameBuffer = (UINT32 **)ptr;
 	// The line number index of z buffer
-	zBuffer = (float **)(ptr + sizeof(void*) * h);
-	ptr += sizeof(void*) * h * 2;
+	ptr += sizeof(void*) * h;
 
 	// Allocate buffer memory
 	framebuf = (char*)ptr;
-	zbuf = (char*)ptr + w * h * 4;
-	ptr += w * h * 8;
+	ptr += w * h * 4;
 
 	if (fb != nullptr) framebuf = (char*)fb;
 	for (int j = 0; j < h; ++j)
 	{
 		frameBuffer[j] = (UINT32 *)(framebuf + w * 4 * j);
+	}
+
+	zBuffer = (float **)(ptr);
+	ptr += sizeof(void*) * h;
+	zbuf = (char*)ptr;
+	ptr += w * h * 4;
+	for (int j = 0; j < h; ++j)
+	{
 		zBuffer[j] = (float *)(zbuf + w * 4 * j);
 	}
+
 	width = w;
 	height = h;
 }

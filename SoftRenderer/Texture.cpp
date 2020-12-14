@@ -14,9 +14,7 @@ Texture::Texture(const char *filename)
 
 Texture::~Texture()
 {
-	if (color)
-		free(color);
-	color = nullptr;
+	SAFE_DELETE(color);
 }
 
 void Texture::LoadColorTexture(const char *filename)
@@ -94,17 +92,21 @@ void Texture::CreateEmptyTexture()
 	char *tex, *dep;
 
 	color = (UINT32 **)ptr;
-	depth = (float **)(ptr + sizeof(void*) * height);
-	// The line number index of texture
-	ptr += sizeof(void*) * height * 2;
-
+	ptr += sizeof(void*) * height;
 	tex = (char*)ptr;
-	dep = (char*)ptr + width * height * 4;
-	ptr += width * height * 8;
+	ptr += width * height * 4;
 
 	for (int j = 0; j < height; ++j)
 	{
 		color[j] = (UINT32 *)(tex + width * 4 * j);
+	}
+
+	depth = (float **)(ptr);
+	ptr += sizeof(void*) * height;
+	dep = (char*)ptr;
+	ptr += width * height * 4;
+	for (int j = 0; j < height; ++j)
+	{
 		depth[j] = (float *)(dep + width * 4 * j);
 	}
 
@@ -114,6 +116,12 @@ void Texture::CreateEmptyTexture()
 
 void Texture::ClearTextureColor()
 {
+	int buffer_size = width * height * 4;
+	char* ptr = (char*)color;
+	ptr += sizeof(void*) * height;
+	memset(ptr, 0xff, buffer_size);
+	
+	/*
 	for (int j = 0; j < height; ++j)
 	{
 		for (int i = 0; i < width; ++i)
@@ -121,6 +129,7 @@ void Texture::ClearTextureColor()
 			color[j][i] = 0xffffffff; 
 		}
 	}
+	*/
 }
 
 void Texture::ClearTextureDepth()
@@ -171,7 +180,7 @@ TextureArray::~TextureArray()
 {
 	for (auto& it : textures)
 	{
-		delete it;
+		SAFE_DELETE(it);
 	}
 	textures.clear();
 }
