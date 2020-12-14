@@ -19,12 +19,15 @@ Then run this bat file. You can find a new build file has already generated in p
 + Gouraud Shading
 + Blinn-Phong Reflection Light
 + Texture Mapping and Perspective Correction
-+ Multiple Texture Support
 + Homogeneous Space Clipping
 + Obj Model Support
++ BMP File Loader
 + FPS and Triangle Number Show
 + FPS Camera and Rotation Model
++ Simple Scene Manager
++ Shadow Map
 
 ## Exhibition
 ![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_texture.JPG)  
+![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_shadow.JPG)  
 Obj file from [zauonlok/renderer](https://github.com/zauonlok/renderer/tree/master/assets/crab)
