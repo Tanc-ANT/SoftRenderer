@@ -360,7 +360,6 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 		float scanline_depth = B.z - A.z;
 		float scanline_width = B.x - A.x;
 		float depth_ratio = scanline_depth / scanline_width;
-		float *shadow_line_buffer = canvas->GetShadowBuffer()[y];
 
 		//w caculation
 		float w_ratio = 1.0f;
@@ -373,9 +372,9 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 			if (j >= canvas->GetWidth() || j < 0) break;
 			float z = depth_ratio * step + A.z;
 
-			if (shadow_line_buffer[j] > z)
+			if (GetShadowDepth(j,y) > z)
 			{
-				shadow_line_buffer[j] = z;
+				DrawShadowDepth(j, y, z);
 				//Color color(z, z, z);
 				//DrawPixel(j, y, color.GetIntensity());
 			}
@@ -406,7 +405,6 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 		float scanline_depth = B.z - A.z;
 		float scanline_width = B.x - A.x;
 		float depth_ratio = scanline_depth / scanline_width;
-		float *shadow_line_buffer = canvas->GetShadowBuffer()[y];
 
 		//w caculation
 		float w_ratio = 1.0f;
@@ -419,9 +417,9 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 			if (j >= canvas->GetWidth() || j < 0) break;
 			float z = depth_ratio * step + A.z;
 			float w = w_ratio * step + A.w;
-			if (shadow_line_buffer[j] > z)
+			if (GetShadowDepth(j, y) > z)
 			{
-				shadow_line_buffer[j] = z;
+				DrawShadowDepth(j, y, z);
 				//Color color(z, z, z);
 				//DrawPixel(j, y, color.GetIntensity());
 			}
@@ -529,6 +527,30 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 	}
 }
 
+void Rasterizer::DrawShadowDepth(int x, int y, float z)
+{
+	float x_ratio = (float)shadowMap->GetWidth() / (float)canvas->GetWidth();
+	float y_ratio = (float)shadowMap->GetHeight() / (float)canvas->GetHeight();
+
+	int u = (int)(x * x_ratio + 0.5f);
+	int v = (int)(y * y_ratio + 0.5f);
+	x = CLAMP(u, 0, shadowMap->GetWidth() - 1);
+	y = CLAMP(v, 0, shadowMap->GetHeight() - 1);
+	shadowMap->SetDepth(x, y, z);
+}
+
+float Rasterizer::GetShadowDepth(int x, int y)
+{
+	float x_ratio = (float)shadowMap->GetWidth() / (float)canvas->GetWidth();
+	float y_ratio = (float)shadowMap->GetHeight() / (float)canvas->GetHeight();
+
+	int u = (int)(x * x_ratio + 0.5f);
+	int v = (int)(y * y_ratio + 0.5f);
+	x = CLAMP(u, 0, shadowMap->GetWidth() - 1);
+	y = CLAMP(v, 0, shadowMap->GetHeight() - 1);
+	return shadowMap->GetDepth(x, y);
+}
+
 bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 {
 	if ((scnManager->GetRenderState() & RENDER_STATE_SHADOW) && 
@@ -551,8 +573,12 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 			return false;
 
 		float currentDepth = scnManager->GetCurrentLight()->LightDepthCalculation(screen_point,normal);
-		float closestDepth = canvas->GetShadowBuffer()[y][x];
-		return closestDepth < currentDepth ? true : false;
+		float closestDepth = GetShadowDepth(x, y);
+		//return closestDepth < currentDepth ? true : false;
+		if (closestDepth < currentDepth)
+			return true;
+		else
+			return false;
 	}
 	else
 		return false;
@@ -586,7 +612,8 @@ void Rasterizer::Update()
 {
 	renderPass = scnManager->GetRenderPass();
 	//renderPass = 1;
-	canvas->ClearShadowBuffer();
+	//canvas->ClearShadowBuffer();
+	shadowMap->ClearTextureDepth();
 	while (renderPass--)
 	{
 		canvas->ClearFrameBuffer();

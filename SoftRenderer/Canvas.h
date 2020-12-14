@@ -9,7 +9,6 @@ public:
 
 	void ClearFrameBuffer();
 	void ClearZBuffer();
-	void ClearShadowBuffer();
 
 	void SetWidth(const int& w) { width = w; }
 	int GetWidth() { return width; }
@@ -19,12 +18,10 @@ public:
 
 	UINT32** GetFrameBuffer() { return frameBuffer; }
 	float** GetZBuffer() { return zBuffer; }
-	float** GetShadowBuffer() { return shadowBuffer; }
 
 private:
 	int width;
 	int height;
 	UINT32 **frameBuffer;
 	float **zBuffer;
-	float **shadowBuffer;
 };

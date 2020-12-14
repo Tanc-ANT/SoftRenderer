@@ -9,17 +9,17 @@ Texture::Texture()
 
 Texture::Texture(const char *filename)
 {
-	LoadTexture(filename);
+	LoadColorTexture(filename);
 }
 
 Texture::~Texture()
 {
-	if (texture)
-		free(texture);
-	texture = nullptr;
+	if (color)
+		free(color);
+	color = nullptr;
 }
 
-void Texture::LoadTexture(const char *filename)
+void Texture::LoadColorTexture(const char *filename)
 {
 	FILE *bmpFile = fopen(filename, "rb");
 
@@ -52,7 +52,7 @@ void Texture::LoadTexture(const char *filename)
 	assert(ptr);
 	char *tex;
 
-	texture = (UINT32 **)ptr;
+	color = (UINT32 **)ptr;
 	// The line number index of texture
 	ptr += sizeof(void*) * height;
 
@@ -61,7 +61,7 @@ void Texture::LoadTexture(const char *filename)
 
 	for (int j = 0; j < height; ++j)
 	{
-		texture[j] = (UINT32 *)(tex + width * 4 * j);
+		color[j] = (UINT32 *)(tex + width * 4 * j);
 	}
 
 	unsigned char B;
@@ -78,7 +78,7 @@ void Texture::LoadTexture(const char *filename)
 			fread(&R, 1, 1, bmpFile);
 			if (infoHeader.biBitCount & 32)
 				fread(&A, 1, 1, bmpFile);
-			texture[j][i] = (A << 24) | (R << 16) | (G << 8) | B;
+			color[j][i] = (A << 24) | (R << 16) | (G << 8) | B;
 		}
 	}
 	fclose(bmpFile);
@@ -88,39 +88,48 @@ void Texture::CreateEmptyTexture()
 {
 	width = 512;
 	height = 512;
-	int need = width * height * 4 + sizeof(void*)*(height);
+	int need = width * height * 8 + sizeof(void*)*(height * 2);
 	char *ptr = (char*)malloc(need);
 	assert(ptr);
-	char *tex;
+	char *tex, *dep;
 
-	texture = (UINT32 **)ptr;
+	color = (UINT32 **)ptr;
+	depth = (float **)(ptr + sizeof(void*) * height);
 	// The line number index of texture
-	ptr += sizeof(void*) * height;
+	ptr += sizeof(void*) * height * 2;
 
 	tex = (char*)ptr;
-	ptr += width * height * 4;
+	dep = (char*)ptr + width * height * 4;
+	ptr += width * height * 8;
 
 	for (int j = 0; j < height; ++j)
 	{
-		texture[j] = (UINT32 *)(tex + width * 4 * j);
+		color[j] = (UINT32 *)(tex + width * 4 * j);
+		depth[j] = (float *)(dep + width * 4 * j);
 	}
 
-	for (int j = 0; j < height; ++j)
-	{
-		for (int i = 0; i < width; ++i)
-		{
-			texture[j][i] = 0xffffffff;
-		}
-	}
+	ClearTextureColor();
+	ClearTextureDepth();
 }
 
-void Texture::ClearTexture()
+void Texture::ClearTextureColor()
 {
 	for (int j = 0; j < height; ++j)
 	{
 		for (int i = 0; i < width; ++i)
 		{
-			texture[j][i] = 0xffffffff;
+			color[j][i] = 0xffffffff; 
+		}
+	}
+}
+
+void Texture::ClearTextureDepth()
+{
+	for (int j = 0; j < height; ++j)
+	{
+		for (int i = 0; i < width; ++i)
+		{
+			depth[j][i] = 1.0f;
 		}
 	}
 }
@@ -134,7 +143,7 @@ void Texture::SetColor(const Vector3& t, const Color& c)
 	y = (int)(v + 0.5f);
 	x = CLAMP(x, 0, width - 1);
 	y = CLAMP(y, 0, height - 1);
-	texture[y][x] = c.GetIntensity();
+	color[y][x] = c.GetIntensity();
 }
 
 Color Texture::GetColor(const Vector3& t)
@@ -146,10 +155,10 @@ Color Texture::GetColor(const Vector3& t)
 	y = (int)(v + 0.5f);
 	x = CLAMP(x, 0, width - 1);
 	y = CLAMP(y, 0, height - 1);
-	UINT32 color = texture[y][x];
-	float r = ((color >> 16) & 0xff) / 255.0f;
-	float g = ((color >> 8) & 0xff) / 255.0f;
-	float b = (color & 0xff) / 255.0f;
+	UINT32 c = color[y][x];
+	float r = ((c >> 16) & 0xff) / 255.0f;
+	float g = ((c >> 8) & 0xff) / 255.0f;
+	float b = (c & 0xff) / 255.0f;
 	return Color(r, g, b);
 }
 

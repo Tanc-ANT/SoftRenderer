@@ -25,6 +25,8 @@ int main()
 	float aspect = (float)width / (float)height;
 	Camera* camera = new Camera(eye, at, up, aspect);
 
+	Texture* shadow_map = new Texture();
+
 	SceneManager *scene_manager = new SceneManager();
 	scene_manager->LoadScene("../Asset/Scene/box.scn");
 	scene_manager->LoadScene("../Asset/Scene/crab.scn");
@@ -34,6 +36,7 @@ int main()
 	raster->SetWindow(window);
 	raster->SetCanvas(canvas);
 	raster->SetCamera(camera);
+	raster->SetShadowMap(shadow_map);
 	raster->SetSceneManager(scene_manager);
 
 	while (!window->GetCloseState())

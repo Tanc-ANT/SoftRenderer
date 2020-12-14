@@ -10,20 +10,27 @@ public:
 	Texture(const char *filename);
 	~Texture();
 
-	void LoadTexture(const char *filename);
+	void LoadColorTexture(const char *filename);
 
 	void CreateEmptyTexture();
 
-	void ClearTexture();
+	void ClearTextureColor();
+	void ClearTextureDepth();
+
+	int GetWidth() { return width; }
+	int GetHeight() { return height; }
 
 	void SetColor(const Vector3& t,const Color& c);
 	Color GetColor(const Vector3& t);
 	
+	void SetDepth(int x, int y, float z) { depth[x][y] = z; }
+	float GetDepth(int x, int y) { return depth[x][y]; }
 
 private:
 	int width;
 	int height;
-	UINT32 **texture = nullptr;
+	UINT32 **color = nullptr;
+	float **depth = nullptr;
 };
 
 class TextureArray

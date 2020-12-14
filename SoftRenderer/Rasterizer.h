@@ -22,6 +22,8 @@ public:
 
 	void SetCamera(Camera* c) { camera = c; }
 
+	void SetShadowMap(Texture* s) { shadowMap = s; }
+
 	void SetSceneManager(SceneManager* scn) { scnManager = scn; }
 
 	void DrawSomthing();
@@ -53,6 +55,9 @@ private:
 	void DrawTriangleDepth(const Triangle& lig_t);
 	void DrawTriangleColor(const Triangle& cam_t);
 
+	void DrawShadowDepth(int x, int y, float z);
+	float GetShadowDepth(int x, int y);
+
 	bool TestVertexInShadow(const Vector4& vert,const Vector4& normal);
 
 	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
@@ -64,6 +69,7 @@ private:
 	Window* window;
 	Canvas* canvas;
 	Camera* camera;
+	Texture* shadowMap;
 	SceneManager* scnManager;
 	
 private:
