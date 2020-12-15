@@ -69,6 +69,10 @@ private:
 
 	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 
+	void UpdateLightMatirx();
+	void UpdateLightViewMatrix();
+	void UpdateLightOrthographicMatrix();
+
 	void ProcessWindowKeyInput();
 	void ProcessWindowMouseInput();
 
@@ -92,5 +96,9 @@ private:
 	float originY = 0.0f;
 	Vector3 viewRotLength = { 0.0f,0.0f,0.0f };
 	Vector3 modelRotLength = { 0.0f,0.0f,0.0f };
+
+	//For light
+	Matrix4 lightView;
+	Matrix4 lightOrth;
 };
 

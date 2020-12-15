@@ -13,11 +13,11 @@ const int height = 600;
 
 int main()
 {
-	Window *window = new Window();
-	TCHAR *title = _T("Soft Renderer");
+	Window* window = new Window();
+	TCHAR* title = _T("Soft Renderer");
 	window->Init(width, height, title);
 
-	Canvas *canvas = new Canvas(width, height, window->GetFrameBuffer());
+	Canvas* canvas = new Canvas(width, height, window->GetFrameBuffer());
 
 	Vector3 eye(0, 0, 10);
 	Vector3 at(0, 0, 0);
@@ -27,12 +27,12 @@ int main()
 
 	Texture* shadow_map = new Texture();
 
-	SceneManager *scene_manager = &SceneManager::GetInstance();
+	SceneManager* scene_manager = &SceneManager::GetInstance();
 	scene_manager->LoadScene("../Asset/Scene/box.scn");
 	scene_manager->LoadScene("../Asset/Scene/crab.scn");
 	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
 
-	Rasterizer *raster = new Rasterizer();
+	Rasterizer* raster = new Rasterizer();
 	raster->SetWindow(window);
 	raster->SetCanvas(canvas);
 	raster->SetCamera(camera);

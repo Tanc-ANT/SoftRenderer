@@ -218,22 +218,15 @@ Triangle Rasterizer::LightTriangleTransfrom(const Triangle& triangle)
 	Vector4 world_points[3];
 	Vector4 screen_points[3];
 
-	Matrix4 M; Matrix4 V; Matrix4 P;
-
-	M = camera->GetModelMatrix();
-	Light* light = scnManager->GetCurrentLight();
-	V = light->GetViewMatrix();
-	P = light->GetProjectionMatrix();
-
 	for (int j = 0; j < 3; j++) {
 		Vector4 v = vertex_points[j].GetVertexPosition();
 		// M transform
-		world_points[j] = v * M;
+		world_points[j] = v * camera->GetModelMatrix();
 		vertex_points[j].SetVertexPosition(world_points[j]);
 
 		// VP transform
-		screen_points[j] = world_points[j] * V;
-		screen_points[j] = screen_points[j] * P;
+		screen_points[j] = world_points[j] * lightView;
+		screen_points[j] = screen_points[j] * lightOrth;
 		vertex_points[j].SetVertexPosition(screen_points[j]);
 	}
 	return Triangle(vertex_points[0], vertex_points[1], vertex_points[2]);
@@ -250,8 +243,8 @@ Vector4 Rasterizer::LightVertexTransfrom(const Vector4& vert)
 
 	// VP transform
 	Light* light = scnManager->GetCurrentLight();
-	screen_points = world_points * light->GetViewMatrix();
-	screen_points = screen_points * light->GetProjectionMatrix();
+	screen_points = world_points * lightView;
+	screen_points = screen_points * lightOrth;
 
 	return screen_points;
 }
@@ -637,9 +630,8 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 
 		Vector4 world_point = screen_point * camera->GetInvViewMatrix();
 
-		Light* light = scnManager->GetCurrentLight();
-		screen_point = world_point * light->GetViewMatrix();
-		screen_point = screen_point * light->GetProjectionMatrix();
+		screen_point = world_point * lightView;
+		screen_point = screen_point * lightOrth;
 
 		screen_point = TransformHomogenize(screen_point, true);
 
@@ -649,7 +641,14 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 		if (y >= canvas->GetHeight() || x > canvas->GetWidth() || y <= 0 || x < 0)
 			return false;
 
-		float currentDepth = scnManager->GetCurrentLight()->LightDepthCalculation(screen_point,normal);
+		//caculate current depth in light screen
+		DirectLight* light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
+		Vector4 light_dir = -light->GetDirection();
+		light_dir.Normalize();
+		float dot = normal.Dot(light_dir);
+		float bias = std::fmaxf(0.025f * (1.0f - dot), 0.010f);
+		float currentDepth = screen_point.z - bias;
+
 		float closestDepth = GetShadowDepth(x, y);
 		return closestDepth < currentDepth ? true : false;
 	}
@@ -712,7 +711,7 @@ void Rasterizer::Update()
 		canvas->ClearFrameBuffer(window->GetFrameBuffer());
 		canvas->ClearZBuffer();
 		camera->Update();
-		scnManager->GetCurrentLight()->Update();
+		UpdateLightMatirx();
 		DrawSomthing();
 		DrawAxis();
 	}
@@ -734,6 +733,67 @@ bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vect
 	{
 		return false;
 	}
+}
+
+void Rasterizer::UpdateLightMatirx()
+{
+	if (scnManager->GetRenderState()&RENDER_STATE_SHADOW)
+	{
+		UpdateLightViewMatrix();
+		UpdateLightOrthographicMatrix();
+	}
+}
+
+void Rasterizer::UpdateLightViewMatrix()
+{
+	DirectLight *light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
+
+	Vector4 p = -light->GetDirection();
+	Vector3 position = Vector3(p.x, p.y, p.z);
+	Vector3 target = { 0, 0, 0 };
+	Vector3 up = { 0,1,0 };
+
+	Vector3 z_axis = target - position;
+	z_axis.Normalize();
+	Vector3 x_axis = up.Cross(z_axis);
+	x_axis.Normalize();
+	Vector3 y_axis = z_axis.Cross(x_axis);
+
+	lightView.m[0][0] = x_axis.x;
+	lightView.m[1][0] = x_axis.y;
+	lightView.m[2][0] = x_axis.z;
+	lightView.m[3][0] = -x_axis.Dot(position);
+
+	lightView.m[0][1] = y_axis.x;
+	lightView.m[1][1] = y_axis.y;
+	lightView.m[2][1] = y_axis.z;
+	lightView.m[3][1] = -y_axis.Dot(position);
+
+	lightView.m[0][2] = z_axis.x;
+	lightView.m[1][2] = z_axis.y;
+	lightView.m[2][2] = z_axis.z;
+	lightView.m[3][2] = -z_axis.Dot(position);
+
+	lightView.m[0][3] = lightView.m[1][3] = lightView.m[2][3] = 0.0f;
+	lightView.m[3][3] = 1.0f;
+}
+
+void Rasterizer::UpdateLightOrthographicMatrix()
+{
+	const float Near = 0.0f;
+	const float Far = 20.0f;
+	const float Right = 10.0f;
+	const float Left = -10.0f;
+	const float Top = 10.0f;
+	const float Bottom = -10.0f;
+
+	lightOrth.m[0][0] = 2 / (Right - Left);
+	lightOrth.m[1][1] = 2 / (Top - Bottom);
+	lightOrth.m[2][2] = 2 / (Far - Near);
+	lightOrth.m[3][0] = (Left + Right) / (Left - Right);
+	lightOrth.m[3][1] = (Bottom + Top) / (Bottom - Top);
+	lightOrth.m[3][2] = (Near + Far) / (Near - Far);
+	lightOrth.m[3][3] = 1.0f;
 }
 
 void Rasterizer::ProcessWindowKeyInput()
