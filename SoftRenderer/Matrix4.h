@@ -49,7 +49,7 @@ public:
 	Matrix4 operator/(float k) const;
 
 	Matrix4 Translation(const Vector3& translate);
-	Matrix4 Rotation(const Vector3& rotate, const float& theta);
+	Matrix4 Rotation(const Vector3& rotate, float theta);
 	Matrix4 Scalation(const Vector3& scale);
 
 	Matrix4 GetTranspose();

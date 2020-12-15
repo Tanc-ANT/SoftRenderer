@@ -10,14 +10,14 @@ public:
 	void ClearFrameBuffer(void *fb);
 	void ClearZBuffer();
 
-	void SetWidth(const int& w) { width = w; }
-	int GetWidth() { return width; }
+	void SetWidth(int w) { width = w; }
+	int GetWidth() const { return width; }
 
-	void SetHeight(const int& h) { height = h; }
-	int GetHeight() { return height; }
+	void SetHeight(int h) { height = h; }
+	int GetHeight() const { return height; }
 
-	UINT32** GetFrameBuffer() { return frameBuffer; }
-	float** GetZBuffer() { return zBuffer; }
+	UINT32** GetFrameBuffer() const { return frameBuffer; }
+	float** GetZBuffer() const { return zBuffer; }
 
 private:
 	int width;

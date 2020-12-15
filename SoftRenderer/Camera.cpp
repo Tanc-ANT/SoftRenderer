@@ -42,6 +42,8 @@ void Camera::UpdateViewMatrix()
 
 	view.m[0][3] = view.m[1][3] = view.m[2][3] = 0.0f;
 	view.m[3][3] = 1.0f;
+
+	staticView = view;
 }
 
 void Camera::UpdateProjectionMatirx()

@@ -21,18 +21,19 @@ public:
 	~Camera() {};
 
 	void SetPostion(const Vector3& p) { position = p; }
-	Vector3 GetPostion() { return position; }
+	Vector3 GetPostion() { return position; } const
 
 	void SetTarget(const Vector3& t) { target = t; }
-	Vector3 GetTarget() { return target; }
+	Vector3 GetTarget() { return target; } const
 
 	void SetUp(const Vector3& u) { up = u; }
-	Vector3 GetUp() { return up; }
+	Vector3 GetUp() { return up; } const
 
 	Matrix4 GetModelMatrix() const{ return model; }
 	Matrix4 GetInvModelMatrix() const { return invModel; }
 
-	Matrix4 GetViewMatrix() const { return view; }
+	Matrix4 GetViewMatrix() const { return view; } const
+	Matrix4 GetStaticViewMatrix() const { return staticView; }
 	Matrix4 GetInvViewMatrix() const { return invView; }
 
 	Matrix4 GetProjectionMatrix() const { return proj; }
@@ -47,9 +48,9 @@ public:
 	void SetModelRot(const Vector3& v) { modelRot = v; }
 	Vector3 GetModelRot() const { return modelRot; }
 
-	float GetNear() { return Near; }
-	float GetFar() { return Far; }
-	float GetFovY() { return FovY; }
+	float GetNear() const { return Near; }
+	float GetFar() const { return Far; }
+	float GetFovY() const { return FovY; }
 
 	void Update();
 
@@ -66,6 +67,7 @@ private:
 	Matrix4 model;
 	Matrix4 invModel;
 	Matrix4 view;
+	Matrix4 staticView;
 	Matrix4 invView;
 	Matrix4 proj;
 	Matrix4 invProj;

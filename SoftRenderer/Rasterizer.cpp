@@ -1,5 +1,24 @@
 #include "Rasterizer.h"
 
+// default viewport trasform value
+const int screen_ox = 600;
+const int screen_oy = 0;
+const int screen_w = 200;
+const int screen_y = 200;
+
+// default axis viewport transform value
+const int axis_ox = 0;
+const int axis_oy = 500;
+const int axis_w = 100;
+const int axis_h = 100;
+
+Vector4 axis_array[4] = {
+	{0.0f,0.0f,0.0f,1.0f},			//origin
+	{5.0f,0.0f,0.0f,1.0f},			//x-axis	red line
+	{0.0f,5.0f,0.0f,1.0f},		//y-axis	blue line
+	{0.0f,0.0f,5.0f,1.0f}		//z-axis	green line
+};	
+
 Rasterizer::Rasterizer()
 {
 
@@ -10,27 +29,65 @@ Rasterizer::~Rasterizer()
 
 };
 
-Vector4 Rasterizer::TransformHomogenize(const Vector4& v)
+Vector4 Rasterizer::TransformHomogenize(const Vector4& v, bool viewport)
 {
 	float rhw = 1.0f / v.w;
 	float x = v.x * rhw;
 	float y = v.y * rhw;
 	float z = v.z * rhw;
 	float w = rhw;
+
+	x = (x + 1.0f)*canvas->GetWidth() * 0.5f;
+	y = (1.0f - y)*canvas->GetHeight() * 0.5f;
 	z = (z + 1.0f) * 0.5f;
-	return Vector4((x + 1.0f)*canvas->GetWidth() * 0.5f,
-		(1.0f - y)*canvas->GetHeight() * 0.5f,
-		z, w);
+	if (viewportTrans && viewport)
+	{
+		TransformViewPort(x, y, screen_ox, screen_oy, screen_w, screen_y);
+	}
+	return Vector4(x, y, z, w);
 }
 
-Vector4 Rasterizer::InvTransformHomogenize(const Vector4& v)
+Vector4 Rasterizer::InvTransformHomogenize(const Vector4& v, bool viewport)
 {
+	float x = v.x;
+	float y = v.y;
+	if (viewportTrans && viewport)
+	{
+		InvTransformViewPort(x, y, screen_ox, screen_oy, screen_w, screen_y);
+	}
+	x = (x * 2 / canvas->GetWidth() - 1.0f) / v.w;
+	y = (1.0f - y * 2 / canvas->GetHeight()) / v.w;
 
-	float x = (v.x * 2 / canvas->GetWidth() - 1.0f) / v.w;
-	float y = (1.0f - v.y * 2 / canvas->GetHeight()) / v.w;
 	float z = (v.z * 2 - 1.0f) / v.w;
 	float w = 1 / v.w;
 	return Vector4(x, y, z, w);
+}
+
+void Rasterizer::TransformViewPort(int& x, int& y, int oX, int oY, int w, int h)
+{
+	float w_ratio = (float)w / (float)canvas->GetWidth();
+	float h_ratio = (float)h / (float)canvas->GetHeight();
+	
+	x = (int)(x * w_ratio + oX);
+	y = (int)(y * h_ratio + oY);
+}
+
+void Rasterizer::TransformViewPort(float& x, float& y, int oX, int oY, int w, int h)
+{
+	float w_ratio = (float)w / (float)canvas->GetWidth();
+	float h_ratio = (float)h / (float)canvas->GetHeight();
+
+	x = x * w_ratio + oX;
+	y = y * h_ratio + oY;
+}
+
+void Rasterizer::InvTransformViewPort(float& x, float& y, int oX, int oY, int w, int h)
+{
+	float w_ratio = (float)w / (float)canvas->GetWidth();
+	float h_ratio = (float)h / (float)canvas->GetHeight();
+
+	x = (x - oX) / w_ratio;
+	y = (y - oY) / h_ratio;
 }
 
 void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
@@ -75,25 +132,41 @@ void Rasterizer::ClipCVV(const Triangle& cam_tri, const Triangle& lig_tri)
 	{
 		std::vector<Vertex> vert_list{ cam_tri.GetV0(), cam_tri.GetV1(), cam_tri.GetV2() };
 		std::vector<Vertex> in_list1;
-		//std::vector<Vertex> in_list2;
+		std::vector<Vertex> in_list2;
+		std::vector<Vertex> in_list3;
+		std::vector<Vertex> in_list4;
+		std::vector<Vertex> in_list5;
 
-		float cosAh = cos(camera->GetFovY() / 2);
-		float sinAh = sin(camera->GetFovY() / 2);
+		if (fiveclip)
+		{
+			float cosAh = cos(camera->GetFovY() / 2);
+			float sinAh = sin(camera->GetFovY() / 2);
 
-		ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
-			vert_list, in_list1);	//near
-		//ClipWithPlane(Vector4(0, 0, camera->GetFar(), 1), Vector4(0, 0, -1, 0),
-		//	in_list1, in_list2);	//far
-
-		int num_vertex = (int)in_list1.size() - 2;
+			ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
+				vert_list, in_list1);	//near
+			ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(0, cosAh, sinAh, 0),
+				in_list1, in_list2);	//top
+			ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(0, -cosAh, sinAh, 0),
+				in_list2, in_list3);	//buttm
+			ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(-cosAh, 0, sinAh, 0),
+				in_list3, in_list4);	//left
+			ClipWithPlane(Vector4(0, 0, 0, 1), Vector4(cosAh, 0, sinAh, 0),
+				in_list4, in_list5);	//right
+		}
+		else
+		{
+			ClipWithPlane(Vector4(0, 0, camera->GetNear(), 1), Vector4(0, 0, 1, 0),
+				vert_list, in_list5);	//near
+		}
+		int num_vertex = (int)in_list5.size() - 2;
 
 		for (int i = 0; i < num_vertex; ++i)
 		{
 			int index0 = 0;
 			int index1 = i + 1;
 			int index2 = i + 2;
-			Triangle cam_triangle(in_list1[index0],
-				in_list1[index1], in_list1[index2]);
+			Triangle cam_triangle(in_list5[index0],
+				in_list5[index1], in_list5[index2]);
 
 			DrawTriangleColor(cam_triangle);
 		}
@@ -249,7 +322,7 @@ void Rasterizer::DrawLine(int x0, int y0, int x1, int y1, Color color)
 	}
 }
 
-void Rasterizer::DrawScanline(const Vertex& A, const Vertex& B, const int& y)
+void Rasterizer::DrawScanline(const Vertex& A, const Vertex& B, int y)
 {
 	Vector4 position_A = A.GetVertexPosition();
 	Vector4 position_B = B.GetVertexPosition();
@@ -317,7 +390,8 @@ void Rasterizer::DrawScanline(const Vertex& A, const Vertex& B, const int& y)
 			z_line_buffer[j] = z;
 			if (TestVertexInShadow(Vector4((float)j, (float)y, z, w), normal))
 				color = color * Color(0.15f, 0.15f, 0.15f);
-			DrawPixel(j, y, color.GetIntensity());
+			int dx = j, dy = y;
+			DrawPixel(dx, dy, color.GetIntensity());
 		}
 	}
 }
@@ -330,9 +404,9 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	Vector4 t1 = lig_t.GetV1().GetVertexPosition();
 	Vector4 t2 = lig_t.GetV2().GetVertexPosition();
 
-	t0 = TransformHomogenize(t0);
-	t1 = TransformHomogenize(t1);
-	t2 = TransformHomogenize(t2);
+	t0 = TransformHomogenize(t0,true);
+	t1 = TransformHomogenize(t1,true);
+	t2 = TransformHomogenize(t2,true);
 
 	if (t0.y > t1.y) { std::swap(t0, t1); }
 	if (t0.y > t2.y) { std::swap(t0, t2); }
@@ -344,7 +418,8 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	{
 		// Because of up set down Y. Add a checkpoint here.
 		if (y >= canvas->GetHeight() || y < 0) continue;
-
+		// This check  additional pixel 
+		//if(std::abs((float)y - t0.y)<0.5f) continue;
 		float segement_height = t1.y - t0.y + EPSILON;
 		//if(segement_height < 1.0f) continue;
 		float alpha = (float)(y - t0.y) / total_height;
@@ -372,14 +447,14 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 		for (int j = (int)(A.x + 0.5f); j < (int)(B.x + 0.5f); ++j)
 		{
 			float step = (float)j - A.x + 0.5f;
-			if (j >= canvas->GetWidth() || j < 0) break;
+			if (j >= canvas->GetWidth() || j < 0) continue;
 			float z = depth_ratio * step + A.z;
 
 			if (GetShadowDepth(j,y) > z)
 			{
 				DrawShadowDepth(j, y, z);
-				//Color color(z, z, z);
-				//DrawPixel(j, y, color.GetIntensity());
+				Color color(z, z, z);
+				DrawPixel(j, y, color.GetIntensity());
 			}
 		}
 	}
@@ -387,8 +462,9 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	for (int y = (int)(t1.y + 0.5f); y <= (int)(t2.y + 0.5f); y++)
 	{
 		// Because of up set down Y. Add a checkpoint here.
-		if (y >= canvas->GetHeight() || y < 0) continue;
-
+		if (y >= canvas->GetHeight() || y < 0) break;
+		// This check  additional pixel 
+		//if (std::abs((float)y - t1.y) < 0.5f) continue;
 		float segement_height = t2.y - t1.y + EPSILON;
 		//if (segement_height < 1.0f) continue;
 		float alpha = (float)(y - t0.y) / total_height;
@@ -422,8 +498,8 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 			if (GetShadowDepth(j, y) > z)
 			{
 				DrawShadowDepth(j, y, z);
-				//Color color(z, z, z);
-				//DrawPixel(j, y, color.GetIntensity());
+				Color color(z, z, z);
+				DrawPixel(j, y, color.GetIntensity());
 			}
 		}
 	}
@@ -437,9 +513,9 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 	Vertex vert1 = cam_t.GetV1();
 	Vertex vert2 = cam_t.GetV2();
 
-	Vector4 t0 = TransformHomogenize(vert0.GetVertexPosition());
-	Vector4 t1 = TransformHomogenize(vert1.GetVertexPosition());
-	Vector4 t2 = TransformHomogenize(vert2.GetVertexPosition());
+	Vector4 t0 = TransformHomogenize(vert0.GetVertexPosition(), true);
+	Vector4 t1 = TransformHomogenize(vert1.GetVertexPosition(), true);
+	Vector4 t2 = TransformHomogenize(vert2.GetVertexPosition(), true);
 
 	vert0.SetVertexPosition(t0);
 	vert1.SetVertexPosition(t1);
@@ -556,7 +632,7 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 	if ((scnManager->GetRenderState() & RENDER_STATE_SHADOW) && 
 		scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetReceiveShadow())
 	{
-		Vector4 screen_point = InvTransformHomogenize(vert);
+		Vector4 screen_point = InvTransformHomogenize(vert, true);
 		screen_point = screen_point * camera->GetInvProjectionMatrix();
 
 		Vector4 world_point = screen_point * camera->GetInvViewMatrix();
@@ -565,7 +641,7 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 		screen_point = world_point * light->GetViewMatrix();
 		screen_point = screen_point * light->GetProjectionMatrix();
 
-		screen_point = TransformHomogenize(screen_point);
+		screen_point = TransformHomogenize(screen_point, true);
 
 		int x = (int)screen_point.x, y = (int)screen_point.y;
 		float z = screen_point.z;
@@ -575,11 +651,7 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 
 		float currentDepth = scnManager->GetCurrentLight()->LightDepthCalculation(screen_point,normal);
 		float closestDepth = GetShadowDepth(x, y);
-		//return closestDepth < currentDepth ? true : false;
-		if (closestDepth < currentDepth)
-			return true;
-		else
-			return false;
+		return closestDepth < currentDepth ? true : false;
 	}
 	else
 		return false;
@@ -609,11 +681,31 @@ void Rasterizer::DrawSomthing()
 	window->SetNtri(nTriangle);
 }
 
+void Rasterizer::DrawAxis()
+{
+	Vector4 screen_pos[4];
+	Matrix4 M = camera->GetModelMatrix();
+	Matrix4 V = camera->GetStaticViewMatrix();
+	Matrix4 P = camera->GetProjectionMatrix();
+	for (int i = 0; i < 4; ++i)
+	{
+		screen_pos[i] = axis_array[i];
+		screen_pos[i] = screen_pos[i] * M * V * P;
+		screen_pos[i] = TransformHomogenize(screen_pos[i], false);
+		TransformViewPort(screen_pos[i].x, screen_pos[i].y, axis_ox, axis_oy, axis_w, axis_h);
+	}
+	DrawLine((int)screen_pos[0].x, (int)screen_pos[0].y, 
+		(int)screen_pos[1].x, (int)screen_pos[1].y,Color::RED_COLOR);
+	DrawLine((int)screen_pos[0].x, (int)screen_pos[0].y,
+		(int)screen_pos[2].x, (int)screen_pos[2].y, Color::GREEN_COLOR);
+	DrawLine((int)screen_pos[0].x, (int)screen_pos[0].y,
+		(int)screen_pos[3].x, (int)screen_pos[3].y, Color::BULE_COLOR);
+}
+
 void Rasterizer::Update()
 {
 	renderPass = scnManager->GetRenderPass();
 	//renderPass = 1;
-	//canvas->ClearShadowBuffer();
 	shadowMap->ClearTextureDepth();
 	while (renderPass--)
 	{
@@ -622,6 +714,7 @@ void Rasterizer::Update()
 		camera->Update();
 		scnManager->GetCurrentLight()->Update();
 		DrawSomthing();
+		DrawAxis();
 	}
 	window->Update();
 	ProcessWindowKeyInput();
@@ -681,6 +774,22 @@ void Rasterizer::ProcessWindowKeyInput()
 		Vector3 trans = camera->GetTrans();
 		trans.y -= 0.01f;
 		camera->SetTrans(trans);
+	}
+	if (window->GetKey()[VK_F1])
+	{
+		viewportTrans = false;
+	}
+	if (window->GetKey()[VK_F2])
+	{
+		viewportTrans = true;
+	}
+	if (window->GetKey()[VK_F3])
+	{
+		fiveclip = false;
+	}
+	if (window->GetKey()[VK_F4])
+	{
+		fiveclip = true;
 	}
 	if (window->GetKey()[VK_ESCAPE])
 	{

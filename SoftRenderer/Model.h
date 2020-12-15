@@ -16,18 +16,18 @@ public:
 	void LoadEmptyTexture();
 
 	//Warning: One model one texture now!
-	Texture* GetCurrentTexture() { return textures->GetTexture(0); }
+	Texture* GetCurrentTexture() const{ return textures->GetTexture(0); }
 
-	Color GetCurrentColor(const Vector3& uv) { return textures->GetTexture(0)->GetColor(uv); }
+	Color GetCurrentColor(const Vector3& uv) const { return textures->GetTexture(0)->GetColor(uv); }
 
-	size_t Nfaces() { return (int)faces.size(); }
-	Triangle GetFaceIndex(long idx) { return faces[idx]; }
+	size_t Nfaces() const { return faces.size(); }
+	Triangle GetFaceIndex(long idx) const { return faces[idx]; }
 
 	void SetCastShadow(bool cast) { castShadow = cast; }
-	bool GetCastShadow() { return castShadow; }
+	bool GetCastShadow() const { return castShadow; }
 
 	void SetReceiveShadow(bool receive) { receiveShadow = receive; }
-	bool GetReceiveShadow() { return receiveShadow; }
+	bool GetReceiveShadow() const { return receiveShadow; }
 
 private:
 	std::vector<Triangle> faces;
@@ -45,9 +45,9 @@ public:
 
 	void LoadModel(const char *filename);
 
-	Model* GetModel(const int& index) { return models[index]; }
+	Model* GetModel(int index) const { return models[index]; }
 
-	size_t GetSize() { return models.size(); }
+	size_t GetSize() const { return models.size(); }
 
 private:
 	std::vector<Model*> models;

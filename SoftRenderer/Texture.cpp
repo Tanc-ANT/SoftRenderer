@@ -23,7 +23,6 @@ void Texture::LoadColorTexture(const char *filename)
 
 	if (bmpFile == nullptr)
 	{
-		fclose(bmpFile);
 		std::cerr << "Open texture file fail" << std::endl;
 		return;
 	}
@@ -84,8 +83,8 @@ void Texture::LoadColorTexture(const char *filename)
 
 void Texture::CreateEmptyTexture()
 {
-	width = 512;
-	height = 512;
+	width = 1024;
+	height = 1024;
 	int need = width * height * 8 + sizeof(void*)*(height * 2);
 	char *ptr = (char*)malloc(need);
 	assert(ptr);
@@ -138,7 +137,7 @@ void Texture::ClearTextureDepth()
 	{
 		for (int i = 0; i < width; ++i)
 		{
-			depth[j][i] = 1.0f;
+			depth[j][i] = 10.0f;
 		}
 	}
 }

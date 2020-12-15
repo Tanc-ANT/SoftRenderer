@@ -146,7 +146,7 @@ Matrix4 Matrix4::Translation(const Vector3& translate)
 	return *this;
 }
 
-Matrix4 Matrix4::Rotation(const Vector3& rotate, const float& theta)
+Matrix4 Matrix4::Rotation(const Vector3& rotate, float theta)
 {
 	Vector3 n = rotate;
 	n.Normalize();

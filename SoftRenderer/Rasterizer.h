@@ -28,11 +28,18 @@ public:
 
 	void DrawSomthing();
 
+	void DrawAxis();
+
 	void Update();
 
 private:
-	Vector4 TransformHomogenize(const Vector4& v);
-	Vector4 InvTransformHomogenize(const Vector4& v);
+	Vector4 TransformHomogenize(const Vector4& v, bool viewport);
+	Vector4 InvTransformHomogenize(const Vector4& v, bool viewport);
+
+	void TransformViewPort(int& x, int& y, int oX, int oY, int w, int h);
+	void TransformViewPort(float& x, float& y, int oX, int oY, int w, int h);
+
+	void InvTransformViewPort(float& x, float& y, int oX, int oY, int w, int h);
 
 	void ClipWithPlane(const Vector4& ponint, const Vector4& normal, 
 		std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list);
@@ -50,7 +57,7 @@ private:
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 
-	void DrawScanline(const Vertex& A, const Vertex& B, const int& y);
+	void DrawScanline(const Vertex& A, const Vertex& B, int y);
 
 	void DrawTriangleDepth(const Triangle& lig_t);
 	void DrawTriangleColor(const Triangle& cam_t);
@@ -77,6 +84,8 @@ private:
 	int nTriangle = 0;
 	bool changeState = false;
 	UINT32 renderPass = 1;
+	bool viewportTrans = false;
+	bool fiveclip = false;
 
 	//For camera
 	float originX = 0.0f;

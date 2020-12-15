@@ -20,13 +20,13 @@ public:
 	Vector4 operator+(const Vector4& other) const;
 	Vector4 operator-(const Vector4& other) const;
 	Vector4 operator-() const;
-	Vector4 operator*(const float& k) const;
-	Vector4 operator/(const float& k) const;
+	Vector4 operator*(float k) const;
+	Vector4 operator/(float k) const;
 
 	Vector4 &operator+=(const Vector4 &other);
 	Vector4 &operator-=(const Vector4 &other);
-	Vector4 &operator*=(const float& k);
-	Vector4 &operator/=(const float& k);
+	Vector4 &operator*=(float k);
+	Vector4 &operator/=(float k);
 
 	Vector4 operator*(const Matrix4 &m) const;
 

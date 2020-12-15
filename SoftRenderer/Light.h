@@ -22,13 +22,13 @@ public:
 	virtual void Update() {};
 
 	void SetViewMatrix(const Matrix4& m) { view = m; }
-	Matrix4 GetViewMatrix() { return view; };
+	Matrix4 GetViewMatrix() const { return view; };
 
 	void SetPorjectionMatrix(const Matrix4& m) { proj = m; }
-	Matrix4 GetProjectionMatrix() { return proj; };
+	Matrix4 GetProjectionMatrix() const { return proj; };
 
 	void SetColor(const Color& c) { color = c; }
-	Color GetColor() { return color; }
+	Color GetColor() const { return color; }
 
 private:
 	Color color;
@@ -57,7 +57,7 @@ public:
 	virtual float LightDepthCalculation(const Vector4& screen_pos, const Vector4& normal) { return 0.0f; }
 
 	void SetPosition(const Vector4& d) { position = d; }
-	Vector4 GetPosition() { return position; }
+	Vector4 GetPosition() const { return position; }
 
 private:
 	Vector4 position;
@@ -85,7 +85,7 @@ public:
 	virtual void Update() override;
 
 	void SetDirection(const Vector4& d) { direction = d; }
-	Vector4 GetDirection() { return direction; }
+	Vector4 GetDirection() const { return direction; }
 
 private:
 	void UpdateViewMatrix();

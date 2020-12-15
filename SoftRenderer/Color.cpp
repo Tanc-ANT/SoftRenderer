@@ -1,11 +1,11 @@
 #include "Color.h"
 
 
-Color Color::WHITH_COLOR = { 1.0f, 1.0f, 1.0f };
-Color Color::BLACK_COLOR = { 0.0f, 0.0f, 0.0f };
-Color Color::RED_COLOR = { 1.0f, 0.0f, 0.0f };
-Color Color::BULE_COLOR = { 0.0f, 1.0f, 0.0f };
-Color Color::GREEN_COLOR = { 0.0f, 0.0f, 1.0f };
+const Color Color::WHITH_COLOR = { 1.0f, 1.0f, 1.0f };
+const Color Color::BLACK_COLOR = { 0.0f, 0.0f, 0.0f };
+const Color Color::RED_COLOR = { 1.0f, 0.0f, 0.0f };
+const Color Color::BULE_COLOR = { 0.0f, 1.0f, 0.0f };
+const Color Color::GREEN_COLOR = { 0.0f, 0.0f, 1.0f };
 
 Color Color::operator+(const Color &other) const
 {
@@ -23,7 +23,7 @@ Color Color::operator-(const Color &other) const
 		color.z - other.GetColor().z);
 }
 
-Color Color::operator*(const float& k) const
+Color Color::operator*(float k) const
 {
 	return Color(
 		color.x * k,
@@ -38,7 +38,7 @@ Color Color::operator*(const Color &other) const
 		color.z * other.GetColor().z);
 }
 
-Color Color::operator/(const float& k) const
+Color Color::operator/(float k) const
 {
 	float oneOver = 1.0f / k;
 	return Color(
@@ -47,7 +47,7 @@ Color Color::operator/(const float& k) const
 		color.z * oneOver);
 }
 
-void Color::SetColor(const float& r, const float& g, const float& b,const float& a)
+void Color::SetColor(float r, float g, float b,float a)
 {
 	color.x = CLAMP(r, 0.0f, 1.0f);
 	color.y = CLAMP(g, 0.0f, 1.0f);
@@ -55,7 +55,7 @@ void Color::SetColor(const float& r, const float& g, const float& b,const float&
 	color.w = CLAMP(a, 0.0f, 1.0f);
 }
 
-void Color::SetColor(const Vector3& v, const float& a)
+void Color::SetColor(const Vector3& v, float a)
 {
 	color.x = CLAMP(v.x, 0.0f, 1.0f);
 	color.y = CLAMP(v.y, 0.0f, 1.0f);

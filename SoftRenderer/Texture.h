@@ -17,8 +17,8 @@ public:
 	void ClearTextureColor();
 	void ClearTextureDepth();
 
-	int GetWidth() { return width; }
-	int GetHeight() { return height; }
+	int GetWidth() const { return width; }
+	int GetHeight() const { return height; }
 
 	void SetColor(const Vector3& t,const Color& c);
 	Color GetColor(const Vector3& t);
@@ -45,9 +45,9 @@ public:
 
 	Color GetColor(const Vector3& t, int index);
 
-	size_t GetSize() { return textures.size(); }
+	size_t GetSize() const { return textures.size(); }
 
-	Texture* GetTexture(int index) { return textures[index]; }
+	Texture* GetTexture(int index) const { return textures[index]; }
 
 	std::vector<Texture*>& GetArray() { return textures; }
 

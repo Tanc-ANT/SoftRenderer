@@ -7,20 +7,22 @@ class Color
 {
 public:
 	Color() {};
-	Color(const float& r, const float& g, const float& b) :color(r, g, b,1.0f) {};
-	Color(const float& r, const float& g, const float& b,const float& a) :color(r, g, b, a) {};
+	Color(float r, float g, float b) :color(r, g, b,1.0f) {};
+	Color(float r, float g, float b,float a) :color(r, g, b, a) {};
 	Color(const Vector4& v) :color(v) {};
 	Color(const Color& c)
 	{
 		color.x = CLAMP(c.color.x, 0.0f, 1.0f);
 		color.y = CLAMP(c.color.y, 0.0f, 1.0f);
 		color.z = CLAMP(c.color.z, 0.0f, 1.0f);
+		color.w = CLAMP(c.color.w, 0.0f, 1.0f);
 	};
 	Color& operator=(const Color& c) 
 	{
 		color.x = CLAMP(c.color.x, 0.0f, 1.0f);
 		color.y = CLAMP(c.color.y, 0.0f, 1.0f);
 		color.z = CLAMP(c.color.z, 0.0f, 1.0f);
+		color.w = CLAMP(c.color.w, 0.0f, 1.0f);
 		return  *this;
 	};
 	~Color() {};
@@ -28,11 +30,11 @@ public:
 	Color operator+(const Color& other) const;
 	Color operator-(const Color& other) const;
 	Color operator*(const Color& other) const;
-	Color operator*(const float& k) const;
-	Color operator/(const float& k) const;
+	Color operator*(float k) const;
+	Color operator/(float k) const;
 
-	void SetColor(const float& r, const float& g, const float& b, const float& a = 1.0f);
-	void SetColor(const Vector3& v, const float& a = 1.0f);
+	void SetColor(float r, float g, float b, float a = 1.0f);
+	void SetColor(const Vector3& v, float a = 1.0f);
 	void SetColor(const Vector4& v);
 
 	Vector4 GetColor() const;
@@ -58,11 +60,11 @@ public:
 		return v1 + (v2 - v1) * factor;
 	}
 
-	static Color WHITH_COLOR;
-	static Color BLACK_COLOR;
-	static Color RED_COLOR;
-	static Color BULE_COLOR;
-	static Color GREEN_COLOR;
+	static const Color WHITH_COLOR;
+	static const Color BLACK_COLOR;
+	static const Color RED_COLOR;
+	static const Color BULE_COLOR;
+	static const Color GREEN_COLOR;
 
 private:
 	Vector4 color;

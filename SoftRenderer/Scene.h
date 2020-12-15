@@ -19,11 +19,11 @@ public:
 	explicit Scene(const char *filename);
 	~Scene();
 
-	UINT32 GetRenderState() { return renderState; }
-	UINT32 GetRenderPass() { return renderPass; }
+	UINT32 GetRenderState() const { return renderState; }
+	UINT32 GetRenderPass() const { return renderPass; }
 
-	Light* GetLight() { return light; }
-	ModelArray* GetModels() { return models; }
+	Light* GetLight() const { return light; }
+	ModelArray* GetModels() const { return models; }
 
 private:
 	void LoadScene(const char *filename);
@@ -55,12 +55,12 @@ public:
 	
 	void SwitchNextScene();
 
-	UINT32 GetRenderState() { return scenes[index]->GetRenderState(); }
-	UINT32 GetRenderPass() { return scenes[index]->GetRenderPass(); }
+	UINT32 GetRenderState() const { return scenes[index]->GetRenderState(); }
+	UINT32 GetRenderPass() const { return scenes[index]->GetRenderPass(); }
 
-	Scene* GetCurrentScene() { return scenes[index]; }
-	Light* GetCurrentLight() { return scenes[index]->GetLight(); }
-	ModelArray* GetCurrentModels(){ return scenes[index]->GetModels(); }
+	Scene* GetCurrentScene() const { return scenes[index]; }
+	Light* GetCurrentLight() const { return scenes[index]->GetLight(); }
+	ModelArray* GetCurrentModels() const { return scenes[index]->GetModels(); }
 
 private:
 	SceneManager();

@@ -52,7 +52,7 @@ Vector4 Vector4::operator-() const
 	return Vector4(-x, -y, -z, -w);
 }
 
-Vector4 Vector4::operator*(const float& k) const
+Vector4 Vector4::operator*(float k) const
 {
 	return Vector4(x * k,
 		y * k,
@@ -70,7 +70,7 @@ Vector4 Vector4::operator*(const Matrix4 &m) const
 	return v;
 }
 
-Vector4 Vector4::operator/(const float& k) const
+Vector4 Vector4::operator/(float k) const
 {
 	float oneOver = 1.0f / k;
 	return Vector4(x * oneOver,
@@ -97,7 +97,7 @@ Vector4& Vector4::operator-=(const Vector4 &other)
 	return *this;
 }
 
-Vector4& Vector4::operator*=(const float& k)
+Vector4& Vector4::operator*=(float k)
 {
 	x *= k;
 	y *= k;
@@ -106,7 +106,7 @@ Vector4& Vector4::operator*=(const float& k)
 	return *this;
 }
 
-Vector4& Vector4::operator/=(const float& k)
+Vector4& Vector4::operator/=(float k)
 {
 	float oneOver = 1.0f / k;
 	x *= oneOver;
