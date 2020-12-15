@@ -148,8 +148,9 @@ Triangle Rasterizer::LightTriangleTransfrom(const Triangle& triangle)
 	Matrix4 M; Matrix4 V; Matrix4 P;
 
 	M = camera->GetModelMatrix();
-	V = scnManager->GetCurrentLight()->GetViewMatrix();
-	P = scnManager->GetCurrentLight()->GetProjectionMatrix();
+	Light* light = scnManager->GetCurrentLight();
+	V = light->GetViewMatrix();
+	P = light->GetProjectionMatrix();
 
 	for (int j = 0; j < 3; j++) {
 		Vector4 v = vertex_points[j].GetVertexPosition();
@@ -175,8 +176,9 @@ Vector4 Rasterizer::LightVertexTransfrom(const Vector4& vert)
 	world_points = v * camera->GetModelMatrix();
 
 	// VP transform
-	screen_points = world_points * scnManager->GetCurrentLight()->GetViewMatrix();
-	screen_points = screen_points * scnManager->GetCurrentLight()->GetProjectionMatrix();
+	Light* light = scnManager->GetCurrentLight();
+	screen_points = world_points * light->GetViewMatrix();
+	screen_points = screen_points * light->GetProjectionMatrix();
 
 	return screen_points;
 }
@@ -186,13 +188,15 @@ Triangle Rasterizer::CameraTriangleToLightTriangle(const Triangle& triangle)
 	Triangle light_triangle = triangle;
 	Vector4 world_pos[3];
 
-	world_pos[0] = light_triangle.GetV0().GetVertexPosition() * camera->GetInvProjectionMatrix();
-	world_pos[1] = light_triangle.GetV1().GetVertexPosition() * camera->GetInvProjectionMatrix();
-	world_pos[2] = light_triangle.GetV2().GetVertexPosition() * camera->GetInvProjectionMatrix();
+	const Matrix4& inv_proj = camera->GetInvProjectionMatrix();
+	world_pos[0] = light_triangle.GetV0().GetVertexPosition() * inv_proj;
+	world_pos[1] = light_triangle.GetV1().GetVertexPosition() * inv_proj;
+	world_pos[2] = light_triangle.GetV2().GetVertexPosition() * inv_proj;
 
-	world_pos[0] = world_pos[0] * camera->GetInvViewMatrix();
-	world_pos[1] = world_pos[1] * camera->GetInvViewMatrix();
-	world_pos[2] = world_pos[2] * camera->GetInvViewMatrix();
+	const Matrix4& inv_view = camera->GetInvViewMatrix();
+	world_pos[0] = world_pos[0] * inv_view;
+	world_pos[1] = world_pos[1] * inv_view;
+	world_pos[2] = world_pos[2] * inv_view;
 
 	light_triangle.GetV0().SetVertexPosition(world_pos[0]);
 	light_triangle.GetV1().SetVertexPosition(world_pos[1]);
@@ -285,7 +289,7 @@ void Rasterizer::DrawScanline(const Vertex& A, const Vertex& B, const int& y)
 	for (int j = (int)(position_A.x + 0.5f); j < (int)(position_B.x + 0.5f); ++j)
 	{
 		float step = (float)j - position_A.x + 0.5f;
-		if (j >= canvas->GetWidth() || j < 0) break;
+		if (j >= canvas->GetWidth() || j < 0) continue;
 		float z = depth_ratio * step + position_A.z;
 		float w = w_ratio * step + position_A.w;
 
@@ -339,9 +343,8 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	for (int y = (int)(t0.y + 0.5f); y <= (int)(t1.y + 0.5f); y++)
 	{
 		// Because of up set down Y. Add a checkpoint here.
-		if (y >= canvas->GetHeight() || y < 0) break;
-		// This check  additional pixel 
-		//if(std::abs((float)y - t0.y)<0.5f) continue;
+		if (y >= canvas->GetHeight() || y < 0) continue;
+
 		float segement_height = t1.y - t0.y + EPSILON;
 		//if(segement_height < 1.0f) continue;
 		float alpha = (float)(y - t0.y) / total_height;
@@ -384,9 +387,8 @@ void Rasterizer::DrawTriangleDepth(const Triangle& lig_t)
 	for (int y = (int)(t1.y + 0.5f); y <= (int)(t2.y + 0.5f); y++)
 	{
 		// Because of up set down Y. Add a checkpoint here.
-		if (y >= canvas->GetHeight() || y < 0) break;
-		// This check  additional pixel 
-		//if (std::abs((float)y - t1.y) < 0.5f) continue;
+		if (y >= canvas->GetHeight() || y < 0) continue;
+
 		float segement_height = t2.y - t1.y + EPSILON;
 		//if (segement_height < 1.0f) continue;
 		float alpha = (float)(y - t0.y) / total_height;
@@ -483,9 +485,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 		for (int y = (int)(t0.y + 0.5f); y <= (int)(t1.y + 0.5f); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= canvas->GetHeight() || y < 0) break;
-			// This check  additional pixel 
-			//if(std::abs((float)y - t0.y)<0.5f) continue;
+			if (y >= canvas->GetHeight() || y < 0) continue;
+
 			float segement_height = t1.y - t0.y + EPSILON;
 			//if(segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
@@ -506,9 +507,8 @@ void Rasterizer::DrawTriangleColor(const Triangle& cam_t)
 		for (int y = (int)(t1.y + 0.5f); y <= (int)(t2.y + 0.5f); y++)
 		{
 			// Because of up set down Y. Add a checkpoint here.
-			if (y >= canvas->GetHeight() || y < 0) break;
-			// This check  additional pixel 
-			//if (std::abs((float)y - t1.y) < 0.5f) continue;
+			if (y >= canvas->GetHeight() || y < 0) continue;
+
 			float segement_height = t2.y - t1.y + EPSILON;
 			//if (segement_height < 1.0f) continue;
 			float alpha = (float)(y - t0.y) / total_height;
@@ -561,8 +561,9 @@ bool Rasterizer::TestVertexInShadow(const Vector4& vert, const Vector4& normal)
 
 		Vector4 world_point = screen_point * camera->GetInvViewMatrix();
 
-		screen_point = world_point * scnManager->GetCurrentLight()->GetViewMatrix();
-		screen_point = screen_point * scnManager->GetCurrentLight()->GetProjectionMatrix();
+		Light* light = scnManager->GetCurrentLight();
+		screen_point = world_point * light->GetViewMatrix();
+		screen_point = screen_point * light->GetProjectionMatrix();
 
 		screen_point = TransformHomogenize(screen_point);
 
