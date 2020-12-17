@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "Vector3.h"
+#include "Vector4.h"
 #include "Matrix4.h"
 #include "Window.h"
 
@@ -13,21 +13,21 @@ constexpr float PI = 3.1415926f;
 class Camera
 {
 public:
-	Camera(Vector3 p, Vector3 t, Vector3 u, float a)
+	Camera(Vector4 p, Vector4 t, Vector4 u, float a)
 		:position(p), target(t), up(u), aspect(a)
 	{
 		model.SetIdentity();
 	};
 	~Camera() {};
 
-	void SetPostion(const Vector3& p) { position = p; }
-	Vector3 GetPostion() { return position; } const
+	void SetPostion(const Vector4& p) { position = p; }
+	Vector4 GetPostion() { return position; } const
 
-	void SetTarget(const Vector3& t) { target = t; }
-	Vector3 GetTarget() { return target; } const
+	void SetTarget(const Vector4& t) { target = t; }
+	Vector4 GetTarget() { return target; } const
 
-	void SetUp(const Vector3& u) { up = u; }
-	Vector3 GetUp() { return up; } const
+	void SetUp(const Vector4& u) { up = u; }
+	Vector4 GetUp() { return up; } const
 
 	Matrix4 GetModelMatrix() const{ return model; }
 	Matrix4 GetInvModelMatrix() const { return invModel; }
@@ -59,9 +59,9 @@ private:
 	void UpdateProjectionMatirx();
 
 private:
-	Vector3 position;
-	Vector3 target;
-	Vector3 up;
+	Vector4 position;
+	Vector4 target;
+	Vector4 up;
 	float aspect;
 
 	Matrix4 model;

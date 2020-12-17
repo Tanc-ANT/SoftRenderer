@@ -164,10 +164,11 @@ Color Texture::GetColor(const Vector3& t)
 	x = CLAMP(x, 0, width - 1);
 	y = CLAMP(y, 0, height - 1);
 	UINT32 c = color[y][x];
+	float a = ((c >> 24) & 0xff) / 255.0f;
 	float r = ((c >> 16) & 0xff) / 255.0f;
 	float g = ((c >> 8) & 0xff) / 255.0f;
 	float b = (c & 0xff) / 255.0f;
-	return Color(r, g, b);
+	return Color(r, g, b, a);
 }
 
 TextureArray::TextureArray()

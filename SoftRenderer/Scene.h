@@ -46,8 +46,10 @@ private:
 class SceneManager
 {
 public:
-	static SceneManager& GetInstance() {
-		static SceneManager instance;
+	static std::shared_ptr<SceneManager> GetInstance()
+	{
+		static std::shared_ptr<SceneManager> instance
+			= std::shared_ptr<SceneManager>(new SceneManager);
 		return instance;
 	}
 	
@@ -62,12 +64,14 @@ public:
 	Light* GetCurrentLight() const { return scenes[index]->GetLight(); }
 	ModelArray* GetCurrentModels() const { return scenes[index]->GetModels(); }
 
+	~SceneManager();
 private:
 	SceneManager();
-	~SceneManager();
+	
 
 private:
 	int index;
 	std::vector<Scene*> scenes;
+	static std::shared_ptr<SceneManager> instance;
 };
 

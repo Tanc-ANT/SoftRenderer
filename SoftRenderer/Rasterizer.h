@@ -16,15 +16,15 @@ public:
 	Rasterizer();
 	~Rasterizer();
 
-	void SetWindow(Window *w) { window = w; }
+	void SetWindow(std::shared_ptr<Window> w) { window = w; }
 
-	void SetCanvas(Canvas* d) { canvas = d; }
+	void SetCanvas(std::shared_ptr<Canvas> d) { canvas = d; }
 
-	void SetCamera(Camera* c) { camera = c; }
+	void SetCamera(std::shared_ptr<Camera> c) { camera = c; }
 
-	void SetShadowMap(Texture* s) { shadowMap = s; }
+	void SetShadowMap(std::shared_ptr<Texture> s) { shadowMap = s; }
 
-	void SetSceneManager(SceneManager* scn) { scnManager = scn; }
+	void SetSceneManager(std::shared_ptr<SceneManager> scn) { scnManager = scn; }
 
 	void DrawSomthing();
 
@@ -33,8 +33,8 @@ public:
 	void Update();
 
 private:
-	Vector4 TransformHomogenize(const Vector4& v, bool viewport);
-	Vector4 InvTransformHomogenize(const Vector4& v, bool viewport);
+	Vector4 TransformHomogenize(const Vector4& v);
+	Vector4 InvTransformHomogenize(const Vector4& v);
 
 	void TransformViewPort(int& x, int& y, int oX, int oY, int w, int h);
 	void TransformViewPort(float& x, float& y, int oX, int oY, int w, int h);
@@ -42,12 +42,14 @@ private:
 	void InvTransformViewPort(float& x, float& y, int oX, int oY, int w, int h);
 
 	void ClipWithPlane(const Vector4& ponint, const Vector4& normal, 
-		std::vector<Vertex>& vert_list, std::vector<Vertex>& in_list);
+		std::vector<std::shared_ptr<Uniform>>& vert_list, 
+		std::vector<std::shared_ptr<Uniform>>& in_list);
 
-	void ClipCVV(const Triangle& cam_tri, const Triangle& lig_tri);
+	void ClipSpace();
 
-	Triangle CameraTriangleTransfrom(const Triangle& triangle);
-	Triangle LightTriangleTransfrom(const Triangle& triangle);
+	// For shadow caculation
+	void CameraTriangleTransfrom(const Triangle& triangle);
+	void LightTriangleTransfrom(const Triangle& triangle);
 	Vector4 LightVertexTransfrom(const Vector4& vert);
 
 	Triangle CameraTriangleToLightTriangle(const Triangle& triangle);
@@ -57,18 +59,20 @@ private:
 	// Bresenham's Line Drawing Algorithm
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 
-	void DrawScanline(const Vertex& A, const Vertex& B, int y);
+	void DrawScanline(const Uniform& A, const Uniform& B, int y);
 
-	void DrawTriangleDepth(const Triangle& lig_t);
-	void DrawTriangleColor(const Triangle& cam_t);
+	void DrawTriangleDepth();
+	void DrawTriangleColor();
 
 	void DrawShadowDepth(int x, int y, float z);
 	float GetShadowDepth(int x, int y);
 
-	bool TestVertexInShadow(const Vector4& vert,const Vector4& normal);
+	bool TestVertexInShadow(const Vector4& worldpos,const Vector4& normal);
 
 	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 
+	// For light caculation
+	void CaculateLightColor(Vertex& vert);
 	void UpdateLightMatirx();
 	void UpdateLightViewMatrix();
 	void UpdateLightOrthographicMatrix();
@@ -77,19 +81,18 @@ private:
 	void ProcessWindowMouseInput();
 
 private:
-	Window* window;
-	Canvas* canvas;
-	Camera* camera;
-	Texture* shadowMap;
-	SceneManager* scnManager;
+	std::shared_ptr<Window> window;
+	std::shared_ptr<Canvas> canvas;
+	std::shared_ptr<Camera> camera;
+	std::shared_ptr<Texture> shadowMap;
+	std::shared_ptr<SceneManager> scnManager;
+	std::shared_ptr<Uniform> unifrom[3];
 	
 private:
 	int currModelIndex = 0;
 	int nTriangle = 0;
 	bool changeState = false;
 	UINT32 renderPass = 1;
-	bool viewportTrans = false;
-	bool fiveclip = false;
 
 	//For camera
 	float originX = 0.0f;

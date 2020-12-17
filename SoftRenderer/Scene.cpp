@@ -188,6 +188,7 @@ SceneManager::~SceneManager()
 	for (auto& it : scenes)
 		delete it;
 	scenes.clear();
+	std::cout << "Release scene manager" << std::endl;
 }
 
 void SceneManager::LoadScene(const char *filename)

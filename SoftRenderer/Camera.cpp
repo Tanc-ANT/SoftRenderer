@@ -19,11 +19,11 @@ void Camera::Update()
 
 void Camera::UpdateViewMatrix()
 {
-	Vector3 z_axis = target - position;
+	Vector4 z_axis = target - position;
 	z_axis.Normalize();
-	Vector3 x_axis = up.Cross(z_axis);
+	Vector4 x_axis = up.Cross(z_axis);
 	x_axis.Normalize();
-	Vector3 y_axis = z_axis.Cross(x_axis);
+	Vector4 y_axis = z_axis.Cross(x_axis);
 
 	view.m[0][0] = x_axis.x;
 	view.m[1][0] = x_axis.y;

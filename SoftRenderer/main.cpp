@@ -13,26 +13,26 @@ const int height = 600;
 
 int main()
 {
-	Window* window = new Window();
+	std::shared_ptr<Window> window = std::make_shared<Window>();
 	TCHAR* title = _T("Soft Renderer");
 	window->Init(width, height, title);
 
-	Canvas* canvas = new Canvas(width, height, window->GetFrameBuffer());
+	std::shared_ptr<Canvas> canvas = std::make_shared<Canvas>(width, height, window->GetFrameBuffer());
 
-	Vector3 eye(0, 0, 10);
-	Vector3 at(0, 0, 0);
-	Vector3 up(0, 1, 0);
+	Vector4 eye(0.0f, 0.0f, 10.0f,1.0f);
+	Vector4 at(0.0f, 0.0f, 0.0f,1.0f);
+	Vector4 up(0.0f, 1.0f, 0.0f, 0.0f);
 	float aspect = (float)width / (float)height;
-	Camera* camera = new Camera(eye, at, up, aspect);
+	std::shared_ptr<Camera> camera = std::make_shared<Camera>(eye, at, up, aspect);
 
-	Texture* shadow_map = new Texture();
+	std::shared_ptr<Texture> shadow_map = std::make_shared<Texture>();
 
-	SceneManager* scene_manager = &SceneManager::GetInstance();
+	std::shared_ptr<SceneManager> scene_manager = SceneManager::GetInstance();
 	scene_manager->LoadScene("../Asset/Scene/box.scn");
 	scene_manager->LoadScene("../Asset/Scene/crab.scn");
 	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
 
-	Rasterizer* raster = new Rasterizer();
+	std::unique_ptr<Rasterizer> raster = std::make_unique<Rasterizer>();
 	raster->SetWindow(window);
 	raster->SetCanvas(canvas);
 	raster->SetCamera(camera);
@@ -43,10 +43,6 @@ int main()
 	{
 		raster->Update();
 	}
-	SAFE_DELETE(raster);
-	SAFE_DELETE(camera);
-	SAFE_DELETE(canvas);
-	SAFE_DELETE(window);
 
 	return 0;
 }
