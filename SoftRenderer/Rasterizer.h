@@ -39,12 +39,11 @@ private:
 	void TransformViewPort(int& x, int& y, int oX, int oY, int w, int h);
 	void TransformViewPort(float& x, float& y, int oX, int oY, int w, int h);
 
-	void InvTransformViewPort(float& x, float& y, int oX, int oY, int w, int h);
-
 	void ClipWithPlane(const Vector4& ponint, const Vector4& normal, 
 		std::vector<std::shared_ptr<Uniform>>& vert_list, 
 		std::vector<std::shared_ptr<Uniform>>& in_list);
 
+	// For CVV clip
 	void ClipSpace();
 
 	// For shadow caculation

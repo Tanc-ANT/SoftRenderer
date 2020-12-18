@@ -143,17 +143,36 @@ void Scene::ReadModel(std::ifstream& in)
 	}
 	ReadOneLine(in, line, iss);
 	iss >> dummy; iss >> data;
-	if (dummy == "texture:")
+	if (dummy == "normal:")
 	{
 		if (data != "none")
 		{
 			std::string path = texturePath + data;
-			model->LoadTexture(path.c_str());
+			model->LoadNormalMap(path.c_str());
+		}
+	}
+	ReadOneLine(in, line, iss);
+	iss >> dummy; iss >> data;
+	if (dummy == "diffuse:")
+	{
+		if (data != "none")
+		{
+			std::string path = texturePath + data;
+			model->LoadDiffuseMap(path.c_str());
 		}
 		else if (data == "none")
 		{
-			size_t index = models->GetSize() - 1;
-			model->LoadEmptyTexture();
+			model->LoadEmptyDiffuseMap();
+		}
+	}
+	ReadOneLine(in, line, iss);
+	iss >> dummy; iss >> data;
+	if (dummy == "specular:")
+	{
+		if (data != "none")
+		{
+			std::string path = texturePath + data;
+			model->LoadSpecularMap(path.c_str());
 		}
 	}
 	ReadOneLine(in, line, iss);
@@ -173,6 +192,15 @@ void Scene::ReadModel(std::ifstream& in)
 			model->SetReceiveShadow(true);
 		else if (data == "false")
 			model->SetReceiveShadow(false);
+	}
+	ReadOneLine(in, line, iss);
+	iss >> dummy; iss >> data;
+	if (dummy == "transparent:")
+	{
+		if (data == "true")
+			model->SetTransparent(true);
+		else if (data == "false")
+			model->SetTransparent(false);
 	}
 }
 

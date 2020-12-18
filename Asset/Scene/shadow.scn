@@ -20,11 +20,17 @@ lighting:
 models: 2
     model:
         mesh: crab.obj
-        texture: crab_diffuse.bmp
+		normal: crab_normal.bmp
+        diffuse: crab_diffuse.bmp
+		specular: crab_specular.bmp
         castshadow: true
         receiveshadow: true
+		transparent: false
     model:
         mesh: plane.obj
-        texture: none
+        normal: none
+        diffuse: none
+		specular: none
         castshadow: true
         receiveshadow: true
+		transparent: false

@@ -1,11 +1,9 @@
 #include "Model.h"
 
-Model::Model(const char *filename):
-	castShadow(true),
-	receiveShadow(true)
+Model::Model(const char *filename)
 {
 	LoadModel(filename);
-	textures = std::make_shared<TextureArray>();
+	material = std::make_shared<Material>();
 }
 
 Model::~Model()
@@ -86,16 +84,6 @@ void Model::LoadModel(const char *filename)
 		"		vt# " << texs.size() <<
 		"	f# " << faces.size() << std::endl;
 	in.close();
-}
-
-void Model::LoadTexture(const char *fliename)
-{
-	textures->LoadTexture(fliename);
-}
-
-void Model::LoadEmptyTexture()
-{
-	textures->LoadEmptyTexture();
 }
 
 ModelArray::ModelArray()

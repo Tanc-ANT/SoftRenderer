@@ -4,15 +4,13 @@
 #include "Matrix4.h"
 #include "Color.h"
 #include "Geometry.h"
+#include "Material.h"
 
 class Light
 {
 public:
-	Light() {};
-	Light(const Color& c)
-	{
-		color = c;
-	}
+	Light() : ambient(0.2f), diffuse(0.8f), specular(1.0f) {}
+	Light(const Color& c) : color(c), ambient(0.2f), diffuse(0.8f), specular(1.0f) {}
 	virtual ~Light() {};
 
 	virtual void LightColorCalculaiton(const Vector4& camera_pos, 
@@ -21,8 +19,15 @@ public:
 	void SetColor(const Color& c) { color = c; }
 	Color GetColor() const { return color; }
 
+	float GetAmbient() const { return ambient; }
+	float GetDiffuse() const { return diffuse; }
+	float GetSpecular() const {return specular;}
+
 private:
 	Color color;
+	float ambient;
+	float diffuse;
+	float specular;
 };
 
 class PointLight final:public Light

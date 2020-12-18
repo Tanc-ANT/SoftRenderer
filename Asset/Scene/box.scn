@@ -20,6 +20,9 @@ lighting:
 models: 1
     model:
         mesh: box.obj
-        texture: checkerboard.bmp
-        castshadow: false
-        receiveshadow: false
+		normal: none
+        diffuse: checkerboard.bmp
+		specular: none
+        castshadow: true
+        receiveshadow: true
+		transparent: false

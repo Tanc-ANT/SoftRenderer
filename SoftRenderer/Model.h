@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include "Geometry.h"
 #include "Texture.h"
+#include "Material.h"
 
 class Model
 {
@@ -12,28 +13,41 @@ public:
 
 	void LoadModel(const char *filename);
 
-	void LoadTexture(const char *fliename);
-	void LoadEmptyTexture();
+	void LoadNormalMap(const char *fliename) { material->LoadNormalMap(fliename); }
 
-	//Warning: One model one texture now!
-	std::shared_ptr<Texture> GetCurrentTexture() const{ return textures->GetTexture(0); }
+	void LoadEmptyDiffuseMap() { material->LoadEmptyDiffuseMap(); };
+	void LoadDiffuseMap(const char *fliename) { material->LoadDiffuseMap(fliename); }
+	
+	void LoadSpecularMap(const char *fliename) { material->LoadSpecularMap(fliename); }
 
-	Color GetCurrentColor(const Vector3& uv) const { return textures->GetTexture(0)->GetColor(uv); }
+	void SetMaterial(std::shared_ptr<Material> m) { material = m; }
+	std::shared_ptr<Material> GetMaterial() const { return material; }
+
+	std::shared_ptr<Texture> GetNormalMap() const { return material->GetNormalMap(); }
+	Color GetNormalColor(const Vector3& uv) const { return material->GetNormalMap()->GetColor(uv); }
+
+	std::shared_ptr<Texture> GetDiffuseMap() const{ return material->GetDiffuseMap(); }
+	Color GetDiffuseColor(const Vector3& uv) const { return material->GetDiffuseMap()->GetColor(uv); }
+
+	std::shared_ptr<Texture> GetSpecularMap() const { return material->GetSpecularMap(); }
+	Color GetSpecularColor(const Vector3& uv) const { return material->GetSpecularMap()->GetColor(uv); }
 
 	size_t Nfaces() const { return faces.size(); }
 	Triangle GetFaceIndex(long idx) const { return faces[idx]; }
 
-	void SetCastShadow(bool cast) { castShadow = cast; }
-	bool GetCastShadow() const { return castShadow; }
 
-	void SetReceiveShadow(bool receive) { receiveShadow = receive; }
-	bool GetReceiveShadow() const { return receiveShadow; }
+	void SetCastShadow(bool cast) { material->SetCastShadow(cast); }
+	bool GetCastShadow() const { return material->GetCastShadow(); }
 
+	void SetReceiveShadow(bool receive) { material->SetReceiveShadow(receive); }
+	bool GetReceiveShadow() const { return material->GetReceiveShadow(); }
+
+	void SetTransparent(bool trans) { material->SetTransparent(trans); }
+	bool GetTransparent() const { return material->GetTransparent(); }
+	
 private:
 	std::vector<Triangle> faces;
-	std::shared_ptr<TextureArray> textures;
-	bool castShadow;
-	bool receiveShadow;
+	std::shared_ptr<Material> material;
 	Vector4 center;
 };
 

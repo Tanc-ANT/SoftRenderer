@@ -72,15 +72,6 @@ void Rasterizer::TransformViewPort(float& x, float& y, int oX, int oY, int w, in
 	y = y * h_ratio + oY;
 }
 
-void Rasterizer::InvTransformViewPort(float& x, float& y, int oX, int oY, int w, int h)
-{
-	float w_ratio = (float)w / (float)canvas->GetWidth();
-	float h_ratio = (float)h / (float)canvas->GetHeight();
-
-	x = (x - oX) / w_ratio;
-	y = (y - oY) / h_ratio;
-}
-
 void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 	std::vector<std::shared_ptr<Uniform>>& vert_list, 
 	std::vector<std::shared_ptr<Uniform>>& in_list)
@@ -355,7 +346,8 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 				// Perspective correction
 				uv = uv / w;
 
-				Color texcolor = scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetCurrentColor(uv);
+				std::shared_ptr<Model> model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
+				Color texcolor = model->GetDiffuseColor(uv);
 				color = color * texcolor;
 			}
 			z_line_buffer[j] = z;
