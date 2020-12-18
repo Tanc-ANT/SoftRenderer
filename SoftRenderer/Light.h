@@ -15,7 +15,8 @@ public:
 	}
 	virtual ~Light() {};
 
-	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) = 0;
+	virtual void LightColorCalculaiton(const Vector4& camera_pos, 
+		const Vector4& world_pos, const Vector4& normal, Color& pixel_color) = 0;
 
 	void SetColor(const Color& c) { color = c; }
 	Color GetColor() const { return color; }
@@ -39,7 +40,8 @@ public:
 	}
 	virtual ~PointLight() {};
 
-	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
+	virtual void LightColorCalculaiton(const Vector4& camera_pos,
+		const Vector4& world_pos, const Vector4& normal, Color& pixel_color) override;
 
 	void SetPosition(const Vector4& d) { position = d; }
 	Vector4 GetPosition() const { return position; }
@@ -63,7 +65,8 @@ public:
 	}
 	virtual ~DirectLight() {};
 
-	virtual void LightColorCalculaiton(const Vector4& camera_pos, Vertex& v) override;
+	virtual void LightColorCalculaiton(const Vector4& camera_pos,
+		const Vector4& world_pos, const Vector4& normal, Color& pixel_color) override;
 
 	void SetDirection(const Vector4& d) { direction = d; }
 	Vector4 GetDirection() const { return direction; }

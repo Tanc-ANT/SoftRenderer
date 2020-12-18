@@ -167,9 +167,6 @@ void Rasterizer::CameraTriangleTransfrom(const Triangle& triangle)
 		// normal set
 		n = n * M;
 		vertex_points[j].SetVertexNormal(n);
-		
-		// light caculation
-		CaculateLightColor(vertex_points[j]);
 
 		// VP transform
 		screen_points[j] = world_points[j] * V;
@@ -335,15 +332,21 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 		float z = depth_ratio * step + campos_A.z;
 		float w = w_ratio * step + campos_A.w;
 
-		Vector4 normal;
-		normal = (norm_ratio * step + normal_A);
-		normal = normal / w;
-
 		if (z_line_buffer[j] > z)
 		{
 			Color color;
 			color = (color_ratio * step + color_A);
 			color = color / w;
+
+			Vector4 normal;
+			normal = (norm_ratio * step + normal_A);
+			normal = normal / w;
+
+			Vector4 world = (worldpos_ratio * step + worldpos_A);
+			world = world / w;
+
+			// light caculation
+			CaculateLightColor(world, normal, color);
 
 			if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
 			{
@@ -358,9 +361,6 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 			z_line_buffer[j] = z;
 			if (scnManager->GetRenderState() & RENDER_STATE_SHADOW)
 			{
-				Vector4 world = (worldpos_ratio * step + worldpos_A);
-				world = world / w;
-
 				if (TestVertexInShadow(world, normal))
 					color = color * Color(0.15f, 0.15f, 0.15f);
 			}
@@ -704,12 +704,12 @@ bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vect
 	}
 }
 
-void Rasterizer::CaculateLightColor(Vertex& vert)
+void Rasterizer::CaculateLightColor(const Vector4& world_pos, const Vector4& normal, Color& pixel_color)
 {
 	if (scnManager->GetRenderState() & RENDER_STATE_LIGHT)
 	{
 		scnManager->GetCurrentLight()->LightColorCalculaiton(
-			camera->GetPostion(), vert);
+			camera->GetPostion(), world_pos, normal, pixel_color);
 	}
 }
 
