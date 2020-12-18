@@ -71,7 +71,7 @@ private:
 	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
 
 	// For light caculation
-	void CaculateLightColor(const Vector4& world_pos, const Vector4& normal, Color& pixel_color);
+	void CaculateLightColor(const Vector4& world_pos, const Vector4& normal,const Vector3& tex, Color& pixel_color);
 	void UpdateLightMatirx();
 	void UpdateLightViewMatrix();
 	void UpdateLightOrthographicMatrix();

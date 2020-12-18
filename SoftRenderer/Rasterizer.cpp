@@ -336,25 +336,27 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 			Vector4 world = (worldpos_ratio * step + worldpos_A);
 			world = world / w;
 
+			Vector3 uv;
+			uv = (uv_ratio * step + texture_A);
+			uv = uv / w;
+
 			// light caculation
-			CaculateLightColor(world, normal, color);
+			CaculateLightColor(world, normal,uv, color);
 
-			if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
-			{
-				Vector3 uv;
-				uv = (uv_ratio * step + texture_A);
-				// Perspective correction
-				uv = uv / w;
-
-				std::shared_ptr<Model> model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
-				Color texcolor = model->GetDiffuseColor(uv);
-				color = color * texcolor;
-			}
+			//if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
+			//{
+			//	std::shared_ptr<Model> model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
+			//	Color texcolor = model->GetDiffuseColor(uv);
+			//	color = color * texcolor;
+			//}
 			z_line_buffer[j] = z;
 			if (scnManager->GetRenderState() & RENDER_STATE_SHADOW)
 			{
 				if (TestVertexInShadow(world, normal))
-					color = color * Color(0.15f, 0.15f, 0.15f);
+				{
+					float shadow = scnManager->GetCurrentLight()->GetAmbient();
+					color = color * Color(shadow, shadow, shadow);
+				}
 			}
 			DrawPixel(j, y, color.GetIntensity());
 		}
@@ -696,12 +698,23 @@ bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vect
 	}
 }
 
-void Rasterizer::CaculateLightColor(const Vector4& world_pos, const Vector4& normal, Color& pixel_color)
+void Rasterizer::CaculateLightColor(const Vector4& world_pos, const Vector4& normal, const Vector3& tex, Color& pixel_color)
 {
 	if (scnManager->GetRenderState() & RENDER_STATE_LIGHT)
 	{
-		scnManager->GetCurrentLight()->LightColorCalculaiton(
-			camera->GetPostion(), world_pos, normal, pixel_color);
+		if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
+		{
+			std::shared_ptr<Material> material = scnManager->GetCurrentModels()->
+				GetModel(currModelIndex)->GetMaterial();
+
+			scnManager->GetCurrentLight()->LightTextureCalculaiton(
+				camera->GetPostion(), world_pos, normal,tex, material, pixel_color);
+		}
+		else if (scnManager->GetRenderState() & RENDER_STATE_COLOR)
+		{
+			scnManager->GetCurrentLight()->LightColorCalculaiton(
+				camera->GetPostion(), world_pos, normal, pixel_color);
+		}
 	}
 }
 
