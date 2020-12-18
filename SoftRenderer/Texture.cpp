@@ -15,6 +15,7 @@ Texture::Texture(const char *filename)
 Texture::~Texture()
 {
 	SAFE_DELETE(color);
+	depth = nullptr;
 }
 
 void Texture::LoadColorTexture(const char *filename)
@@ -137,7 +138,7 @@ void Texture::ClearTextureDepth()
 	{
 		for (int i = 0; i < width; ++i)
 		{
-			depth[j][i] = 10.0f;
+			depth[j][i] = 1.0f;
 		}
 	}
 }
@@ -178,22 +179,18 @@ TextureArray::TextureArray()
 
 TextureArray::~TextureArray()
 {
-	for (auto& it : textures)
-	{
-		SAFE_DELETE(it);
-	}
-	textures.clear();
+
 }
 
 void TextureArray::LoadTexture(const char *filename)
 {
-	Texture* texure = new Texture(filename);
+	std::shared_ptr<Texture> texure = std::make_shared<Texture>(filename);
 	textures.push_back(texure);
 }
 
 void TextureArray::LoadEmptyTexture()
 {
-	Texture* texure = new Texture();
+	std::shared_ptr<Texture> texure = std::make_shared<Texture>();
 	textures.push_back(texure);
 }
 

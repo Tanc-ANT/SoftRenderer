@@ -22,8 +22,8 @@ public:
 	UINT32 GetRenderState() const { return renderState; }
 	UINT32 GetRenderPass() const { return renderPass; }
 
-	Light* GetLight() const { return light; }
-	ModelArray* GetModels() const { return models; }
+	std::shared_ptr<Light> GetLight() const { return light; }
+	std::shared_ptr<ModelArray> GetModels() const { return models; }
 
 private:
 	void LoadScene(const char *filename);
@@ -34,8 +34,8 @@ private:
 	void ReadModel(std::ifstream& in);
 
 private:
-	Light* light;
-	ModelArray* models;
+	std::shared_ptr<Light> light;
+	std::shared_ptr<ModelArray> models;
 
 	UINT32 renderState = 0;
 	UINT32 renderPass = 1;// default value is one
@@ -60,9 +60,9 @@ public:
 	UINT32 GetRenderState() const { return scenes[index]->GetRenderState(); }
 	UINT32 GetRenderPass() const { return scenes[index]->GetRenderPass(); }
 
-	Scene* GetCurrentScene() const { return scenes[index]; }
-	Light* GetCurrentLight() const { return scenes[index]->GetLight(); }
-	ModelArray* GetCurrentModels() const { return scenes[index]->GetModels(); }
+	std::shared_ptr<Scene> GetCurrentScene() const { return scenes[index]; }
+	std::shared_ptr<Light> GetCurrentLight() const { return scenes[index]->GetLight(); }
+	std::shared_ptr<ModelArray> GetCurrentModels() const { return scenes[index]->GetModels(); }
 
 	~SceneManager();
 private:
@@ -71,7 +71,7 @@ private:
 
 private:
 	int index;
-	std::vector<Scene*> scenes;
+	std::vector<std::shared_ptr<Scene>> scenes;
 	static std::shared_ptr<SceneManager> instance;
 };
 

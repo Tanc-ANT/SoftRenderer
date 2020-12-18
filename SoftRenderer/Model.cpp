@@ -5,12 +5,12 @@ Model::Model(const char *filename):
 	receiveShadow(true)
 {
 	LoadModel(filename);
-	textures = new TextureArray();
+	textures = std::make_shared<TextureArray>();
 }
 
 Model::~Model()
 {
-	SAFE_DELETE(textures);
+	
 }
 
 void Model::LoadModel(const char *filename)
@@ -105,16 +105,12 @@ ModelArray::ModelArray()
 
 ModelArray::~ModelArray()
 {
-	for (auto& it : models)
-	{
-		SAFE_DELETE(it);
-	}
-	models.clear();
+
 }
 
 void ModelArray::LoadModel(const char *filename)
 {
-	Model *model = new Model(filename);
+	std::shared_ptr<Model> model = std::make_shared<Model>(filename);
 	models.push_back(model);
 }
 

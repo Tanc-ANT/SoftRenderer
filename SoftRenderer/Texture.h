@@ -47,10 +47,10 @@ public:
 
 	size_t GetSize() const { return textures.size(); }
 
-	Texture* GetTexture(int index) const { return textures[index]; }
+	std::shared_ptr<Texture> GetTexture(int index) const { return textures[index]; }
 
-	std::vector<Texture*>& GetArray() { return textures; }
+	std::vector<std::shared_ptr<Texture>>& GetArray() { return textures; }
 
 private:
-	std::vector<Texture*> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 };

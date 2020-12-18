@@ -212,7 +212,7 @@ Vector4 Rasterizer::LightVertexTransfrom(const Vector4& vert)
 	world_points = v * camera->GetModelMatrix();
 
 	// VP transform
-	Light* light = scnManager->GetCurrentLight();
+	std::shared_ptr<Light> light = scnManager->GetCurrentLight();
 	screen_points = world_points * lightView;
 	screen_points = screen_points * lightOrth;
 
@@ -611,7 +611,8 @@ bool Rasterizer::TestVertexInShadow(const Vector4& world_point, const Vector4& n
 			return false;
 
 		//caculate current depth in light screen
-		DirectLight* light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
+		std::shared_ptr<DirectLight> light = 
+			std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
 		Vector4 light_dir = -light->GetDirection();
 		light_dir.Normalize();
 		float dot = normal.Dot(light_dir);
@@ -628,7 +629,7 @@ bool Rasterizer::TestVertexInShadow(const Vector4& world_point, const Vector4& n
 void Rasterizer::DrawSomthing()
 {
 	nTriangle = 0;
-	Model *model;
+	std::shared_ptr<Model> model;
 
 	int max_models = (int)scnManager->GetCurrentModels()->GetSize();
 	for (currModelIndex = 0; currModelIndex < max_models; ++currModelIndex)
@@ -723,7 +724,8 @@ void Rasterizer::UpdateLightMatirx()
 
 void Rasterizer::UpdateLightViewMatrix()
 {
-	DirectLight *light = dynamic_cast<DirectLight*>(scnManager->GetCurrentLight());
+	std::shared_ptr<DirectLight> light =
+		std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
 
 	Vector4 p = -light->GetDirection();
 	Vector3 position = Vector3(p.x, p.y, p.z);

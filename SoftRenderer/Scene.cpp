@@ -3,14 +3,13 @@
 
 Scene::Scene(const char *filename)
 {
-	models = new ModelArray();
+	models = std::make_shared<ModelArray>();
 	LoadScene(filename);
 }
 
 Scene::~Scene()
 {
-	delete models;
-	delete light;
+	
 }
 
 void Scene::LoadScene(const char *filename)
@@ -98,7 +97,7 @@ void Scene::ReadLight(std::ifstream& in)
 		iss >> c.y;
 		iss >> c.z;
 		c.w = 1.0f;
-		light = new PointLight(p, c);
+		light = std::make_shared<PointLight>(p, c);
 		renderState |= RENDER_STATE_LIGHT;
 	}
 	else if (data == "direct")
@@ -117,7 +116,7 @@ void Scene::ReadLight(std::ifstream& in)
 		iss >> c.y;
 		iss >> c.z;
 		c.w = 1.0f;
-		light = new DirectLight(p, c);
+		light = std::make_shared<DirectLight>(p, c);
 		renderState |= RENDER_STATE_LIGHT;
 	}
 }
@@ -128,7 +127,7 @@ void Scene::ReadModel(std::ifstream& in)
 	std::string dummy;
 	std::string data;
 	std::istringstream iss;
-	Model* model;
+	std::shared_ptr<Model> model;
 
 	ReadOneLine(in, line, iss);
 	ReadOneLine(in, line, iss);
@@ -185,15 +184,12 @@ SceneManager::SceneManager():
 
 SceneManager::~SceneManager()
 {
-	for (auto& it : scenes)
-		delete it;
-	scenes.clear();
 	std::cout << "Release scene manager" << std::endl;
 }
 
 void SceneManager::LoadScene(const char *filename)
 {
-	Scene *scene = new Scene(filename);
+	std::shared_ptr<Scene> scene = std::make_shared<Scene>(filename);
 	scenes.push_back(scene);
 }
 

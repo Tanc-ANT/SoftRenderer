@@ -16,7 +16,7 @@ public:
 	void LoadEmptyTexture();
 
 	//Warning: One model one texture now!
-	Texture* GetCurrentTexture() const{ return textures->GetTexture(0); }
+	std::shared_ptr<Texture> GetCurrentTexture() const{ return textures->GetTexture(0); }
 
 	Color GetCurrentColor(const Vector3& uv) const { return textures->GetTexture(0)->GetColor(uv); }
 
@@ -31,7 +31,7 @@ public:
 
 private:
 	std::vector<Triangle> faces;
-	TextureArray* textures;
+	std::shared_ptr<TextureArray> textures;
 	bool castShadow;
 	bool receiveShadow;
 	Vector4 center;
@@ -45,10 +45,10 @@ public:
 
 	void LoadModel(const char *filename);
 
-	Model* GetModel(int index) const { return models[index]; }
+	std::shared_ptr<Model> GetModel(int index) const { return models[index]; }
 
 	size_t GetSize() const { return models.size(); }
 
 private:
-	std::vector<Model*> models;
+	std::vector<std::shared_ptr<Model>> models;
 };
