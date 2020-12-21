@@ -299,7 +299,7 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 		if (j >= canvas->GetWidth() || j < 0) continue;
 		float z = depth_ratio * step + campos_A.z;
 		float w = w_ratio * step + campos_A.w;
-
+		// Z test
 		if (z_line_buffer[j] > z)
 		{
 			Color color;
@@ -320,7 +320,9 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 			// light caculation
 			CaculateLightColor(world, normal,uv, color);
 
-			z_line_buffer[j] = z;
+			// Z write
+			if(!modelTransprant)
+				z_line_buffer[j] = z;
 			if (scnManager->GetRenderState() & RENDER_STATE_SHADOW)
 			{
 				if (TestVertexInShadow(world, normal))
@@ -329,6 +331,9 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 					color = color * Color(shadow, shadow, shadow);
 				}
 			}
+
+			AlphaBlending(j, y, color);
+
 			DrawPixel(j, y, color.GetIntensity());
 		}
 	}
@@ -593,14 +598,16 @@ bool Rasterizer::TestVertexInShadow(const Vector4& world_point, const Vector4& n
 void Rasterizer::DrawSomthing()
 {
 	nTriangle = 0;
-	std::shared_ptr<Model> model;
 	int max_models = (int)scnManager->GetCurrentModels()->GetSize();
 	
-	SortRenderArray();
+	if(scnManager->GetRenderState() & RENDER_STATE_TRANSPARENT)
+		SortRenderArray();
 
 	for (currModelIndex = 0; currModelIndex < max_models; ++currModelIndex)
 	{
-		model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
+		auto model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
+
+		modelTransprant = model->GetTransparent();
 
 		for (int i = 0; i < model->Nfaces(); i++) {
 			if ((scnManager->GetRenderState() & RENDER_STATE_SHADOW) &&
@@ -753,15 +760,15 @@ void Rasterizer::UpdateLightOrthographicMatrix()
 
 void Rasterizer::SortRenderArray()
 {
-	auto model_array = scnManager->GetCurrentModels()->GetArrayRef();
+	auto& model_array = scnManager->GetCurrentModels()->GetArrayRef();
 
 	Vector4 model_camera = camera->GetPostion() * camera->GetInvModelMatrix();
 	
 	auto cmp1 = [model_camera](std::shared_ptr<Model> a, std::shared_ptr<Model> b)
 	{
-		return (((int)a->GetTransparent() < (int)b->GetTransparent()));
+		return ((int)a->GetTransparent() < (int)b->GetTransparent());
 	};
-	
+	// First sort opaque model
 	sort(model_array.begin(), model_array.end(), cmp1);
 
 	auto iter = model_array.begin();
@@ -780,9 +787,20 @@ void Rasterizer::SortRenderArray()
 
 		return (lenght1 > lenght2);
 	};
-
+	// Second sort transparent with distance
 	sort(iter, model_array.end(), cmp2);
 
+}
+
+void Rasterizer::AlphaBlending(int x, int y, Color& color)
+{
+	UINT32 *color_line_buffer = canvas->GetFrameBuffer()[y];
+
+	UINT32 pixel_intensity = color_line_buffer[x];
+	Color pixel_color;
+	pixel_color.SetIntensity(pixel_intensity);
+
+	color = color * color.GetColor().w + pixel_color * (1 - color.GetColor().w);
 }
 
 void Rasterizer::ProcessWindowKeyInput()

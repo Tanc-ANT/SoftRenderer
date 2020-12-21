@@ -39,6 +39,14 @@ public:
 
 	Vector4 GetColor() const;
 
+	void SetIntensity(UINT32 intensity)
+	{
+		color.w = ((intensity >> 24) & 0xff) / 255.0f;
+		color.x = ((intensity >> 16) & 0xff) / 255.0f;
+		color.y = ((intensity >> 8) & 0xff) / 255.0f;
+		color.z = (intensity & 0xff) / 255.0f;
+	}
+
 	UINT32 GetIntensity() const 
 	{ 
 		UINT32 r = (UINT32)(color.x * 255.0f);

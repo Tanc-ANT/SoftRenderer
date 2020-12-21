@@ -28,9 +28,9 @@ int main()
 	auto shadow_map = std::make_shared<Texture>();
 
 	auto scene_manager = SceneManager::GetInstance();
-	//scene_manager->LoadScene("../Asset/Scene/box.scn");
-	//scene_manager->LoadScene("../Asset/Scene/crab.scn");
-	//scene_manager->LoadScene("../Asset/Scene/shadow.scn");
+	scene_manager->LoadScene("../Asset/Scene/box.scn");
+	scene_manager->LoadScene("../Asset/Scene/crab.scn");
+	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
 	scene_manager->LoadScene("../Asset/Scene/blending.scn");
 
 	auto raster = std::make_unique<Rasterizer>();

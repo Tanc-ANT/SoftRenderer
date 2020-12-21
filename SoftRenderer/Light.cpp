@@ -109,6 +109,7 @@ void DirectLight::LightTextureCalculaiton(const Vector4& camera_pos,
 {
 	float diff;
 	float spec;
+	float alpha = 1.0f;
 
 	auto diffuse_map = materal->GetDiffuseMap();
 	auto specular_map = materal->GetSpecularMap();
@@ -126,6 +127,9 @@ void DirectLight::LightTextureCalculaiton(const Vector4& camera_pos,
 	{
 		specular_color = materal->GetSpecularMap()->GetColor(tex);
 	}
+
+	if (diffuse_color.GetColor().w < 1.0f)
+		alpha = diffuse_color.GetColor().w;
 
 	ambient_color = ambient_color * GetAmbient();
 
@@ -148,4 +152,6 @@ void DirectLight::LightTextureCalculaiton(const Vector4& camera_pos,
 
 	//blinn-phone
 	pixel_color = (ambient_color + diffuse_color + specular_color) * GetColor();
+	pixel_color.SetColor(pixel_color.GetColor().x, pixel_color.GetColor().y, 
+		pixel_color.GetColor().z, alpha);
 }

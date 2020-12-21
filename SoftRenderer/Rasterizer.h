@@ -76,6 +76,7 @@ private:
 
 	// For transparent model
 	void SortRenderArray();
+	void AlphaBlending(int x, int y, Color& color);
 
 	void ProcessWindowKeyInput();
 	void ProcessWindowMouseInput();
@@ -93,6 +94,7 @@ private:
 	int nTriangle = 0;
 	bool changeState = false;
 	UINT32 renderPass = 1;
+	bool modelTransprant = false;
 
 	//For camera
 	float originX = 0.0f;
