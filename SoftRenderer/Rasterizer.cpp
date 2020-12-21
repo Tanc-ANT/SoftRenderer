@@ -7,10 +7,10 @@ const int axis_w = 100;
 const int axis_h = 100;
 
 Vector4 axis_array[4] = {
-	{0.0f,0.0f,0.0f,1.0f},			//origin
-	{5.0f,0.0f,0.0f,1.0f},			//x-axis	red line
-	{0.0f,5.0f,0.0f,1.0f},		//y-axis	blue line
-	{0.0f,0.0f,5.0f,1.0f}		//z-axis	green line
+	{0.0f,0.0f,0.0f,1.0f},		//origin
+	{5.0f,0.0f,0.0f,1.0f},		//x-axis	red line
+	{0.0f,5.0f,0.0f,1.0f},		//y-axis	green line
+	{0.0f,0.0f,5.0f,1.0f}		//z-axis	blue line
 };	
 
 Rasterizer::Rasterizer()
@@ -82,8 +82,8 @@ void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 	{
 		current_index = i;
 		previous_index = (i - 1 + num_vert) % num_vert;
-		std::shared_ptr<Uniform> pre_vertex = vert_list[previous_index];
-		std::shared_ptr<Uniform> current_vertex = vert_list[current_index];
+		auto pre_vertex = vert_list[previous_index];
+		auto current_vertex = vert_list[current_index];
 
 		Vector4 Q1P = pre_vertex->cameraScreenPos - ponint;
 		Vector4 Q2P = current_vertex->cameraScreenPos - ponint;
@@ -95,7 +95,7 @@ void Rasterizer::ClipWithPlane(const Vector4& ponint, const Vector4& normal,
 		{
 			float t = d1 / (d1 - d2);
 			Uniform u = Uniform::Lerp(pre_vertex, current_vertex, t);
-			std::shared_ptr<Uniform> u_ptr = std::make_shared<Uniform>(u);
+			auto u_ptr = std::make_shared<Uniform>(u);
 			in_list.push_back(u_ptr);
 		}
 		if (d2 > 0)
@@ -200,34 +200,11 @@ Vector4 Rasterizer::LightVertexTransfrom(const Vector4& vert)
 	world_points = v * camera->GetModelMatrix();
 
 	// VP transform
-	std::shared_ptr<Light> light = scnManager->GetCurrentLight();
+	auto light = scnManager->GetCurrentLight();
 	screen_points = world_points * lightView;
 	screen_points = screen_points * lightOrth;
 
 	return screen_points;
-}
-
-Triangle Rasterizer::CameraTriangleToLightTriangle(const Triangle& triangle)
-{
-	Triangle light_triangle = triangle;
-	Vector4 world_pos[3];
-
-	const Matrix4& inv_proj = camera->GetInvProjectionMatrix();
-	world_pos[0] = light_triangle.GetV0().GetVertexPosition() * inv_proj;
-	world_pos[1] = light_triangle.GetV1().GetVertexPosition() * inv_proj;
-	world_pos[2] = light_triangle.GetV2().GetVertexPosition() * inv_proj;
-
-	const Matrix4& inv_view = camera->GetInvViewMatrix();
-	world_pos[0] = world_pos[0] * inv_view;
-	world_pos[1] = world_pos[1] * inv_view;
-	world_pos[2] = world_pos[2] * inv_view;
-
-	light_triangle.GetV0().SetVertexPosition(world_pos[0]);
-	light_triangle.GetV1().SetVertexPosition(world_pos[1]);
-	light_triangle.GetV2().SetVertexPosition(world_pos[2]);
-	
-	//light_triangle = LightTriangleTransfrom(light_triangle);
-	return light_triangle;
 }
 
 void Rasterizer::DrawPixel(int x, int y, UINT32 color)
@@ -343,12 +320,6 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 			// light caculation
 			CaculateLightColor(world, normal,uv, color);
 
-			//if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
-			//{
-			//	std::shared_ptr<Model> model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
-			//	Color texcolor = model->GetDiffuseColor(uv);
-			//	color = color * texcolor;
-			//}
 			z_line_buffer[j] = z;
 			if (scnManager->GetRenderState() & RENDER_STATE_SHADOW)
 			{
@@ -605,8 +576,7 @@ bool Rasterizer::TestVertexInShadow(const Vector4& world_point, const Vector4& n
 			return false;
 
 		//caculate current depth in light screen
-		std::shared_ptr<DirectLight> light = 
-			std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
+		auto light = std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
 		Vector4 light_dir = -light->GetDirection();
 		light_dir.Normalize();
 		float dot = normal.Dot(light_dir);
@@ -624,14 +594,16 @@ void Rasterizer::DrawSomthing()
 {
 	nTriangle = 0;
 	std::shared_ptr<Model> model;
-
 	int max_models = (int)scnManager->GetCurrentModels()->GetSize();
+	
+	SortRenderArray();
+
 	for (currModelIndex = 0; currModelIndex < max_models; ++currModelIndex)
 	{
 		model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
 
 		for (int i = 0; i < model->Nfaces(); i++) {
-			if ((scnManager->GetRenderState()&RENDER_STATE_SHADOW)&&
+			if ((scnManager->GetRenderState() & RENDER_STATE_SHADOW) &&
 				scnManager->GetCurrentModels()->GetModel(currModelIndex)->GetCastShadow())
 			{
 				LightTriangleTransfrom(model->GetFaceIndex(i));
@@ -661,7 +633,7 @@ void Rasterizer::DrawAxis()
 	DrawLine((int)screen_pos[0].x, (int)screen_pos[0].y,
 		(int)screen_pos[2].x, (int)screen_pos[2].y, Color::GREEN_COLOR);
 	DrawLine((int)screen_pos[0].x, (int)screen_pos[0].y,
-		(int)screen_pos[3].x, (int)screen_pos[3].y, Color::BULE_COLOR);
+		(int)screen_pos[3].x, (int)screen_pos[3].y, Color::BLUE_COLOR);
 }
 
 void Rasterizer::Update()
@@ -704,7 +676,7 @@ void Rasterizer::CaculateLightColor(const Vector4& world_pos, const Vector4& nor
 	{
 		if (scnManager->GetRenderState() & RENDER_STATE_TEXTURE)
 		{
-			std::shared_ptr<Material> material = scnManager->GetCurrentModels()->
+			auto material = scnManager->GetCurrentModels()->
 				GetModel(currModelIndex)->GetMaterial();
 
 			scnManager->GetCurrentLight()->LightTextureCalculaiton(
@@ -729,8 +701,7 @@ void Rasterizer::UpdateLightMatirx()
 
 void Rasterizer::UpdateLightViewMatrix()
 {
-	std::shared_ptr<DirectLight> light =
-		std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
+	auto light = std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
 
 	Vector4 p = -light->GetDirection();
 	Vector3 position = Vector3(p.x, p.y, p.z);
@@ -778,6 +749,40 @@ void Rasterizer::UpdateLightOrthographicMatrix()
 	lightOrth.m[3][1] = (Bottom + Top) / (Bottom - Top);
 	lightOrth.m[3][2] = (Near + Far) / (Near - Far);
 	lightOrth.m[3][3] = 1.0f;
+}
+
+void Rasterizer::SortRenderArray()
+{
+	auto model_array = scnManager->GetCurrentModels()->GetArrayRef();
+
+	Vector4 model_camera = camera->GetPostion() * camera->GetInvModelMatrix();
+	
+	auto cmp1 = [model_camera](std::shared_ptr<Model> a, std::shared_ptr<Model> b)
+	{
+		return (((int)a->GetTransparent() < (int)b->GetTransparent()));
+	};
+	
+	sort(model_array.begin(), model_array.end(), cmp1);
+
+	auto iter = model_array.begin();
+	for (; iter < model_array.end(); ++iter)
+	{
+		if((*iter)->GetTransparent()) break;
+	}
+
+	auto cmp2 = [model_camera](std::shared_ptr<Model> a, std::shared_ptr<Model> b)
+	{
+		Vector4 dist1 = model_camera - a->GetCenter();
+		Vector4 dist2 = model_camera - b->GetCenter();
+
+		float lenght1 = dist1.Lenght();
+		float lenght2 = dist2.Lenght();
+
+		return (lenght1 > lenght2);
+	};
+
+	sort(iter, model_array.end(), cmp2);
+
 }
 
 void Rasterizer::ProcessWindowKeyInput()

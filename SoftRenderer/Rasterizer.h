@@ -51,8 +51,6 @@ private:
 	void LightTriangleTransfrom(const Triangle& triangle);
 	Vector4 LightVertexTransfrom(const Vector4& vert);
 
-	Triangle CameraTriangleToLightTriangle(const Triangle& triangle);
-
 	void DrawPixel(int x, int y, UINT32 color);
 
 	// Bresenham's Line Drawing Algorithm
@@ -75,6 +73,9 @@ private:
 	void UpdateLightMatirx();
 	void UpdateLightViewMatrix();
 	void UpdateLightOrthographicMatrix();
+
+	// For transparent model
+	void SortRenderArray();
 
 	void ProcessWindowKeyInput();
 	void ProcessWindowMouseInput();

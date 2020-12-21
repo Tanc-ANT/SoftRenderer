@@ -186,13 +186,13 @@ TextureArray::~TextureArray()
 
 void TextureArray::LoadTexture(const char *filename)
 {
-	std::shared_ptr<Texture> texure = std::make_shared<Texture>(filename);
+	auto texure = std::make_shared<Texture>(filename);
 	textures.push_back(texure);
 }
 
 void TextureArray::LoadEmptyTexture()
 {
-	std::shared_ptr<Texture> texure = std::make_shared<Texture>();
+	auto texure = std::make_shared<Texture>();
 	textures.push_back(texure);
 }
 

@@ -35,8 +35,8 @@ void PointLight::LightTextureCalculaiton(const Vector4& camera_pos,
 	float diff;
 	float spec;
 	
-	std::shared_ptr<Texture> diffuse_map = materal->GetDiffuseMap();
-	std::shared_ptr<Texture> specular_map = materal->GetSpecularMap();
+	auto diffuse_map = materal->GetDiffuseMap();
+	auto specular_map = materal->GetSpecularMap();
 
 	Color ambient_color(1.0f, 1.0f, 1.0f);
 	Color diffuse_color(1.0f, 1.0f, 1.0f);
@@ -110,8 +110,8 @@ void DirectLight::LightTextureCalculaiton(const Vector4& camera_pos,
 	float diff;
 	float spec;
 
-	std::shared_ptr<Texture> diffuse_map = materal->GetDiffuseMap();
-	std::shared_ptr<Texture> specular_map = materal->GetSpecularMap();
+	auto diffuse_map = materal->GetDiffuseMap();
+	auto specular_map = materal->GetSpecularMap();
 
 	Color ambient_color(1.0f, 1.0f, 1.0f);
 	Color diffuse_color(1.0f, 1.0f, 1.0f);

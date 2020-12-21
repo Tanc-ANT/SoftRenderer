@@ -11,10 +11,8 @@ void Camera::Update()
 	view.Translation(trans);
 	view.Rotation(Vector3(1.0f, 0.0f, 0.0f), TO_RADIANS(viewRot.x));
 	view.Rotation(Vector3(0.0f, 1.0f, 0.0f), TO_RADIANS(viewRot.y));
-	invView = view.GetInverseTranspose().GetTranspose();
 
 	UpdateProjectionMatirx();
-	invProj = proj.GetInverseTranspose().GetTranspose();
 }
 
 void Camera::UpdateViewMatrix()

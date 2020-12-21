@@ -63,8 +63,8 @@ public:
 	static const Color WHITH_COLOR;
 	static const Color BLACK_COLOR;
 	static const Color RED_COLOR;
-	static const Color BULE_COLOR;
 	static const Color GREEN_COLOR;
+	static const Color BLUE_COLOR;
 
 private:
 	Vector4 color;

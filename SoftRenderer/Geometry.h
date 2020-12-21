@@ -117,7 +117,7 @@ public:
 	}
 	~Uniform() {};
 	
-	std::shared_ptr<Uniform> Clone() const { return std::make_shared<Uniform>(*this); }
+	auto Clone() const { return std::make_shared<Uniform>(*this); }
 
 	void SetVertex(const Vertex& vert)
 	{

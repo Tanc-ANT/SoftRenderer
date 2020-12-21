@@ -1,0 +1,44 @@
+#wireframe color texture
+mode: texture
+
+#on off
+backcull: off
+
+#on off
+shadow: off
+
+#lighting:
+#    tpye: point
+#    position: 5.0 -5.0 -5.0
+#    color: 1.0 1.0 1.0
+
+lighting:
+    tpye: direct
+    direction: 5.0 -5.0 -5.0
+    color: 1.0 1.0 1.0
+
+models: 3
+    model:
+        mesh: window1.obj
+		normal: none
+        diffuse: window.bmp
+		specular: none
+        castshadow: false
+        receiveshadow: false
+		transparent: true
+    model:
+        mesh: window2.obj
+		normal: none
+        diffuse: window.bmp
+		specular: none
+        castshadow: false
+        receiveshadow: false
+		transparent: true
+    model:
+        mesh: plane.obj
+        normal: none
+        diffuse: checkerboard.bmp
+		specular: none
+        castshadow: false
+        receiveshadow: false
+		transparent: false

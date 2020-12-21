@@ -12,7 +12,7 @@ public:
 	{
 		normalMap = std::make_shared<Texture>(filename);
 	}
-	std::shared_ptr<Texture> GetNormalMap() const { return normalMap; }
+	auto GetNormalMap() const { return normalMap; }
 
 	void LoadEmptyDiffuseMap()
 	{
@@ -22,13 +22,13 @@ public:
 	{
 		diffuseMap = std::make_shared<Texture>(filename);
 	}
-	std::shared_ptr<Texture> GetDiffuseMap() const { return diffuseMap; }
+	auto GetDiffuseMap() const { return diffuseMap; }
 
 	void LoadSpecularMap(const char* filename)
 	{
 		specularMap = std::make_shared<Texture>(filename);
 	}
-	std::shared_ptr<Texture> GetSpecularMap() const { return specularMap; }
+	auto GetSpecularMap() const { return specularMap; }
 
 	void SetCastShadow(bool cast) { castShadow = cast; }
 	bool GetCastShadow() const { return castShadow; }

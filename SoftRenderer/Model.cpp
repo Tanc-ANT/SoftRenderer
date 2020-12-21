@@ -20,6 +20,8 @@ void Model::LoadModel(const char *filename)
 	in.open(filename, std::ifstream::in);
 	if (in.fail()) return;
 	std::string line;
+	float maxVx = -FLT_MAX, maxVy = -FLT_MAX, maxVz = -FLT_MAX;
+	float minVx = FLT_MAX, minVy = FLT_MAX, minVz = FLT_MAX;
 	while (!in.eof()) {
 		std::getline(in, line);
 		std::istringstream iss(line.c_str());
@@ -32,6 +34,12 @@ void Model::LoadModel(const char *filename)
 			iss >> v.z;
 			v.w = 1.0f;
 			verts.push_back(v);
+			maxVx = std::fmaxf(maxVx, v.x);
+			maxVy = std::fmaxf(maxVy, v.y);
+			maxVz = std::fmaxf(maxVz, v.z);
+			minVx = std::fminf(minVx, v.x);
+			minVy = std::fminf(minVy, v.y);
+			minVz = std::fminf(minVz, v.z);
 		}
 		else if (!line.compare(0, 3, "vt ")) {
 			iss >> trash;
@@ -79,6 +87,7 @@ void Model::LoadModel(const char *filename)
 			faces.push_back(triangle);
 		}
 	}
+	center = Vector4((maxVx + minVx) / 2, (maxVy + minVy) / 2, (maxVz + minVz) / 2, 1.0f);
 	std::cerr << "v# " << verts.size() <<
 		"		vn# " << norms.size() <<
 		"		vt# " << texs.size() <<
@@ -98,7 +107,7 @@ ModelArray::~ModelArray()
 
 void ModelArray::LoadModel(const char *filename)
 {
-	std::shared_ptr<Model> model = std::make_shared<Model>(filename);
+	auto model = std::make_shared<Model>(filename);
 	models.push_back(model);
 }
 

@@ -21,15 +21,15 @@ public:
 	void LoadSpecularMap(const char *fliename) { material->LoadSpecularMap(fliename); }
 
 	void SetMaterial(std::shared_ptr<Material> m) { material = m; }
-	std::shared_ptr<Material> GetMaterial() const { return material; }
+	auto GetMaterial() const { return material; }
 
-	std::shared_ptr<Texture> GetNormalMap() const { return material->GetNormalMap(); }
+	auto GetNormalMap() const { return material->GetNormalMap(); }
 	Color GetNormalColor(const Vector3& uv) const { return material->GetNormalMap()->GetColor(uv); }
 
-	std::shared_ptr<Texture> GetDiffuseMap() const{ return material->GetDiffuseMap(); }
+	auto GetDiffuseMap() const{ return material->GetDiffuseMap(); }
 	Color GetDiffuseColor(const Vector3& uv) const { return material->GetDiffuseMap()->GetColor(uv); }
 
-	std::shared_ptr<Texture> GetSpecularMap() const { return material->GetSpecularMap(); }
+	auto GetSpecularMap() const { return material->GetSpecularMap(); }
 	Color GetSpecularColor(const Vector3& uv) const { return material->GetSpecularMap()->GetColor(uv); }
 
 	size_t Nfaces() const { return faces.size(); }
@@ -44,6 +44,8 @@ public:
 
 	void SetTransparent(bool trans) { material->SetTransparent(trans); }
 	bool GetTransparent() const { return material->GetTransparent(); }
+
+	Vector4 GetCenter() const { return center; }
 	
 private:
 	std::vector<Triangle> faces;
@@ -59,7 +61,9 @@ public:
 
 	void LoadModel(const char *filename);
 
-	std::shared_ptr<Model> GetModel(int index) const { return models[index]; }
+	auto GetModel(int index) const { return models[index]; }
+
+	std::vector<std::shared_ptr<Model>>& GetArrayRef() { return models; }
 
 	size_t GetSize() const { return models.size(); }
 

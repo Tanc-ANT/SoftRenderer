@@ -198,7 +198,10 @@ void Scene::ReadModel(std::ifstream& in)
 	if (dummy == "transparent:")
 	{
 		if (data == "true")
+		{
 			model->SetTransparent(true);
+			renderState |= RENDER_STATE_TRANSPARENT;
+		}
 		else if (data == "false")
 			model->SetTransparent(false);
 	}
@@ -217,7 +220,7 @@ SceneManager::~SceneManager()
 
 void SceneManager::LoadScene(const char *filename)
 {
-	std::shared_ptr<Scene> scene = std::make_shared<Scene>(filename);
+	auto scene = std::make_shared<Scene>(filename);
 	scenes.push_back(scene);
 }
 

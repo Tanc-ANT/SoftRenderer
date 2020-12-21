@@ -13,26 +13,27 @@ const int height = 600;
 
 int main()
 {
-	std::shared_ptr<Window> window = std::make_shared<Window>();
+	auto window = std::make_shared<Window>();
 	TCHAR* title = _T("Soft Renderer");
 	window->Init(width, height, title);
 
-	std::shared_ptr<Canvas> canvas = std::make_shared<Canvas>(width, height, window->GetFrameBuffer());
+	auto canvas = std::make_shared<Canvas>(width, height, window->GetFrameBuffer());
 
 	Vector4 eye(0.0f, 0.0f, 10.0f,1.0f);
 	Vector4 at(0.0f, 0.0f, 0.0f,1.0f);
 	Vector4 up(0.0f, 1.0f, 0.0f, 0.0f);
 	float aspect = (float)width / (float)height;
-	std::shared_ptr<Camera> camera = std::make_shared<Camera>(eye, at, up, aspect);
+	auto camera = std::make_shared<Camera>(eye, at, up, aspect);
 
-	std::shared_ptr<Texture> shadow_map = std::make_shared<Texture>();
+	auto shadow_map = std::make_shared<Texture>();
 
-	std::shared_ptr<SceneManager> scene_manager = SceneManager::GetInstance();
-	scene_manager->LoadScene("../Asset/Scene/box.scn");
-	scene_manager->LoadScene("../Asset/Scene/crab.scn");
-	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
+	auto scene_manager = SceneManager::GetInstance();
+	//scene_manager->LoadScene("../Asset/Scene/box.scn");
+	//scene_manager->LoadScene("../Asset/Scene/crab.scn");
+	//scene_manager->LoadScene("../Asset/Scene/shadow.scn");
+	scene_manager->LoadScene("../Asset/Scene/blending.scn");
 
-	std::unique_ptr<Rasterizer> raster = std::make_unique<Rasterizer>();
+	auto raster = std::make_unique<Rasterizer>();
 	raster->SetWindow(window);
 	raster->SetCanvas(canvas);
 	raster->SetCamera(camera);

@@ -12,6 +12,7 @@
 #define RENDER_STATE_BACKCULL		32	// Back culling or not
 #define RENDER_STATE_LIGHT			64	// Calculate light or not
 #define RENDER_STATE_SHADOW			128	// Shadow map on or off
+#define RENDER_STATE_TRANSPARENT	256	// Transparent rendering
 
 class Scene
 {
@@ -22,8 +23,8 @@ public:
 	UINT32 GetRenderState() const { return renderState; }
 	UINT32 GetRenderPass() const { return renderPass; }
 
-	std::shared_ptr<Light> GetLight() const { return light; }
-	std::shared_ptr<ModelArray> GetModels() const { return models; }
+	auto GetLight() const { return light; }
+	auto GetModels() const { return models; }
 
 private:
 	void LoadScene(const char *filename);
@@ -48,7 +49,7 @@ class SceneManager
 public:
 	static std::shared_ptr<SceneManager> GetInstance()
 	{
-		static std::shared_ptr<SceneManager> instance
+		static auto instance
 			= std::shared_ptr<SceneManager>(new SceneManager);
 		return instance;
 	}
@@ -60,9 +61,9 @@ public:
 	UINT32 GetRenderState() const { return scenes[index]->GetRenderState(); }
 	UINT32 GetRenderPass() const { return scenes[index]->GetRenderPass(); }
 
-	std::shared_ptr<Scene> GetCurrentScene() const { return scenes[index]; }
-	std::shared_ptr<Light> GetCurrentLight() const { return scenes[index]->GetLight(); }
-	std::shared_ptr<ModelArray> GetCurrentModels() const { return scenes[index]->GetModels(); }
+	auto GetCurrentScene() const { return scenes[index]; }
+	auto GetCurrentLight() const { return scenes[index]->GetLight(); }
+	auto GetCurrentModels() const { return scenes[index]->GetModels(); }
 
 	~SceneManager();
 private:
