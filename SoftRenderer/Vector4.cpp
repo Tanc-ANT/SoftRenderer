@@ -1,5 +1,8 @@
 #include "Vector4.h"
 
+const Vector4 Vector4::Zero = { 0.0f, 0.0f, 0.0f, 0.0f };
+const Vector4 Vector4::Identity = { 1.0f,1.0f,1.0f, 1.0f };
+
 void Vector4::Set(float _x, float _y, float _z, float _w)
 {
 	x = _x;
@@ -72,7 +75,7 @@ Vector4 Vector4::operator*(const Matrix4 &m) const
 
 Vector4 Vector4::operator/(float k) const
 {
-	float oneOver = 1.0f / k;
+	float oneOver = 1.0f / (k + FLT_MIN);
 	return Vector4(x * oneOver,
 		y * oneOver,
 		z * oneOver,
@@ -108,7 +111,7 @@ Vector4& Vector4::operator*=(float k)
 
 Vector4& Vector4::operator/=(float k)
 {
-	float oneOver = 1.0f / k;
+	float oneOver = 1.0f / (k + FLT_MIN);
 	x *= oneOver;
 	y *= oneOver;
 	z *= oneOver;

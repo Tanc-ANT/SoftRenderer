@@ -14,7 +14,10 @@ class Camera
 {
 public:
 	Camera(Vector4 p, Vector4 t, Vector4 u, float a)
-		:position(p), target(t), up(u), aspect(a)
+		:position(p), target(t), up(u), aspect(a),
+		trans({0.0f,0.0f,10.0f}),
+		viewRot(Vector3::Zero),
+		modelRot(Vector3::Zero)
 	{
 		model.SetIdentity();
 	};
@@ -68,11 +71,11 @@ private:
 	Matrix4 staticView;
 	Matrix4 proj;
 
-	Vector3 trans = { 0.0f,0.0f,10.0f };
+	Vector3 trans;
 
-	Vector3 viewRot = { 0.0f,0.0f,0.0f };
+	Vector3 viewRot;
 
-	Vector3 modelRot = { 0.0f,0.0f,0.0f };
+	Vector3 modelRot;
 
 	// const number of camera
 	// we don't need change number value here

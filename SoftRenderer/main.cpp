@@ -32,6 +32,7 @@ int main()
 	scene_manager->LoadScene("../Asset/Scene/crab.scn");
 	scene_manager->LoadScene("../Asset/Scene/shadow.scn");
 	scene_manager->LoadScene("../Asset/Scene/blending.scn");
+	//scene_manager->LoadScene("../Asset/Scene/test.scn");
 
 	auto raster = std::make_unique<Rasterizer>();
 	raster->SetWindow(window);

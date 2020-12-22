@@ -48,6 +48,10 @@ public:
 	}
 
 public:
+	const static Vector4 Zero;
+	const static Vector4 Identity;
+
+public:
 	float x, y, z, w;
 
 };

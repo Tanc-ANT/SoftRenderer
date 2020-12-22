@@ -13,7 +13,18 @@ Vector4 axis_array[4] = {
 	{0.0f,0.0f,5.0f,1.0f}		//z-axis	blue line
 };	
 
-Rasterizer::Rasterizer()
+Rasterizer::Rasterizer():
+	currModelIndex(0),
+	nTriangle(0),
+	renderPass(1),
+	isChangeState(false),
+	isBackculling(false),
+	isModelTransprant(false),
+	originX(0.0f),
+	originY(0.0f),
+	viewRotLength(Vector3::Zero),
+	modelRotLength(Vector3::Zero)
+
 {
 	for (int i = 0; i < 3; ++i)
 	{
@@ -154,10 +165,10 @@ void Rasterizer::CameraTriangleTransfrom(const Triangle& triangle)
 	}
 
 	// Buck culling
-	unifrom[0]->backface = false;
+	isBackculling = false;
 	if (BackFaceCulling(world_points[0], world_points[1], world_points[2],camera->GetPostion()))
 	{
-		unifrom[0]->backface = true;
+		isBackculling = true;
 		return;
 	}
 
@@ -337,7 +348,7 @@ void Rasterizer::DrawScanline(const Uniform& A, const Uniform& B, int y)
 			CaculateLightColor(world, normal,uv, color);
 
 			// Z write
-			if(!modelTransprant)
+			if(!isModelTransprant)
 				z_line_buffer[j] = z;
 			if (scnManager->GetRenderState() & RENDER_STATE_SHADOW)
 			{
@@ -629,7 +640,7 @@ void Rasterizer::DrawSomthing()
 	{
 		auto model = scnManager->GetCurrentModels()->GetModel(currModelIndex);
 
-		modelTransprant = model->GetTransparent();
+		isModelTransprant = model->GetTransparent();
 
 		for (int i = 0; i < model->Nfaces(); i++) {
 			if ((scnManager->GetRenderState() & RENDER_STATE_SHADOW) &&
@@ -641,7 +652,7 @@ void Rasterizer::DrawSomthing()
 				CameraTriangleTransfrom(model->GetFaceIndex(i));
 			}
 			// back culling
-			if (unifrom[0]->backface)
+			if (isBackculling)
 				continue;
 			ClipSpace();
 		}
@@ -887,14 +898,14 @@ void Rasterizer::ProcessWindowKeyInput()
 	}
 	if (window->GetKey()[VK_SPACE])
 	{
-		if (!changeState)
+		if (!isChangeState)
 		{
-			changeState = true;
+			isChangeState = true;
 			scnManager->SwitchNextScene();
 		}
 	}
 	else
-		changeState = false;
+		isChangeState = false;
 }
 
 void Rasterizer::ProcessWindowMouseInput()

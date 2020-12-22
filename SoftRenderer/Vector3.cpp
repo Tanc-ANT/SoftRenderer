@@ -1,5 +1,8 @@
 #include "Vector3.h"
 
+const Vector3 Vector3::Zero = { 0.0f, 0.0f, 0.0f };
+const Vector3 Vector3::Identity = { 1.0f,1.0f,1.0f };
+
 void Vector3::Set(float _x, float _y, float _z, float _w)
 {
 	x = _x;
@@ -55,7 +58,7 @@ Vector3 Vector3::operator*(float k) const
 
 Vector3 Vector3::operator/(float k) const
 {
-	float oneOver = 1.0f / k;
+	float oneOver = 1.0f / (k + FLT_MIN);
 	return Vector3(x * oneOver,
 		y * oneOver,
 		z * oneOver);
@@ -87,7 +90,7 @@ Vector3& Vector3::operator*=(float k)
 
 Vector3& Vector3::operator/=(float k)
 {
-	float oneOver = 1.0f / k;
+	float oneOver = 1.0f / (k + FLT_MIN);
 	x *= oneOver;
 	y *= oneOver;
 	z *= oneOver;

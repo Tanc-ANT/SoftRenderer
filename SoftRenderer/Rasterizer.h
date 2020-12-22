@@ -90,17 +90,18 @@ private:
 	std::shared_ptr<Uniform> unifrom[3];
 	
 private:
-	int currModelIndex = 0;
-	int nTriangle = 0;
-	bool changeState = false;
-	UINT32 renderPass = 1;
-	bool modelTransprant = false;
+	int currModelIndex;
+	int nTriangle;
+	UINT32 renderPass;
+	bool isChangeState;
+	bool isBackculling;
+	bool isModelTransprant;
 
 	//For camera
-	float originX = 0.0f;
-	float originY = 0.0f;
-	Vector3 viewRotLength = { 0.0f,0.0f,0.0f };
-	Vector3 modelRotLength = { 0.0f,0.0f,0.0f };
+	float originX;
+	float originY;
+	Vector3 viewRotLength;
+	Vector3 modelRotLength;
 
 	//For light
 	Matrix4 lightView;

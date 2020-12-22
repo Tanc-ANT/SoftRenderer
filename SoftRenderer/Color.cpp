@@ -40,7 +40,7 @@ Color Color::operator*(const Color &other) const
 
 Color Color::operator/(float k) const
 {
-	float oneOver = 1.0f / k;
+	float oneOver = 1.0f / (k+FLT_MIN);
 	return Color(
 		color.x * oneOver,
 		color.y * oneOver,
@@ -69,9 +69,4 @@ void Color::SetColor(const Vector4& v)
 	color.y = CLAMP(v.y, 0.0f, 1.0f);
 	color.z = CLAMP(v.z, 0.0f, 1.0f);
 	color.w = CLAMP(v.w, 0.0f, 1.0f);
-}
-
-Vector4 Color::GetColor() const
-{
-	return color;
 }

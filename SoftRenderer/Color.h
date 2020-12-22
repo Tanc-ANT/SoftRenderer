@@ -37,7 +37,7 @@ public:
 	void SetColor(const Vector3& v, float a = 1.0f);
 	void SetColor(const Vector4& v);
 
-	Vector4 GetColor() const;
+	Vector4 GetColor() const { return color; }
 
 	void SetIntensity(UINT32 intensity)
 	{
@@ -68,11 +68,11 @@ public:
 		return v1 + (v2 - v1) * factor;
 	}
 
-	static const Color WHITH_COLOR;
-	static const Color BLACK_COLOR;
-	static const Color RED_COLOR;
-	static const Color GREEN_COLOR;
-	static const Color BLUE_COLOR;
+	const static Color WHITH_COLOR;
+	const static Color BLACK_COLOR;
+	const static Color RED_COLOR;
+	const static Color GREEN_COLOR;
+	const static Color BLUE_COLOR;
 
 private:
 	Vector4 color;

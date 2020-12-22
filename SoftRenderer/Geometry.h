@@ -94,7 +94,7 @@ public:
 	Uniform(const Vector4& wor, const Vector4& cam, const Vector4& lig,
 		const Vector3& tex, const Vector4& nor, const Color& col) :
 		worldPos(wor), cameraScreenPos(cam), lightScreenPos(lig),
-		texcoord(tex), normal(nor), color(col),backface(false) {}
+		texcoord(tex), normal(nor), color(col) {}
 
 	Uniform(const Uniform& u)
 	{
@@ -104,7 +104,6 @@ public:
 		texcoord = u.texcoord;
 		normal = u.normal;
 		color = u.color;
-		backface = u.backface;
 	}
 	Uniform& operator=(const Uniform& u)
 	{
@@ -114,7 +113,6 @@ public:
 		texcoord = u.texcoord;
 		normal = u.normal;
 		color = u.color;
-		backface = u.backface;
 		return *this;
 	}
 	~Uniform() {};
@@ -145,5 +143,4 @@ public:
 	Vector3 texcoord;
 	Vector4 normal;
 	Color color;
-	bool backface;
 };

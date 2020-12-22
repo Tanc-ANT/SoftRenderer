@@ -44,6 +44,10 @@ public:
 	}
 
 public:
+	const static Vector3 Zero;
+	const static Vector3 Identity;
+
+public:
 	float x, y, z;
 
 };
