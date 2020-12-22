@@ -20,6 +20,8 @@ public:
 		const Vector4& world_pos, const Vector4& normal, const Vector3& tex,
 		std::shared_ptr<Material> materal, Color& pixel_color) = 0;
 
+	virtual Vector4 GetPosition() const = 0;
+
 	void SetColor(const Color& c) { color = c; }
 	Color GetColor() const { return color; }
 
@@ -56,8 +58,8 @@ public:
 		const Vector4& world_pos, const Vector4& normal, const Vector3& tex,
 		std::shared_ptr<Material> materal, Color& pixel_color) override;
 
-	void SetPosition(const Vector4& d) { position = d; }
-	Vector4 GetPosition() const { return position; }
+	//void SetPosition(const Vector4& d) { position = d; }
+	virtual Vector4 GetPosition() const override { return position; }
 
 private:
 	Vector4 position;
@@ -85,8 +87,8 @@ public:
 		const Vector4& world_pos, const Vector4& normal, const Vector3& tex,
 		std::shared_ptr<Material> materal, Color& pixel_color) override;
 
-	void SetDirection(const Vector4& d) { direction = d; }
-	Vector4 GetDirection() const { return direction; }
+	//void SetDirection(const Vector4& d) { direction = d; }
+	virtual Vector4 GetPosition() const override { return direction; }
 
 private:
 	Vector4 direction;

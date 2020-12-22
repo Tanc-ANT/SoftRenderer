@@ -12,7 +12,7 @@ public:
 
 	void LoadColorTexture(const char *filename);
 
-	void CreateEmptyTexture();
+	void CreateEmptyTexture(int w, int h);
 
 	void ClearTextureColor();
 	void ClearTextureDepth();

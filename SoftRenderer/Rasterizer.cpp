@@ -142,18 +142,32 @@ void Rasterizer::CameraTriangleTransfrom(const Triangle& triangle)
 	Vector4 world_points[3];
 	Vector4 screen_points[3];
 
-	Matrix4 M; Matrix4 V; Matrix4 P;
-
+	Matrix4 M;
 	M = camera->GetModelMatrix();
-	V = camera->GetViewMatrix();
-	P = camera->GetProjectionMatrix();
-
+	
+	//model space -> world space
 	for (int j = 0; j < 3; j++) {
 		Vector4 v = vertex_points[j].GetVertexPosition();
-		Vector4 n = vertex_points[j].GetVertexNormal();
 		// M transform
 		world_points[j] = v * M;
 		vertex_points[j].SetVertexPosition(world_points[j]);
+	}
+
+	// Buck culling
+	unifrom[0]->backface = false;
+	if (BackFaceCulling(world_points[0], world_points[1], world_points[2],camera->GetPostion()))
+	{
+		unifrom[0]->backface = true;
+		return;
+	}
+
+	Matrix4 V; Matrix4 P;
+	V = camera->GetViewMatrix();
+	P = camera->GetProjectionMatrix();
+
+	//world space -> prespective space
+	for (int j = 0; j < 3; j++) {
+		Vector4 n = vertex_points[j].GetVertexNormal();
 
 		// normal set
 		n = n * M;
@@ -181,7 +195,9 @@ void Rasterizer::LightTriangleTransfrom(const Triangle& triangle)
 		Vector4 v = vertex_points[j].GetVertexPosition();
 		// M transform
 		world_points[j] = v * camera->GetModelMatrix();
+	}
 
+	for (int j = 0; j < 3; j++) {
 		// VP transform
 		screen_points[j] = world_points[j] * lightView;
 		screen_points[j] = screen_points[j] * lightOrth;
@@ -345,6 +361,15 @@ void Rasterizer::DrawTriangleDepth()
 	Vector4 t1 = TransformHomogenize(unifrom[1]->lightScreenPos);
 	Vector4 t2 = TransformHomogenize(unifrom[2]->lightScreenPos);
 
+	//if (renderPass == 0 && (scnManager->GetRenderState() & RENDER_STATE_WIREFRAME))
+	//{
+	//	DrawLine((int)t0.x, (int)t0.y, (int)t1.x, (int)t1.y, Color::WHITH_COLOR);
+	//	DrawLine((int)t1.x, (int)t1.y, (int)t2.x, (int)t2.y, Color::WHITH_COLOR);
+	//	DrawLine((int)t2.x, (int)t2.y, (int)t0.x, (int)t0.y, Color::WHITH_COLOR);
+	//	return;
+	//}
+
+
 	if (t0.y > t1.y) { std::swap(t0, t1); }
 	if (t0.y > t2.y) { std::swap(t0, t2); }
 	if (t1.y > t2.y) { std::swap(t1, t2); }
@@ -453,10 +478,7 @@ void Rasterizer::DrawTriangleColor()
 	unifrom[1]->cameraScreenPos = t1;
 	unifrom[2]->cameraScreenPos = t2;
 
-	if (BackFaceCulling(t0, t1, t2))
-		return;
-	else
-		nTriangle++;
+	nTriangle++;
 
 	if (renderPass == 0 && (scnManager->GetRenderState() & RENDER_STATE_WIREFRAME))
 	{
@@ -582,7 +604,7 @@ bool Rasterizer::TestVertexInShadow(const Vector4& world_point, const Vector4& n
 
 		//caculate current depth in light screen
 		auto light = std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
-		Vector4 light_dir = -light->GetDirection();
+		Vector4 light_dir = -light->GetPosition();
 		light_dir.Normalize();
 		float dot = normal.Dot(light_dir);
 		float bias = std::fmaxf(0.025f * (1.0f - dot), 0.010f);
@@ -615,7 +637,12 @@ void Rasterizer::DrawSomthing()
 			{
 				LightTriangleTransfrom(model->GetFaceIndex(i));
 			}
-			CameraTriangleTransfrom(model->GetFaceIndex(i));
+			if (renderPass == 0) {
+				CameraTriangleTransfrom(model->GetFaceIndex(i));
+			}
+			// back culling
+			if (unifrom[0]->backface)
+				continue;
 			ClipSpace();
 		}
 	}
@@ -662,14 +689,25 @@ void Rasterizer::Update()
 	ProcessWindowMouseInput();
 }
 
-bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const
+bool Rasterizer::BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2, const Vector4 cam_pos) const
 {
 	if (scnManager->GetRenderState() & RENDER_STATE_BACKCULL)
 	{
-		Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
-		Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
-		Vector3 n = v1.Cross(v2);
-		return n.z <= 0;
+		//Vector3 v1 = Vector3(t1.x, t1.y, t1.z) - Vector3(t0.x, t0.y, t0.z);
+		//Vector3 v2 = Vector3(t2.x, t2.y, t2.z) - Vector3(t0.x, t0.y, t0.z);
+		//Vector3 n = v1.Cross(v2);
+		//return n.z >=0;
+
+		Vector4 v1 = t1 - t0;
+		Vector4 v2 = t2 - t0;
+		Vector4 n = v1.Cross(v2);
+
+		//Vector4 center = (t0 + t1 + t2) / 3;
+
+		Vector4 cam_direction = t0 - cam_pos;
+		float z = n.Dot(cam_direction);
+		
+		return z > 0;
 	}
 	else
 	{
@@ -710,7 +748,7 @@ void Rasterizer::UpdateLightViewMatrix()
 {
 	auto light = std::dynamic_pointer_cast<DirectLight>(scnManager->GetCurrentLight());
 
-	Vector4 p = -light->GetDirection();
+	Vector4 p = -light->GetPosition();
 	Vector3 position = Vector3(p.x, p.y, p.z);
 	Vector3 target = { 0, 0, 0 };
 	Vector3 up = { 0,1,0 };
@@ -762,34 +800,35 @@ void Rasterizer::SortRenderArray()
 {
 	auto& model_array = scnManager->GetCurrentModels()->GetArrayRef();
 
-	Vector4 model_camera = camera->GetPostion() * camera->GetInvModelMatrix();
-	
-	auto cmp1 = [model_camera](std::shared_ptr<Model> a, std::shared_ptr<Model> b)
-	{
-		return ((int)a->GetTransparent() < (int)b->GetTransparent());
-	};
-	// First sort opaque model
-	sort(model_array.begin(), model_array.end(), cmp1);
+	Matrix4 M = camera->GetModelMatrix();
 
-	auto iter = model_array.begin();
-	for (; iter < model_array.end(); ++iter)
+	for (auto it : model_array)
 	{
-		if((*iter)->GetTransparent()) break;
+		Vector4 world_pos = it->GetCenter() * M;
+		it->SetWorldCenter(world_pos);
 	}
 
-	auto cmp2 = [model_camera](std::shared_ptr<Model> a, std::shared_ptr<Model> b)
+	Vector4 camera_pos = camera->GetPostion();
+	
+	auto cmp = [&camera_pos](std::shared_ptr<Model> a, std::shared_ptr<Model> b)
 	{
-		Vector4 dist1 = model_camera - a->GetCenter();
-		Vector4 dist2 = model_camera - b->GetCenter();
+		// First sort opaque model
+		if(a->GetTransparent() != b->GetTransparent())
+			return ((int)a->GetTransparent() < (int)b->GetTransparent());
+
+		Vector4 dist1 = camera_pos - a->GetWorldCenter();
+		Vector4 dist2 = camera_pos - b->GetWorldCenter();
 
 		float lenght1 = dist1.Lenght();
 		float lenght2 = dist2.Lenght();
-
-		return (lenght1 > lenght2);
+		// Second sort transparent with distance
+		if (lenght1 != lenght2)
+			return (lenght1 > lenght2);
+		else
+			return false;
 	};
-	// Second sort transparent with distance
-	sort(iter, model_array.end(), cmp2);
 
+	sort(model_array.begin(), model_array.end(), cmp);
 }
 
 void Rasterizer::AlphaBlending(int x, int y, Color& color)

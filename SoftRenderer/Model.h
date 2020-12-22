@@ -46,11 +46,15 @@ public:
 	bool GetTransparent() const { return material->GetTransparent(); }
 
 	Vector4 GetCenter() const { return center; }
+
+	void SetWorldCenter(const Vector4 w) { worldCenter = w; }
+	Vector4 GetWorldCenter() { return worldCenter; }
 	
 private:
 	std::vector<Triangle> faces;
 	std::shared_ptr<Material> material;
 	Vector4 center;
+	Vector4 worldCenter;
 };
 
 class ModelArray

@@ -2,9 +2,10 @@
 #include <windows.h>
 #include <wingdi.h>
 
+//TODO: More flexible texture creation
 Texture::Texture()
 {
-	CreateEmptyTexture();
+	CreateEmptyTexture(1024, 1024);
 }
 
 Texture::Texture(const char *filename)
@@ -82,10 +83,10 @@ void Texture::LoadColorTexture(const char *filename)
 	fclose(bmpFile);
 }
 
-void Texture::CreateEmptyTexture()
+void Texture::CreateEmptyTexture(int w, int h)
 {
-	width = 1024;
-	height = 1024;
+	width = w;
+	height = h;
 	int need = width * height * 8 + sizeof(void*)*(height * 2);
 	char *ptr = (char*)malloc(need);
 	assert(ptr);

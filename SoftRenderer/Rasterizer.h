@@ -66,7 +66,7 @@ private:
 
 	bool TestVertexInShadow(const Vector4& worldpos,const Vector4& normal);
 
-	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2) const;
+	bool BackFaceCulling(const Vector4& t0, const Vector4 t1, const Vector4 t2, const Vector4 cam_pos) const;
 
 	// For light caculation
 	void CaculateLightColor(const Vector4& world_pos, const Vector4& normal,const Vector3& tex, Color& pixel_color);

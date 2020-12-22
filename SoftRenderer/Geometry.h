@@ -94,7 +94,7 @@ public:
 	Uniform(const Vector4& wor, const Vector4& cam, const Vector4& lig,
 		const Vector3& tex, const Vector4& nor, const Color& col) :
 		worldPos(wor), cameraScreenPos(cam), lightScreenPos(lig),
-		texcoord(tex), normal(nor), color(col) {}
+		texcoord(tex), normal(nor), color(col),backface(false) {}
 
 	Uniform(const Uniform& u)
 	{
@@ -104,6 +104,7 @@ public:
 		texcoord = u.texcoord;
 		normal = u.normal;
 		color = u.color;
+		backface = u.backface;
 	}
 	Uniform& operator=(const Uniform& u)
 	{
@@ -113,24 +114,12 @@ public:
 		texcoord = u.texcoord;
 		normal = u.normal;
 		color = u.color;
+		backface = u.backface;
 		return *this;
 	}
 	~Uniform() {};
 	
 	auto Clone() const { return std::make_shared<Uniform>(*this); }
-
-	void SetVertex(const Vertex& vert)
-	{
-		cameraScreenPos = vert.GetVertexPosition();
-		normal = vert.GetVertexNormal();
-		texcoord = vert.GetVertexTexcoord();
-		color = vert.GetVertexColor();
-	}
-
-	Vertex GetVertex() const
-	{
-		return Vertex(cameraScreenPos, normal, color, texcoord);
-	}
 
 	static inline Uniform ClampLerp(const std::shared_ptr<Uniform> &u1, const std::shared_ptr<Uniform> &u2, float factor)
 	{
@@ -156,4 +145,5 @@ public:
 	Vector3 texcoord;
 	Vector4 normal;
 	Color color;
+	bool backface;
 };
