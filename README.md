@@ -26,6 +26,7 @@ Then run this bat file. You can find a new build file has already generated in p
 + FPS Camera and Rotation Model
 + Simple Scene Manager
 + Shadow Map
++ Alpha Blend
 
 ## Exhibition
 ![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_texture.JPG)  
