@@ -30,4 +30,5 @@ Then run this bat file. You can find a new build file has already generated in p
 ## Exhibition
 ![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_texture.JPG)  
 ![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/model_shadow.JPG)  
+![screenshot](https://raw.githubusercontent.com/Tanc-ANT/SoftRenderer/master/Asset/Image/alpha_blend.JPG)  
 Obj file from [zauonlok/renderer](https://github.com/zauonlok/renderer/tree/master/assets/crab)
