@@ -124,7 +124,7 @@ void Vector4::Normalize()
 	float sq = x * x + y * y + z * z;
 	if (sq > 0.0)
 	{
-		float oneOver = 1.0f / sqrt(sq);
+		float oneOver = Q_rsqrt(sq);
 		x *= oneOver;
 		y *= oneOver;
 		z *= oneOver;
@@ -134,7 +134,7 @@ void Vector4::Normalize()
 
 float Vector4::Lenght()
 {
-	return sqrt(x * x + y * y + z * z);
+	return Q_sqrt(x * x + y * y + z * z);
 }
 
 float Vector4::Dot(const Vector4& other) const

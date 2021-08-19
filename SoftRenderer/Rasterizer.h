@@ -9,6 +9,7 @@
 #include "Color.h"
 #include "Light.h"
 #include "Scene.h"
+#include "MathUtils.h"
 
 class Rasterizer
 {

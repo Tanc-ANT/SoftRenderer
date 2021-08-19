@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Vector3.h"
 #include "Matrix4.h"
+#include "MathUtils.h"
 
 class Vector4
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "MathUtils.h"
 
 class Vector3
 {
