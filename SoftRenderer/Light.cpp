@@ -35,12 +35,49 @@ void PointLight::LightTextureCalculaiton(const Vector4& camera_pos,
 	float diff;
 	float spec;
 	
+	auto normal_map = materal->GetNormalMap();
 	auto diffuse_map = materal->GetDiffuseMap();
 	auto specular_map = materal->GetSpecularMap();
 
+	Color normal_color(0.f, 0.f, 0.f);
 	Color ambient_color(1.0f, 1.0f, 1.0f);
 	Color diffuse_color(1.0f, 1.0f, 1.0f);
 	Color specular_color(1.0f, 1.0f, 1.0f);
+	
+	//Normal value for light color caculation
+	Vector4 n = normal;
+
+	if (normal_map)
+	{
+		normal_color = normal_map->GetColor(tex);
+
+		float x = normal.x;
+		float y = normal.y;
+		float z = normal.z;
+
+		Vector4 t = Vector4(x*y / sqrt(x*x + z * z), sqrt(x*x + z * z), z*y / sqrt(x*x + z * z),0.f);
+		Vector4 b = normal.Cross(t);
+		Matrix4 TBN(t.x, t.y, t.z, t.w,
+					b.x, b.y, b.z, b.w,
+					x, y, z, 0.f,
+					0.f, 0.f, 0.f, 0.f);
+
+		int w = normal_map->GetWidth();
+		int h = normal_map->GetHeight();
+		
+		float kh = 0.2f, kn = 0.1f;
+
+		Vector3 offset_u = Vector3(tex.x + 1.0f/(float)w, tex.y, tex.z);
+		Vector3 offset_v = Vector3(tex.x, tex.y + 1.0f /(float)h, tex.z);
+		float dU = kh * kn*(normal_map->GetColor(offset_u).GetColor().Lenght() - normal_color.GetColor().Lenght());
+		float dV = kh * kn*(normal_map->GetColor(offset_v).GetColor().Lenght() - normal_color.GetColor().Lenght());
+
+		Vector4 ln = Vector4(-dU, -dV, 1.0f, 1.0f);
+
+		Vector4 res = ln * TBN;
+		res.Normalize();
+		n = res;
+	}
 
 	if (diffuse_map)
 	{
@@ -55,7 +92,6 @@ void PointLight::LightTextureCalculaiton(const Vector4& camera_pos,
 	ambient_color = ambient_color * GetAmbient();
 
 	//diffuse caculation
-	Vector4 n = normal;
 	Vector4 light_dir = position - world_pos;
 	light_dir.Normalize();
 	diff = n.Dot(light_dir);
