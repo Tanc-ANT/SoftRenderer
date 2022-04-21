@@ -6,7 +6,7 @@ This project is still under construction. If you want to find a stable version w
 ## Build
 It is very easy to build this project.
 
-You can open the bat file in Scripts with any text editor. And change the version of MSCV to your own computer.
+You can open the bat file in Scripts with any text editor. And change the version of MSVC to your own computer.
 
 Then run this bat file. You can find a new build file has already generated in project file.
 
